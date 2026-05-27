@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: ./src
+      dockerfile: WebAPI/Dockerfile
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=cara_iupa;Username=cara_user;Password=cara_pass;
+      - ConnectionStrings__Redis=redis:6379
+      - Jwt__Secret=CARA-SuperSecretKey-ChangeInProduction-Min32Chars!
+      - Jwt__Issuer=CARA.IUPA
+      - Jwt__Audience=CARA.IUPA.Frontend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: cara_iupa
+      POSTGRES_USER: cara_user
+      POSTGRES_PASSWORD: cara_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./src/Infrastructure/Persistence/Migrations/INITIAL_CARA_SCHEMA.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cara_user -d cara_iupa"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+volumes:
+  pgdata:

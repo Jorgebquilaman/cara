@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+bin/
+obj/
+
+# Build artifacts
+dist/
+.vite/
+.vs/
+*.user
+*.suo
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.*
+
+# Logs
+*.log
