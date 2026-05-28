@@ -24,6 +24,8 @@ Resumen ejecutivo con indicadores clave:
 - **Pendientes**: suma de solicitudes de préstamo + reservas sin aprobar.
 - **Encuestas Realizadas**: cantidad total de encuestas completadas.
 
+![Menu](pantalla.png)
+
 ---
 
 ## 3. Activos
