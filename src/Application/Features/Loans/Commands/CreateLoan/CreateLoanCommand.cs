@@ -9,4 +9,6 @@ public record CreateLoanCommand : IRequest<LoanDto>
     public Guid UserId { get; init; }
     public DateTime StartDate { get; init; }
     public DateTime DueDate { get; init; }
+    public string? Observations { get; init; }
+    public decimal Prenda { get; init; }
 }

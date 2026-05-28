@@ -34,6 +34,13 @@ public class LoanConfiguration : IEntityTypeConfiguration<Loan>
         builder.Property(l => l.RejectionReason)
             .HasMaxLength(500);
 
+        builder.Property(l => l.Observations)
+            .HasMaxLength(1000);
+
+        builder.Property(l => l.Prenda)
+            .HasDefaultValue(0)
+            .HasColumnType("decimal(18,2)");
+
         builder.Property(l => l.RequestedAt)
             .IsRequired();
 

@@ -44,7 +44,7 @@ export default function App() {
       <Route element={<MainLayout />}>
         <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path="/assets" element={<ProtectedRoute roles={['Admin', 'Staff']}><AssetsPage /></ProtectedRoute>} />
-        <Route path="/assets/import" element={<ProtectedRoute roles={['Admin', 'Staff']}><ImportAssetsPage /></ProtectedRoute>} />
+        <Route path="/assets/import" element={<ProtectedRoute roles={['Admin']}><ImportAssetsPage /></ProtectedRoute>} />
         <Route path="/assets/:id" element={<ProtectedRoute><AssetDetailPage /></ProtectedRoute>} />
         <Route path="/loans" element={<ProtectedRoute roles={['Admin', 'Staff']}><LoansPage /></ProtectedRoute>} />
         <Route path="/loans/overdue" element={<ProtectedRoute roles={['Admin', 'Staff']}><OverdueLoansPage /></ProtectedRoute>} />

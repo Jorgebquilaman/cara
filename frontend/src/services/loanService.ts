@@ -12,7 +12,7 @@ export const loanService = {
     return data;
   },
 
-  async create(loan: { assetId: string; startDate: string; dueDate: string; userId?: string }): Promise<Loan> {
+  async create(loan: { assetId: string; startDate: string; dueDate: string; userId?: string; observations?: string; prenda?: number }): Promise<Loan> {
     const { data } = await api.post<Loan>('/loans', {
       ...loan,
       userId: loan.userId ?? JSON.parse(localStorage.getItem('cara_user') || '{}').id,

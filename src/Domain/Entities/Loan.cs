@@ -11,6 +11,8 @@ public class Loan
     public LoanPeriod Period { get; private set; }
     public LoanStatus Status { get; private set; }
     public string? RejectionReason { get; private set; }
+    public string? Observations { get; private set; }
+    public decimal Prenda { get; private set; }
     public DateTime RequestedAt { get; private set; }
     public DateTime? ApprovedAt { get; private set; }
     public DateTime? ReturnedAt { get; private set; }
@@ -24,12 +26,14 @@ public class Loan
 
     private Loan() { }
 
-    public Loan(Guid assetId, Guid userId, LoanPeriod period)
+    public Loan(Guid assetId, Guid userId, LoanPeriod period, string? observations = null, decimal prenda = 0)
     {
         Id = Guid.NewGuid();
         AssetId = assetId;
         UserId = userId;
         Period = period;
+        Observations = observations;
+        Prenda = prenda;
         Status = LoanStatus.Pending;
         RequestedAt = DateTime.UtcNow;
     }

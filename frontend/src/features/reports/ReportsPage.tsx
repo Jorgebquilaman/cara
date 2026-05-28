@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/services/api';
+import { useAuth } from '@/hooks/useAuth';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Modal } from '@/components/ui/Modal';
 import { Select } from '@/components/ui/Select';
-import { FileText, Download, Search, Users, Package, BookOpen, Star, ThumbsUp } from 'lucide-react';
+import { FileText, Download, Search, Users, Package, BookOpen, ThumbsUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { User } from '@/types';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart as RePieChart, Pie, Cell } from 'recharts';
+import ReactStars from 'react-stars';
 import clsx from 'clsx';
 
 interface UserHistory {
@@ -49,6 +51,8 @@ const StatCard = ({ label, value, icon: Icon, color }: { label: string, value: n
   );
 
 export default function ReportsPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'Admin';
   const [historyModalOpen, setHistoryModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState('');
   const [activeTab, setActiveTab] = useState<'graphics' | 'csv'>('graphics');
@@ -64,8 +68,12 @@ export default function ReportsPage() {
   const { data: users } = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const { data } = await api.get<User[]>('/users');
-      return data;
+      try {
+        const { data } = await api.get<User[]>('/users');
+        return data;
+      } catch {
+        return [];
+      }
     },
   });
 
@@ -110,10 +118,12 @@ export default function ReportsPage() {
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-cara-900">Reportes y Estadísticas</h1>
-        <Button variant="secondary" size="sm" onClick={() => setHistoryModalOpen(true)}>
-            <Search className="h-4 w-4 mr-2" />
-            Historial de Usuario
-        </Button>
+        {isAdmin && (
+          <Button variant="secondary" size="sm" onClick={() => setHistoryModalOpen(true)}>
+              <Search className="h-4 w-4 mr-2" />
+              Historial de Usuario
+          </Button>
+        )}
       </div>
 
       {/* Tabs */}
@@ -150,22 +160,28 @@ export default function ReportsPage() {
             {stats && stats.kpIs.totalSurveys > 0 && (
               <Card title="Valoraciones de Encuestas">
                 <div className="grid grid-cols-4 gap-4 text-center">
-                  <div>
-                    <p className="text-2xl font-bold text-cara-700">{stats.kpIs.avgOverallRating}</p>
-                    <p className="text-xs text-cara-500">General</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-cara-700">{stats.kpIs.avgServiceRating}</p>
-                    <p className="text-xs text-cara-500">Atención</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-cara-700">{stats.kpIs.avgRequestTimeRating}</p>
-                    <p className="text-xs text-cara-500">Tiempo Solicitud</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-cara-700">{stats.kpIs.avgAssetQualityRating}</p>
-                    <p className="text-xs text-cara-500">Calidad Activo</p>
-                  </div>
+                  {[
+                    { label: 'General', value: stats.kpIs.avgOverallRating },
+                    { label: 'Atención', value: stats.kpIs.avgServiceRating },
+                    { label: 'Tiempo Solicitud', value: stats.kpIs.avgRequestTimeRating },
+                    { label: 'Calidad Activo', value: stats.kpIs.avgAssetQualityRating },
+                  ].map(({ label, value }) => (
+                    <div key={label}>
+                      <p className="text-2xl font-bold text-cara-700">{value}</p>
+                      <div className="flex justify-center my-1">
+                        <ReactStars
+                          count={5}
+                          value={value}
+                          size={20}
+                          color1="#d1d5db"
+                          color2="#facc15"
+                          edit={false}
+                          half
+                        />
+                      </div>
+                      <p className="text-xs text-cara-500">{label}</p>
+                    </div>
+                  ))}
                 </div>
               </Card>
             )}
@@ -260,7 +276,61 @@ export default function ReportsPage() {
                 <h3 className="font-semibold text-cara-900">{userHistory.fullName}</h3>
                 <p className="text-sm text-cara-600">{userHistory.institutionalEmail} · {userHistory.role}</p>
               </div>
-              {/* ... (rest of history modal content remains unchanged) ... */}
+
+              {/* Préstamos */}
+              <div>
+                <h4 className="font-semibold text-cara-800 mb-2">Préstamos ({userHistory.loans.length})</h4>
+                <div className="space-y-2">
+                  {userHistory.loans.map((loan: any) => (
+                    <div key={loan.id} className="rounded-lg border border-cara-200 p-3 text-sm">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-medium text-cara-900">{loan.assetName} ({loan.assetCode})</p>
+                          <p className="text-cara-500">
+                            {new Date(loan.startDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })} → {new Date(loan.dueDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}
+                          </p>
+                          {loan.approvedAt && <p className="text-cara-500">Aprobado: {new Date(loan.approvedAt).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}</p>}
+                          {loan.returnedAt && <p className="text-cara-500">Devuelto: {new Date(loan.returnedAt).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}</p>}
+                          {loan.rejectionReason && <p className="text-danger">Rechazo: {loan.rejectionReason}</p>}
+                        </div>
+                        <Badge status={loan.status} />
+                      </div>
+                    </div>
+                  ))}
+                  {userHistory.loans.length === 0 && <p className="text-sm text-cara-400 italic">Sin préstamos</p>}
+                </div>
+              </div>
+
+              {/* Incidentes */}
+              <div>
+                <h4 className="font-semibold text-cara-800 mb-2">Incidentes ({userHistory.incidents.length})</h4>
+                <div className="space-y-2">
+                  {userHistory.incidents.map((inc: any) => (
+                    <div key={inc.id} className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm">
+                      <p className="font-medium text-red-800">{inc.description}</p>
+                      <p className="text-red-600 text-xs">
+                        {new Date(inc.reportedAt).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}
+                        {inc.isResolved && inc.resolvedAt && ` · Resuelto: ${new Date(inc.resolvedAt).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}`}
+                      </p>
+                    </div>
+                  ))}
+                  {userHistory.incidents.length === 0 && <p className="text-sm text-cara-400 italic">Sin incidentes</p>}
+                </div>
+              </div>
+
+              {/* Sanciones */}
+              <div>
+                <h4 className="font-semibold text-cara-800 mb-2">Sanciones ({userHistory.sanctions.length})</h4>
+                <div className="space-y-2">
+                  {userHistory.sanctions.map((san: any) => (
+                    <div key={san.id} className="rounded-lg border border-yellow-200 bg-yellow-50 p-3 text-sm">
+                      <p className="font-medium text-yellow-800">{san.reason}</p>
+                      <p className="text-yellow-600 text-xs">{new Date(san.issuedAt).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}</p>
+                    </div>
+                  ))}
+                  {userHistory.sanctions.length === 0 && <p className="text-sm text-cara-400 italic">Sin sanciones</p>}
+                </div>
+              </div>
             </div>
           )}
         </div>

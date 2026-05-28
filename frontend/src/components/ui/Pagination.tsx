@@ -20,21 +20,21 @@ export default function Pagination({ pageNumber, totalPages, totalCount, onPageC
   }
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-cara-200">
-      <p className="text-sm text-cara-500">
+    <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-cara-200 dark:bg-cara-900 dark:border-cara-700">
+      <p className="text-sm text-cara-500 dark:text-cara-400">
         {totalCount} resultado{totalCount !== 1 ? 's' : ''}
       </p>
       <div className="flex items-center gap-1">
         <button
           onClick={() => onPageChange(pageNumber - 1)}
           disabled={pageNumber <= 1}
-          className="p-1.5 rounded hover:bg-cara-100 disabled:opacity-30 disabled:cursor-not-allowed text-cara-600"
+          className="p-1.5 rounded hover:bg-cara-100 disabled:opacity-30 disabled:cursor-not-allowed text-cara-600 dark:text-cara-400 dark:hover:bg-cara-800"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
         {pages.map((p, i) =>
           p === '...' ? (
-            <span key={`dot-${i}`} className="px-1 text-cara-400 text-sm">...</span>
+            <span key={`dot-${i}`} className="px-1 text-cara-400 text-sm dark:text-cara-500">...</span>
           ) : (
             <button
               key={p}
@@ -42,7 +42,7 @@ export default function Pagination({ pageNumber, totalPages, totalCount, onPageC
               className={`min-w-[2rem] h-8 text-sm rounded-md font-medium transition-colors ${
                 p === pageNumber
                   ? 'bg-cara-600 text-white'
-                  : 'text-cara-600 hover:bg-cara-100'
+                  : 'text-cara-600 hover:bg-cara-100 dark:text-cara-400 dark:hover:bg-cara-800'
               }`}
             >
               {p}
@@ -52,7 +52,7 @@ export default function Pagination({ pageNumber, totalPages, totalCount, onPageC
         <button
           onClick={() => onPageChange(pageNumber + 1)}
           disabled={pageNumber >= totalPages}
-          className="p-1.5 rounded hover:bg-cara-100 disabled:opacity-30 disabled:cursor-not-allowed text-cara-600"
+          className="p-1.5 rounded hover:bg-cara-100 disabled:opacity-30 disabled:cursor-not-allowed text-cara-600 dark:text-cara-400 dark:hover:bg-cara-800"
         >
           <ChevronRight className="h-4 w-4" />
         </button>

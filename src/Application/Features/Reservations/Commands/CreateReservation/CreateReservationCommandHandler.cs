@@ -45,8 +45,8 @@ public class CreateReservationCommandHandler : IRequestHandler<CreateReservation
         if (await _incidentRepository.HasUnresolvedIncidentsAsync(request.AssetId, cancellationToken))
             throw new InvalidOperationException("El activo no puede ser reservado porque tiene incidentes sin resolver.");
 
-        var startDate = DateTime.SpecifyKind(request.StartDate, DateTimeKind.Utc);
-        var endDate = DateTime.SpecifyKind(request.EndDate, DateTimeKind.Utc);
+        var startDate = DateTime.SpecifyKind(request.StartDate.AddHours(3), DateTimeKind.Utc);
+        var endDate = DateTime.SpecifyKind(request.EndDate.AddHours(3), DateTimeKind.Utc);
 
         if ((endDate - startDate).TotalDays > asset.MaxLoanDays)
             throw new LoanPeriodException($"El período máximo del activo es de {asset.MaxLoanDays} días.");

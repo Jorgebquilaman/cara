@@ -23,6 +23,8 @@ const loanSchema = z.object({
   assetId: z.string().min(1, 'Seleccioná un activo'),
   startDate: z.string().min(1, 'Requerido'),
   dueDate: z.string().min(1, 'Requerido'),
+  observations: z.string().max(1000).optional(),
+  prenda: z.string().optional(),
 });
 
 type LoanForm = z.infer<typeof loanSchema>;
@@ -56,7 +58,10 @@ export default function MyLoansPage() {
   const selectedAsset = activeAssets.find((a) => a.id === selectedAssetId);
 
   const onSubmit = async (data: LoanForm) => {
-    await createLoan.mutateAsync(data);
+    await createLoan.mutateAsync({
+      ...data,
+      prenda: parseFloat(data.prenda || '0'),
+    });
     setIsCreateOpen(false);
     form.reset();
   };
@@ -78,12 +83,12 @@ export default function MyLoansPage() {
     {
       key: 'startDate',
       header: 'Inicio',
-      render: (l: Loan) => new Date(l.startDate).toLocaleString('es-AR'),
+      render: (l: Loan) => new Date(l.startDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
     },
     {
       key: 'dueDate',
       header: 'Vencimiento',
-      render: (l: Loan) => new Date(l.dueDate).toLocaleString('es-AR'),
+      render: (l: Loan) => new Date(l.dueDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
     },
     { key: 'status', header: 'Estado', render: (l: Loan) => <Badge status={l.status} /> },
   ];
@@ -160,6 +165,23 @@ export default function MyLoansPage() {
             type="datetime-local"
             error={form.formState.errors.dueDate?.message}
             {...form.register('dueDate')}
+          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Observaciones</label>
+            <textarea
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cara-500"
+              rows={3}
+              {...form.register('observations')}
+            />
+          </div>
+          <Input
+            label="Prenda ($)"
+            type="number"
+            step="0.01"
+            min="0"
+            defaultValue="0"
+            error={form.formState.errors.prenda?.message}
+            {...form.register('prenda')}
           />
           <div className="flex justify-end gap-3">
             <Button variant="secondary" onClick={() => setIsCreateOpen(false)}>Cancelar</Button>

@@ -174,8 +174,8 @@ export default function ReservationsPage() {
       allReservations.map((r) => ({
         Espacio: r.space,
         Usuario: r.userName,
-        Inicio: new Date(r.startDate).toLocaleString('es-AR'),
-        Fin: new Date(r.endDate).toLocaleString('es-AR'),
+        Inicio: new Date(r.startDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
+        Fin: new Date(r.endDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
         Estado: r.status,
       }))
     );
@@ -197,8 +197,8 @@ export default function ReservationsPage() {
       body: allReservations.map((r) => [
         r.space,
         r.userName,
-        new Date(r.startDate).toLocaleString('es-AR'),
-        new Date(r.endDate).toLocaleString('es-AR'),
+        new Date(r.startDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
+        new Date(r.endDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
         r.status,
       ]),
       styles: { fontSize: 8 },
@@ -214,12 +214,12 @@ export default function ReservationsPage() {
     {
       key: 'startDate',
       header: 'Inicio',
-      render: (r: Reservation) => new Date(r.startDate).toLocaleString('es-AR'),
+      render: (r: Reservation) => new Date(r.startDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
     },
     {
       key: 'endDate',
       header: 'Fin',
-      render: (r: Reservation) => new Date(r.endDate).toLocaleString('es-AR'),
+      render: (r: Reservation) => new Date(r.endDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
     },
     { key: 'status', header: 'Estado', render: (r: Reservation) => <Badge status={r.status} /> },
     {
@@ -383,24 +383,22 @@ export default function ReservationsPage() {
             render={({ field }) => <input type="hidden" {...field} />}
           />
 
-          {dateRange && (
-            <div className="grid grid-cols-2 gap-4">
-              <Input
-                label="Hora de inicio"
-                type="time"
-                defaultValue="08:00"
-                error={form.formState.errors.startTime?.message}
-                {...form.register('startTime')}
-              />
-              <Input
-                label="Hora de fin"
-                type="time"
-                defaultValue="09:00"
-                error={form.formState.errors.endTime?.message}
-                {...form.register('endTime')}
-              />
-            </div>
-          )}
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Hora de inicio"
+              type="time"
+              defaultValue={new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false })}
+              error={form.formState.errors.startTime?.message}
+              {...form.register('startTime')}
+            />
+            <Input
+              label="Hora de fin"
+              type="time"
+              defaultValue={new Date(Date.now() + 3600000).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false })}
+              error={form.formState.errors.endTime?.message}
+              {...form.register('endTime')}
+            />
+          </div>
 
           <Input
             label="Espacio"

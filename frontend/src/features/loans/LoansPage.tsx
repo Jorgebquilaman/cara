@@ -26,6 +26,8 @@ const loanSchema = z.object({
   assetId: z.string().min(1, 'Seleccioná un activo'),
   startDate: z.string().min(1, 'Requerido'),
   dueDate: z.string().min(1, 'Requerido'),
+  observations: z.string().max(1000).optional(),
+  prenda: z.string().optional(),
 });
 
 type LoanForm = z.infer<typeof loanSchema>;
@@ -33,6 +35,7 @@ type LoanForm = z.infer<typeof loanSchema>;
 const statusFilterOptions = [
   { value: '', label: 'Todos' },
   { value: 'Pending', label: 'Pendientes' },
+  { value: 'Approved', label: 'Aprobados (Listos para retirar)' },
   { value: 'Active', label: 'Activos' },
   { value: 'Overdue', label: 'Vencidos' },
   { value: 'Returned', label: 'Devueltos' },
@@ -58,8 +61,12 @@ export default function LoansPage() {
   const { data: users } = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const { data } = await api.get<User[]>('/users');
-      return data;
+      try {
+        const { data } = await api.get<User[]>('/users');
+        return data;
+      } catch {
+        return [];
+      }
     },
   });
 
@@ -76,6 +83,8 @@ export default function LoansPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
+  const [sortKey, setSortKey] = useState('');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const pageSize = 10;
   const searchTimeout = useRef<ReturnType<typeof setTimeout>>();
 
@@ -122,6 +131,8 @@ export default function LoansPage() {
       assetId: data.assetId,
       startDate: data.startDate,
       dueDate: data.dueDate,
+      observations: data.observations || undefined,
+      prenda: parseFloat(data.prenda || '0'),
     });
     form.reset();
     setIsCreateOpen(false);
@@ -155,8 +166,16 @@ export default function LoansPage() {
           l.userName.toLowerCase().includes(q)
       );
     }
+    if (sortKey) {
+      const sorted = [...result].sort((a, b) => {
+        const aVal = String((a as any)[sortKey] ?? '');
+        const bVal = String((b as any)[sortKey] ?? '');
+        return sortDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      });
+      return sorted;
+    }
     return result;
-  }, [allLoans, statusFilter, search]);
+  }, [allLoans, statusFilter, search, sortKey, sortDir]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
@@ -172,6 +191,15 @@ export default function LoansPage() {
   const handleStatusChange = (value: string) => {
     setStatusFilter(value);
     setPage(1);
+  };
+
+  const handleSort = (key: string) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
   };
 
   const exportExcel = () => {
@@ -205,8 +233,8 @@ export default function LoansPage() {
         l.assetCode,
         l.assetName,
         l.userName,
-        new Date(l.startDate).toLocaleString('es-AR'),
-        new Date(l.dueDate).toLocaleString('es-AR'),
+        new Date(l.startDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
+        new Date(l.dueDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
         l.status,
       ]),
       styles: { fontSize: 8 },
@@ -216,19 +244,21 @@ export default function LoansPage() {
   };
 
   const columns = [
-    { key: 'assetName', header: 'Activo' },
-    { key: 'userName', header: 'Usuario' },
+    { key: 'assetName', header: 'Activo', sortable: true },
+    { key: 'userName', header: 'Usuario', sortable: true },
     {
       key: 'startDate',
       header: 'Inicio',
-      render: (l: Loan) => new Date(l.startDate).toLocaleString('es-AR'),
+      sortable: true,
+      render: (l: Loan) => new Date(l.startDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
     },
     {
       key: 'dueDate',
       header: 'Vencimiento',
-      render: (l: Loan) => new Date(l.dueDate).toLocaleString('es-AR'),
+      sortable: true,
+      render: (l: Loan) => new Date(l.dueDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
     },
-    { key: 'status', header: 'Estado', render: (l: Loan) => <Badge status={l.status} /> },
+    { key: 'status', header: 'Estado', sortable: true, render: (l: Loan) => <Badge status={l.status} /> },
     {
       key: 'actions',
       header: 'Acciones',
@@ -321,6 +351,9 @@ export default function LoansPage() {
           keyExtractor={(l) => l.id}
           isLoading={isLoading}
           emptyMessage="No se encontraron préstamos"
+          sortKey={sortKey}
+          sortDir={sortDir}
+          onSort={handleSort}
         />
         <Pagination
           pageNumber={page}
@@ -379,6 +412,23 @@ export default function LoansPage() {
             type="datetime-local"
             error={form.formState.errors.dueDate?.message}
             {...form.register('dueDate')}
+          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Observaciones</label>
+            <textarea
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cara-500"
+              rows={3}
+              {...form.register('observations')}
+            />
+          </div>
+          <Input
+            label="Prenda ($)"
+            type="number"
+            step="0.01"
+            min="0"
+            defaultValue="0"
+            error={form.formState.errors.prenda?.message}
+            {...form.register('prenda')}
           />
           <div className="flex justify-end gap-3">
             <Button variant="secondary" onClick={() => setIsCreateOpen(false)}>Cancelar</Button>

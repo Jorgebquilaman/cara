@@ -58,8 +58,8 @@ public class CreateLoanCommandHandler : IRequestHandler<CreateLoanCommand, LoanD
         if (await _incidentRepository.HasUnresolvedIncidentsAsync(request.AssetId, cancellationToken))
             throw new InvalidOperationException("El activo no puede ser prestado porque tiene incidentes sin resolver.");
 
-        var startUtc = DateTime.SpecifyKind(request.StartDate, DateTimeKind.Utc);
-        var endUtc = DateTime.SpecifyKind(request.DueDate, DateTimeKind.Utc);
+        var startUtc = DateTime.SpecifyKind(request.StartDate.AddHours(3), DateTimeKind.Utc);
+        var endUtc = DateTime.SpecifyKind(request.DueDate.AddHours(3), DateTimeKind.Utc);
 
         if (startUtc < DateTime.UtcNow.AddDays(-1))
             throw new LoanPeriodException("Start date cannot be in the past");
@@ -72,7 +72,7 @@ public class CreateLoanCommandHandler : IRequestHandler<CreateLoanCommand, LoanD
         var hasOverlap = await _loanRepository.HasOverlappingActiveLoanAsync(
             request.AssetId, startUtc, endUtc, cancellationToken);
 
-        var loan = new Loan(request.AssetId, request.UserId, period);
+        var loan = new Loan(request.AssetId, request.UserId, period, request.Observations, request.Prenda);
 
         _loanRepository.Add(loan);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

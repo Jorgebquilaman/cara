@@ -336,40 +336,42 @@ export default function UsersPage() {
       </div>
 
       <Modal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} title="Nuevo Usuario">
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <Input label="Nombre" error={form.formState.errors.firstName?.message} {...form.register('firstName')} />
-          <Input label="Apellido" error={form.formState.errors.lastName?.message} {...form.register('lastName')} />
-          <Input label="Email institucional" type="email" error={form.formState.errors.email?.message} {...form.register('email')} />
-          <Input label="DNI" error={form.formState.errors.dni?.message} {...form.register('dni')} />
-          <Input label="Teléfono (opcional)" type="tel" error={form.formState.errors.phoneNumber?.message} {...form.register('phoneNumber')} />
-          <div>
-            <label className="mb-1 block text-sm font-medium text-cara-700">Departamento</label>
-            <select value={formDepartmentId} onChange={(e) => setFormDepartmentId(e.target.value)}
-              className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none"
-            >
-              <option value="">Sin departamento</option>
-              {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-            </select>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input label="Nombre" error={form.formState.errors.firstName?.message} {...form.register('firstName')} />
+            <Input label="Apellido" error={form.formState.errors.lastName?.message} {...form.register('lastName')} />
+            <Input label="Email institucional" type="email" error={form.formState.errors.email?.message} {...form.register('email')} />
+            <Input label="DNI" error={form.formState.errors.dni?.message} {...form.register('dni')} />
+            <Input label="Teléfono (opcional)" type="tel" error={form.formState.errors.phoneNumber?.message} {...form.register('phoneNumber')} />
+            <div>
+              <label className="mb-1 block text-sm font-medium text-cara-700 dark:text-cara-300">Departamento</label>
+              <select value={formDepartmentId} onChange={(e) => setFormDepartmentId(e.target.value)}
+                className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none dark:bg-cara-800 dark:text-cara-200 dark:border-cara-600"
+              >
+                <option value="">Sin departamento</option>
+                {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-cara-700 dark:text-cara-300">Carrera</label>
+              <select disabled={!formDepartmentId}
+                {...form.register('careerId')}
+                className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none disabled:opacity-50 dark:bg-cara-800 dark:text-cara-200 dark:border-cara-600"
+              >
+                <option value="">Sin carrera</option>
+                {formCareers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+            <Select
+              label="Rol"
+              options={roleCreateOptions}
+              placeholder="Seleccioná un rol"
+              error={form.formState.errors.role?.message}
+              {...form.register('role')}
+            />
+            <Input label="Contraseña" type="password" error={form.formState.errors.password?.message} {...form.register('password')} />
           </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-cara-700">Carrera</label>
-            <select disabled={!formDepartmentId}
-              {...form.register('careerId')}
-              className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none disabled:opacity-50"
-            >
-              <option value="">Sin carrera</option>
-              {formCareers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
-          </div>
-          <Select
-            label="Rol"
-            options={roleCreateOptions}
-            placeholder="Seleccioná un rol"
-            error={form.formState.errors.role?.message}
-            {...form.register('role')}
-          />
-          <Input label="Contraseña" type="password" error={form.formState.errors.password?.message} {...form.register('password')} />
-          <div className="flex justify-end gap-3">
+          <div className="flex justify-end gap-3 mt-4">
             <Button variant="secondary" onClick={() => setIsCreateOpen(false)}>Cancelar</Button>
             <Button type="submit" isLoading={createMutation.isPending}>Crear</Button>
           </div>

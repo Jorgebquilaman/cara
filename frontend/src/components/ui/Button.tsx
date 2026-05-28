@@ -15,10 +15,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={clsx(
           'inline-flex items-center justify-center rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed',
           {
-            'bg-cara-700 text-white hover:bg-cara-800 focus:ring-cara-500': variant === 'primary',
-            'bg-white text-cara-700 border border-cara-300 hover:bg-cara-50 focus:ring-cara-500': variant === 'secondary',
+            'bg-cara-700 text-white hover:bg-cara-800 focus:ring-cara-500 dark:bg-cara-600 dark:hover:bg-cara-500': variant === 'primary',
+            'bg-white text-cara-700 border border-cara-300 hover:bg-cara-50 focus:ring-cara-500 dark:bg-cara-800 dark:text-cara-200 dark:border-cara-600 dark:hover:bg-cara-700': variant === 'secondary',
             'bg-danger text-white hover:bg-red-600 focus:ring-red-500': variant === 'danger',
-            'text-cara-600 hover:bg-cara-100 focus:ring-cara-500': variant === 'ghost',
+            'text-cara-600 hover:bg-cara-100 focus:ring-cara-500 dark:text-cara-400 dark:hover:bg-cara-800': variant === 'ghost',
           },
           {
             'px-3 py-1.5 text-sm': size === 'sm',

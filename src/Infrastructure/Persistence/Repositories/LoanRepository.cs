@@ -55,7 +55,7 @@ public class LoanRepository : ILoanRepository
         => await _context.Loans
             .Include(l => l.User)
             .Include(l => l.Asset)
-            .Where(l => l.Status == LoanStatus.Pending || l.Status == LoanStatus.Active || l.Status == LoanStatus.Overdue)
+            .Where(l => l.Status == LoanStatus.Pending || l.Status == LoanStatus.Approved || l.Status == LoanStatus.Active || l.Status == LoanStatus.Overdue || l.Status == LoanStatus.Returned)
             .OrderByDescending(l => l.RequestedAt)
             .ToListAsync(cancellationToken);
 

@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAssets, useCreateAsset, useUpdateAsset, useDeleteAsset } from '@/hooks/useAssets';
+import { useAuth } from '@/hooks/useAuth';
 import { Card } from '@/components/ui/Card';
 import { Table } from '@/components/ui/Table';
 import { Badge } from '@/components/ui/Badge';
@@ -53,6 +54,8 @@ const statusOptions = [
 ];
 
 export default function AssetsPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'Admin';
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -198,39 +201,53 @@ export default function AssetsPage() {
     }
   };
 
-  const exportExcel = () => {
-    if (!data?.items) return;
-    const ws = XLSX.utils.json_to_sheet(
-      data.items.map((a) => ({
-        Código: a.code,
-        Nombre: a.name,
-        Categoría: a.category,
-        Departamento: a.department,
-        Ubicación: a.location,
-        Estado: a.status,
-        'Días máx.': a.maxLoanDays,
-      }))
-    );
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Activos');
-    XLSX.writeFile(wb, 'activos.xlsx');
+  const exportExcel = async () => {
+    try {
+      const params: Record<string, unknown> = { pageSize: 9999 };
+      if (search) params.searchTerm = search;
+      if (statusFilter) params.status = statusFilter;
+      const { data: all } = await api.get('/assets', { params });
+      const items = all.items ?? [];
+      if (!items.length) return;
+      const ws = XLSX.utils.json_to_sheet(
+        items.map((a: Asset) => ({
+          Código: a.code,
+          Nombre: a.name,
+          Categoría: a.category,
+          Departamento: a.department,
+          Ubicación: a.location,
+          Estado: a.status,
+          'Días máx.': a.maxLoanDays,
+        }))
+      );
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Activos');
+      XLSX.writeFile(wb, 'activos.xlsx');
+    } catch { toast.error('Error al exportar Excel'); }
   };
 
-  const exportPdf = () => {
-    if (!data?.items) return;
-    const doc = new jsPDF();
-    doc.setFontSize(16);
-    doc.text('Activos - CARA', 14, 20);
-    doc.setFontSize(10);
-    doc.text(`Generado: ${new Date().toLocaleDateString()}`, 14, 28);
-    autoTable(doc, {
-      startY: 34,
-      head: [['Código', 'Nombre', 'Categoría', 'Departamento', 'Ubicación', 'Estado']],
-      body: data.items.map((a) => [a.code, a.name, a.category, a.department, a.location, a.status]),
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [51, 51, 51] },
-    });
-    doc.save('activos.pdf');
+  const exportPdf = async () => {
+    try {
+      const params: Record<string, unknown> = { pageSize: 9999 };
+      if (search) params.searchTerm = search;
+      if (statusFilter) params.status = statusFilter;
+      const { data: all } = await api.get('/assets', { params });
+      const items = all.items ?? [];
+      if (!items.length) return;
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text('Activos - CARA', 14, 20);
+      doc.setFontSize(10);
+      doc.text(`Generado: ${new Date().toLocaleDateString()}`, 14, 28);
+      autoTable(doc, {
+        startY: 34,
+        head: [['Código', 'Nombre', 'Categoría', 'Departamento', 'Ubicación', 'Estado']],
+        body: items.map((a: Asset) => [a.code, a.name, a.category, a.department, a.location, a.status]),
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [51, 51, 51] },
+      });
+      doc.save('activos.pdf');
+    } catch { toast.error('Error al exportar PDF'); }
   };
 
   const columns = [
@@ -282,9 +299,11 @@ export default function AssetsPage() {
           <Button variant="ghost" size="sm" onClick={() => openEdit(a)} title="Editar">
             <Pencil className="h-4 w-4 text-cara-600" />
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => deleteAsset.mutate(a.id)} title="Eliminar">
-            <Trash2 className="h-4 w-4 text-danger" />
-          </Button>
+          {isAdmin && (
+            <Button variant="ghost" size="sm" onClick={() => deleteAsset.mutate(a.id)} title="Eliminar">
+              <Trash2 className="h-4 w-4 text-danger" />
+            </Button>
+          )}
           <Button variant="ghost" size="sm" onClick={() => downloadZpl([a.id])} title="Imprimir etiqueta">
             <Printer className="h-4 w-4 text-cara-600" />
           </Button>
