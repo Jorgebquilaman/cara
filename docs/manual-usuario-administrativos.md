@@ -10,7 +10,7 @@
 2. Iniciá sesión con tu correo institucional y contraseña.
 3. Los usuarios **Admin** ven todas las opciones del menú; los **Staff** ven un subconjunto (ej: no ven Usuarios, Importar, Departamentos, etc.).
 
-![Login](screenshots/login.png)
+![Login](docs/Captura de pantalla 2026-05-28 a las 11.39.27.png)
 
 ---
 
