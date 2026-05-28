@@ -79,6 +79,8 @@ Gestión completa del ciclo de vida de los préstamos.
 6. Indicá el valor de **prenda** (garantía en $ARS, por defecto 0).
 7. Hacé clic en **"Crear"**.
 
+![Préstamo](PRESTAMO.png)
+
 > Si el usuario tiene **sanciones activas**, se muestra una advertencia antes de crear el préstamo.
 
 ### 4.3 Gestionar Préstamos
