@@ -64,6 +64,7 @@ export default function LoansPage() {
   });
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState('');
   const [selectedAssetId, setSelectedAssetId] = useState('');
   const [rejectModal, setRejectModal] = useState<{ id: string; open: boolean }>({ id: '', open: false });
   const [rejectReason, setRejectReason] = useState('');
@@ -132,6 +133,7 @@ export default function LoansPage() {
     label: `${a.code} - ${a.name}${a.status !== 'Available' ? ` (${a.status === 'InUse' ? 'En uso' : a.status})` : ''}`,
   }));
   const selectedAsset = activeAssets.find((a) => a.id === selectedAssetId);
+  const selectedUser = (users ?? []).find((u) => u.id === selectedUserId);
   const userOptions = (users ?? []).map((u) => ({
     value: u.id,
     label: `${u.fullName} (${u.institutionalEmail})`,
@@ -203,8 +205,8 @@ export default function LoansPage() {
         l.assetCode,
         l.assetName,
         l.userName,
-        new Date(l.startDate).toLocaleDateString(),
-        new Date(l.dueDate).toLocaleDateString(),
+        new Date(l.startDate).toLocaleString('es-AR'),
+        new Date(l.dueDate).toLocaleString('es-AR'),
         l.status,
       ]),
       styles: { fontSize: 8 },
@@ -219,12 +221,12 @@ export default function LoansPage() {
     {
       key: 'startDate',
       header: 'Inicio',
-      render: (l: Loan) => new Date(l.startDate).toLocaleDateString(),
+      render: (l: Loan) => new Date(l.startDate).toLocaleString('es-AR'),
     },
     {
       key: 'dueDate',
       header: 'Vencimiento',
-      render: (l: Loan) => new Date(l.dueDate).toLocaleDateString(),
+      render: (l: Loan) => new Date(l.dueDate).toLocaleString('es-AR'),
     },
     { key: 'status', header: 'Estado', render: (l: Loan) => <Badge status={l.status} /> },
     {
@@ -335,8 +337,16 @@ export default function LoansPage() {
             options={userOptions}
             placeholder="Seleccioná un usuario"
             error={form.formState.errors.userId?.message}
-            {...form.register('userId')}
+            {...form.register('userId', {
+              onChange: (e) => setSelectedUserId(e.target.value),
+            })}
           />
+          {selectedUser?.hasActiveSanctions && (
+            <div className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+              <strong className="block mb-1">Usuario suspendido</strong>
+              Este usuario tiene sanciones activas y no está autorizado para solicitar préstamos ni hacer reservas.
+            </div>
+          )}
           <Select
             label="Activo"
             options={assetOptions}
@@ -359,14 +369,14 @@ export default function LoansPage() {
             <p className="text-xs text-cara-500">Máximo {selectedAsset.maxLoanDays} días por préstamo</p>
           )}
           <Input
-            label="Fecha de inicio"
-            type="date"
+            label="Fecha y hora de inicio"
+            type="datetime-local"
             error={form.formState.errors.startDate?.message}
             {...form.register('startDate')}
           />
           <Input
-            label="Fecha de devolución"
-            type="date"
+            label="Fecha y hora de devolución"
+            type="datetime-local"
             error={form.formState.errors.dueDate?.message}
             {...form.register('dueDate')}
           />

@@ -19,6 +19,7 @@ import {
   GraduationCap,
   MessageSquare,
   CalendarDays,
+  Upload,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import clsx from 'clsx';
@@ -30,6 +31,7 @@ import api from '@/services/api';
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard', roles: ['Admin', 'Staff', 'Teacher', 'Student'] },
   { to: '/assets', icon: Package, label: 'Activos', roles: ['Admin', 'Staff'] },
+  { to: '/assets/import', icon: Upload, label: 'Importar', roles: ['Admin', 'Staff'] },
   { to: '/my-loans', icon: BookOpen, label: 'Mis Préstamos', roles: ['Teacher', 'Student'] },
   { to: '/my-surveys', icon: MessageSquare, label: 'Mis Encuestas', roles: ['Teacher', 'Student'] },
   { to: '/loans', icon: BookOpen, label: 'Préstamos', roles: ['Admin', 'Staff'] },

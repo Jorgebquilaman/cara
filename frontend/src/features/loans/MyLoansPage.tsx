@@ -78,12 +78,12 @@ export default function MyLoansPage() {
     {
       key: 'startDate',
       header: 'Inicio',
-      render: (l: Loan) => new Date(l.startDate).toLocaleDateString(),
+      render: (l: Loan) => new Date(l.startDate).toLocaleString('es-AR'),
     },
     {
       key: 'dueDate',
       header: 'Vencimiento',
-      render: (l: Loan) => new Date(l.dueDate).toLocaleDateString(),
+      render: (l: Loan) => new Date(l.dueDate).toLocaleString('es-AR'),
     },
     { key: 'status', header: 'Estado', render: (l: Loan) => <Badge status={l.status} /> },
   ];
@@ -150,14 +150,14 @@ export default function MyLoansPage() {
             <p className="text-xs text-cara-500">Máximo {selectedAsset.maxLoanDays} días por préstamo</p>
           )}
           <Input
-            label="Fecha de inicio"
-            type="date"
+            label="Fecha y hora de inicio"
+            type="datetime-local"
             error={form.formState.errors.startDate?.message}
             {...form.register('startDate')}
           />
           <Input
-            label="Fecha de devolución"
-            type="date"
+            label="Fecha y hora de devolución"
+            type="datetime-local"
             error={form.formState.errors.dueDate?.message}
             {...form.register('dueDate')}
           />

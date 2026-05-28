@@ -48,7 +48,7 @@ export default function DashboardPage() {
     const adminStats = [
       { label: 'Préstamos Activos', value: dashboard?.activeLoans ?? 0, icon: BookOpen, color: 'text-amber-600 bg-amber-50' },
       { label: 'Vencidos', value: dashboard?.overdueLoans ?? 0, icon: AlertTriangle, color: 'text-red-600 bg-red-50' },
-      { label: 'Pendientes', value: dashboard?.pendingApprovals ?? 0, icon: Clock, color: 'text-purple-600 bg-purple-50' },
+      { label: 'Pendientes', value: (dashboard?.pendingApprovals ?? 0) + (dashboard?.pendingReservations ?? 0), icon: Clock, color: 'text-purple-600 bg-purple-50' },
     ];
 
     const adminReservationStats = [

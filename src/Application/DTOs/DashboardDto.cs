@@ -11,6 +11,7 @@ public class DashboardDto
     public IReadOnlyList<LoanDto> UpcomingDueLoans { get; set; }
     public IReadOnlyList<LoanDto> OverdueLoansList { get; set; }
     public int TotalReservations { get; set; }
+    public int PendingReservations { get; set; }
     public int ConfirmedReservations { get; set; }
     public int CompletedReservations { get; set; }
     public int CancelledReservations { get; set; }

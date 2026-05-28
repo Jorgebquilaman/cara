@@ -4,6 +4,7 @@ import MainLayout from '@/components/layout/MainLayout';
 import DashboardPage from '@/features/dashboard/DashboardPage';
 import AssetsPage from '@/features/assets/AssetsPage';
 import AssetDetailPage from '@/features/assets/AssetDetailPage';
+import ImportAssetsPage from '@/features/assets/ImportAssetsPage';
 import LoansPage from '@/features/loans/LoansPage';
 import MyLoansPage from '@/features/loans/MyLoansPage';
 import SurveysPage from '@/features/surveys/SurveysPage';
@@ -43,6 +44,7 @@ export default function App() {
       <Route element={<MainLayout />}>
         <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path="/assets" element={<ProtectedRoute roles={['Admin', 'Staff']}><AssetsPage /></ProtectedRoute>} />
+        <Route path="/assets/import" element={<ProtectedRoute roles={['Admin', 'Staff']}><ImportAssetsPage /></ProtectedRoute>} />
         <Route path="/assets/:id" element={<ProtectedRoute><AssetDetailPage /></ProtectedRoute>} />
         <Route path="/loans" element={<ProtectedRoute roles={['Admin', 'Staff']}><LoansPage /></ProtectedRoute>} />
         <Route path="/loans/overdue" element={<ProtectedRoute roles={['Admin', 'Staff']}><OverdueLoansPage /></ProtectedRoute>} />

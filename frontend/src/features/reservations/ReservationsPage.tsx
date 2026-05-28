@@ -26,6 +26,8 @@ const reservationSchema = z.object({
   assetId: z.string().min(1, 'Seleccioná un activo'),
   startDate: z.string().min(1, 'Requerido'),
   endDate: z.string().min(1, 'Requerido'),
+  startTime: z.string().min(1, 'Requerido'),
+  endTime: z.string().min(1, 'Requerido'),
   space: z.string().min(1, 'Requerido'),
 });
 
@@ -99,8 +101,10 @@ export default function ReservationsPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: async (form: ReservationForm) => {
-      await api.post('/reservations', { ...form, userId: user?.id });
+    mutationFn: async (data: ReservationForm) => {
+      const startDate = `${data.startDate}T${data.startTime}:00`;
+      const endDate = `${data.endDate}T${data.endTime}:00`;
+      await api.post('/reservations', { assetId: data.assetId, startDate, endDate, space: data.space, userId: user?.id });
     },
     onSuccess: () => {
       form.reset();
@@ -170,8 +174,8 @@ export default function ReservationsPage() {
       allReservations.map((r) => ({
         Espacio: r.space,
         Usuario: r.userName,
-        Inicio: new Date(r.startDate).toLocaleDateString(),
-        Fin: new Date(r.endDate).toLocaleDateString(),
+        Inicio: new Date(r.startDate).toLocaleString('es-AR'),
+        Fin: new Date(r.endDate).toLocaleString('es-AR'),
         Estado: r.status,
       }))
     );
@@ -193,8 +197,8 @@ export default function ReservationsPage() {
       body: allReservations.map((r) => [
         r.space,
         r.userName,
-        new Date(r.startDate).toLocaleDateString(),
-        new Date(r.endDate).toLocaleDateString(),
+        new Date(r.startDate).toLocaleString('es-AR'),
+        new Date(r.endDate).toLocaleString('es-AR'),
         r.status,
       ]),
       styles: { fontSize: 8 },
@@ -210,12 +214,12 @@ export default function ReservationsPage() {
     {
       key: 'startDate',
       header: 'Inicio',
-      render: (r: Reservation) => new Date(r.startDate).toLocaleDateString(),
+      render: (r: Reservation) => new Date(r.startDate).toLocaleString('es-AR'),
     },
     {
       key: 'endDate',
       header: 'Fin',
-      render: (r: Reservation) => new Date(r.endDate).toLocaleDateString(),
+      render: (r: Reservation) => new Date(r.endDate).toLocaleString('es-AR'),
     },
     { key: 'status', header: 'Estado', render: (r: Reservation) => <Badge status={r.status} /> },
     {
@@ -378,6 +382,25 @@ export default function ReservationsPage() {
             control={form.control}
             render={({ field }) => <input type="hidden" {...field} />}
           />
+
+          {dateRange && (
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label="Hora de inicio"
+                type="time"
+                defaultValue="08:00"
+                error={form.formState.errors.startTime?.message}
+                {...form.register('startTime')}
+              />
+              <Input
+                label="Hora de fin"
+                type="time"
+                defaultValue="09:00"
+                error={form.formState.errors.endTime?.message}
+                {...form.register('endTime')}
+              />
+            </div>
+          )}
 
           <Input
             label="Espacio"

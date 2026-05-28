@@ -56,6 +56,7 @@ public class GetDashboardQueryHandler : IRequestHandler<GetDashboardQuery, Dashb
             UpcomingDueLoans = _mapper.Map<List<LoanDto>>(dueSoon),
             OverdueLoansList = _mapper.Map<List<LoanDto>>(allOverdue),
             TotalReservations = reservations.Count,
+            PendingReservations = reservations.Count(r => r.Status == ReservationStatus.Pending),
             ConfirmedReservations = reservations.Count(r => r.Status == ReservationStatus.Confirmed),
             CompletedReservations = reservations.Count(r => r.Status == ReservationStatus.Completed),
             CancelledReservations = reservations.Count(r => r.Status == ReservationStatus.Cancelled),

@@ -52,7 +52,6 @@ export default function CalendarPage() {
         title: `${e.title} - ${e.userName}`,
         start: new Date(e.start),
         end: new Date(e.end),
-        allDay: true,
         typeId: e.typeId,
         status: e.status,
       }));
@@ -172,6 +171,9 @@ export default function CalendarPage() {
                   }}
                   title={`${(event as any).title} (${(event as any).status})`}
                 >
+                  <span style={{ fontWeight: 600, marginRight: 3 }}>
+                    {format((event as any).start, 'HH:mm')}
+                  </span>
                   {(event as any).title}
                 </div>
               ),
