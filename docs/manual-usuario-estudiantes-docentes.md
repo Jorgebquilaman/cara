@@ -10,7 +10,7 @@
 2. Iniciá sesión con tu correo institucional (`@iupa.edu.ar`) y contraseña.
 3. Si olvidaste tu contraseña, contactá al administrador del sistema.
 
-![Login](screenshots/login.png)
+![Login](login.png)
 
 ---
 
