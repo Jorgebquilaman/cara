@@ -40,6 +40,7 @@ public class GetUserDashboardQueryHandler : IRequestHandler<GetUserDashboardQuer
             OverdueLoans = loans.Count(l => l.Status == LoanStatus.Overdue),
             RecentLoans = _mapper.Map<List<LoanDto>>(loans.Take(10).ToList()),
             TotalReservations = reservations.Count,
+            PendingReservations = reservations.Count(r => r.Status == ReservationStatus.Pending),
             ConfirmedReservations = reservations.Count(r => r.Status == ReservationStatus.Confirmed),
             CompletedReservations = reservations.Count(r => r.Status == ReservationStatus.Completed),
             CancelledReservations = reservations.Count(r => r.Status == ReservationStatus.Cancelled),

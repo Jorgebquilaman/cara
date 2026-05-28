@@ -14,6 +14,7 @@ public class CreateLoanCommandHandler : IRequestHandler<CreateLoanCommand, LoanD
     private readonly ILoanRepository _loanRepository;
     private readonly IAssetRepository _assetRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IIncidentRepository _incidentRepository;
     private readonly INotificationService _notificationService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
@@ -22,6 +23,7 @@ public class CreateLoanCommandHandler : IRequestHandler<CreateLoanCommand, LoanD
         ILoanRepository loanRepository,
         IAssetRepository assetRepository,
         IUserRepository userRepository,
+        IIncidentRepository incidentRepository,
         INotificationService notificationService,
         IUnitOfWork unitOfWork,
         IMapper mapper)
@@ -29,6 +31,7 @@ public class CreateLoanCommandHandler : IRequestHandler<CreateLoanCommand, LoanD
         _loanRepository = loanRepository;
         _assetRepository = assetRepository;
         _userRepository = userRepository;
+        _incidentRepository = incidentRepository;
         _notificationService = notificationService;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -51,6 +54,9 @@ public class CreateLoanCommandHandler : IRequestHandler<CreateLoanCommand, LoanD
         var asset = await _assetRepository.GetByIdAsync(request.AssetId, cancellationToken);
         if (asset == null)
             throw new KeyNotFoundException($"Asset {request.AssetId} not found.");
+
+        if (await _incidentRepository.HasUnresolvedIncidentsAsync(request.AssetId, cancellationToken))
+            throw new InvalidOperationException("El activo no puede ser prestado porque tiene incidentes sin resolver.");
 
         var startUtc = DateTime.SpecifyKind(request.StartDate, DateTimeKind.Utc);
         var endUtc = DateTime.SpecifyKind(request.DueDate, DateTimeKind.Utc);

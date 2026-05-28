@@ -8,6 +8,7 @@ public interface IIncidentRepository
     Task<Incident?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Incident>> GetByLoanAsync(Guid loanId, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Incident>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<bool> HasUnresolvedIncidentsAsync(Guid assetId, CancellationToken cancellationToken = default);
     void Add(Incident incident);
     void Update(Incident incident);
 }

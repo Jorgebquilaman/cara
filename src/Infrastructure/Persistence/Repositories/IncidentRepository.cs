@@ -15,7 +15,11 @@ public class IncidentRepository : IIncidentRepository
     }
 
     public async Task<IReadOnlyList<Incident>> GetAllAsync(CancellationToken cancellationToken = default)
-        => await _context.Incidents.OrderByDescending(i => i.ReportedAt).ToListAsync(cancellationToken);
+        => await _context.Incidents
+            .Include(i => i.Loan)
+            .ThenInclude(l => l.Asset)
+            .OrderByDescending(i => i.ReportedAt)
+            .ToListAsync(cancellationToken);
 
     public async Task<Incident?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         => await _context.Incidents.FirstOrDefaultAsync(i => i.Id == id, cancellationToken);
@@ -31,6 +35,10 @@ public class IncidentRepository : IIncidentRepository
             .Where(i => i.Loan.UserId == userId)
             .OrderByDescending(i => i.ReportedAt)
             .ToListAsync(cancellationToken);
+
+    public async Task<bool> HasUnresolvedIncidentsAsync(Guid assetId, CancellationToken cancellationToken = default)
+        => await _context.Incidents
+            .AnyAsync(i => i.Loan.AssetId == assetId && !i.IsResolved, cancellationToken);
 
     public void Add(Incident incident) => _context.Incidents.Add(incident);
     public void Update(Incident incident) => _context.Incidents.Update(incident);

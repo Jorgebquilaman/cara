@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
-import { useApproveLoan, useRejectLoan, useReturnLoan, useCreateLoan, useSendReminder } from '@/hooks/useLoans';
+import { useApproveLoan, usePickUpLoan, useRejectLoan, useReturnLoan, useCreateLoan, useSendReminder } from '@/hooks/useLoans';
 import { useAssets } from '@/hooks/useAssets';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/services/api';
@@ -48,6 +48,7 @@ export default function LoansPage() {
     },
   });
   const approveLoan = useApproveLoan();
+  const pickUpLoan = usePickUpLoan();
   const rejectLoan = useRejectLoan();
   const returnLoan = useReturnLoan();
   const createLoan = useCreateLoan();
@@ -241,10 +242,16 @@ export default function LoansPage() {
               </Button>
             </>
           )}
+          {l.status === 'Approved' && (
+            <Button variant="ghost" size="sm" onClick={() => pickUpLoan.mutate(l.id)}>
+                <CheckCircle className="h-4 w-4 text-cara-600" />
+            </Button>
+          )}
           {(l.status === 'Active' || l.status === 'Overdue') && (
             <>
               <Button variant="ghost" size="sm" onClick={() => setReturnModal({ id: l.id, open: true })}>
-                <Undo2 className="h-4 w-4" />
+                <Undo2 className="h-4 w-4 mr-2" />
+                Devolver
               </Button>
               <Button 
                 variant="ghost" 

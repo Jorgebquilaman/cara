@@ -15,6 +15,9 @@ public interface ILoanRepository
     Task<IReadOnlyList<Loan>> GetLoansDueWithinAsync(int hours, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Loan>> GetPastDueLoansAsync(CancellationToken cancellationToken = default);
     Task<int> GetActiveLoanCountAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Loan>> GetLoansByCareerAsync(Guid careerId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Loan>> GetAllLoansAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Loan>> GetLoansByDepartmentAsync(Guid departmentId, CancellationToken cancellationToken = default);
     Task<bool> HasOverlappingActiveLoanAsync(Guid assetId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
     void Add(Loan loan);
     void Update(Loan loan);

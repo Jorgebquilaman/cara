@@ -56,6 +56,18 @@ export function useApproveLoan() {
   });
 }
 
+export function usePickUpLoan() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: loanService.pickup,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['loans'] });
+      toast.success('Retiro confirmado');
+    },
+  });
+}
+
 export function useRejectLoan() {
   const queryClient = useQueryClient();
 

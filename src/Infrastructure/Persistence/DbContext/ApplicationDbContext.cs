@@ -31,6 +31,7 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext, IUn
     public DbSet<AccountRequest> AccountRequests => Set<AccountRequest>();
     public DbSet<Department> Departments => Set<Department>();
     public DbSet<Career> Careers => Set<Career>();
+    public DbSet<SatisfactionSurvey> SatisfactionSurveys => Set<SatisfactionSurvey>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

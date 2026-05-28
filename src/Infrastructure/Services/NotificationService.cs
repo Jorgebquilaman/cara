@@ -122,4 +122,40 @@ public class NotificationService : INotificationService
 
         await SendNotificationAsync(notification, cancellationToken);
     }
+
+    public async Task NotifyReservationCreatedAsync(Reservation reservation, CancellationToken cancellationToken = default)
+    {
+        var notification = new Notification(
+            reservation.UserId,
+            NotificationType.ReservationCreated,
+            "Reserva Creada",
+            $"Tu reserva del espacio {reservation.Space} para el {reservation.StartDate:dd/MM/yyyy} fue creada exitosamente.",
+            reservation.Id.ToString());
+
+        await SendNotificationAsync(notification, cancellationToken);
+    }
+
+    public async Task NotifyReservationConfirmedAsync(Reservation reservation, CancellationToken cancellationToken = default)
+    {
+        var notification = new Notification(
+            reservation.UserId,
+            NotificationType.ReservationConfirmed,
+            "Reserva Confirmada",
+            $"Tu reserva del espacio {reservation.Space} fue confirmada.",
+            reservation.Id.ToString());
+
+        await SendNotificationAsync(notification, cancellationToken);
+    }
+
+    public async Task NotifyReservationCancelledAsync(Reservation reservation, CancellationToken cancellationToken = default)
+    {
+        var notification = new Notification(
+            reservation.UserId,
+            NotificationType.ReservationCancelled,
+            "Reserva Cancelada",
+            $"Tu reserva del espacio {reservation.Space} del {reservation.StartDate:dd/MM/yyyy} fue cancelada.",
+            reservation.Id.ToString());
+
+        await SendNotificationAsync(notification, cancellationToken);
+    }
 }

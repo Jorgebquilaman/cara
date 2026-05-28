@@ -6,6 +6,7 @@ import AssetsPage from '@/features/assets/AssetsPage';
 import AssetDetailPage from '@/features/assets/AssetDetailPage';
 import LoansPage from '@/features/loans/LoansPage';
 import MyLoansPage from '@/features/loans/MyLoansPage';
+import SurveysPage from '@/features/surveys/SurveysPage';
 import OverdueLoansPage from '@/features/loans/OverdueLoansPage';
 import ReservationsPage from '@/features/reservations/ReservationsPage';
 import UsersPage from '@/features/users/UsersPage';
@@ -21,6 +22,7 @@ import AccountRequestFormPage from '@/features/users/AccountRequestPage';
 import AccountRequestsPage from '@/features/users/AccountRequestsPage';
 import EmailConfigPage from '@/features/settings/EmailConfigPage';
 import DepartmentsPage from '@/features/settings/DepartmentsPage';
+import CalendarPage from '@/features/calendar/CalendarPage';
 
 function ProtectedRoute({ children, roles }: { children: React.ReactNode; roles?: string[] }) {
   const { user, isAuthenticated } = useAuth();
@@ -45,6 +47,7 @@ export default function App() {
         <Route path="/loans" element={<ProtectedRoute roles={['Admin', 'Staff']}><LoansPage /></ProtectedRoute>} />
         <Route path="/loans/overdue" element={<ProtectedRoute roles={['Admin', 'Staff']}><OverdueLoansPage /></ProtectedRoute>} />
         <Route path="/my-loans" element={<ProtectedRoute><MyLoansPage /></ProtectedRoute>} />
+        <Route path="/my-surveys" element={<ProtectedRoute roles={['Teacher', 'Student']}><SurveysPage /></ProtectedRoute>} />
         <Route path="/reservations" element={<ProtectedRoute><ReservationsPage /></ProtectedRoute>} />
         <Route path="/users" element={<ProtectedRoute roles={['Admin']}><UsersPage /></ProtectedRoute>} />
         <Route path="/departamentos" element={<ProtectedRoute roles={['Admin']}><DepartmentsPage /></ProtectedRoute>} />
@@ -54,8 +57,9 @@ export default function App() {
         <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
         <Route path="/mi-perfil" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path="/config-email" element={<ProtectedRoute roles={['Admin']}><EmailConfigPage /></ProtectedRoute>} />
-        <Route path="/solicitudes-alta" element={<ProtectedRoute roles={['Admin']}><AccountRequestsPage /></ProtectedRoute>} />
-      </Route>
+          <Route path="/solicitudes-alta" element={<ProtectedRoute roles={['Admin']}><AccountRequestsPage /></ProtectedRoute>} />
+          <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
+        </Route>
     </Routes>
   );
 }

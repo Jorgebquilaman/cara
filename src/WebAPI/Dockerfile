@@ -9,8 +9,8 @@ COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 RUN dotnet restore "WebAPI/WebAPI.csproj"
 
 COPY . .
-RUN dotnet build "WebAPI/WebAPI.csproj" -c Release --no-restore
-RUN dotnet publish "WebAPI/WebAPI.csproj" -c Release -o /app --no-restore
+RUN dotnet build "WebAPI/WebAPI.csproj" -c Release
+RUN dotnet publish "WebAPI/WebAPI.csproj" -c Release -o /app
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app

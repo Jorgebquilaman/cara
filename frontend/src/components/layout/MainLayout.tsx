@@ -17,28 +17,33 @@ import {
   Settings,
   UserPlus,
   GraduationCap,
+  MessageSquare,
+  CalendarDays,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { connectNotificationHub, disconnectHubs } from '@/services/signalr';
 import toast from 'react-hot-toast';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
+import api from '@/services/api';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard', roles: ['Admin', 'Staff', 'Teacher', 'Student'] },
   { to: '/assets', icon: Package, label: 'Activos', roles: ['Admin', 'Staff'] },
   { to: '/my-loans', icon: BookOpen, label: 'Mis Préstamos', roles: ['Teacher', 'Student'] },
+  { to: '/my-surveys', icon: MessageSquare, label: 'Mis Encuestas', roles: ['Teacher', 'Student'] },
   { to: '/loans', icon: BookOpen, label: 'Préstamos', roles: ['Admin', 'Staff'] },
   { to: '/loans/overdue', icon: Clock, label: 'Vencidos', roles: ['Admin', 'Staff'] },
   { to: '/reservations', icon: Calendar, label: 'Reservas', roles: ['Admin', 'Staff', 'Teacher', 'Student'] },
+  { to: '/calendar', icon: CalendarDays, label: 'Calendario', roles: ['Admin', 'Staff', 'Teacher', 'Student'] },
   { to: '/users', icon: Users, label: 'Usuarios', roles: ['Admin'] },
+  { to: '/solicitudes-alta', icon: UserPlus, label: 'Solicitudes Alta', roles: ['Admin'] },
   { to: '/departamentos', icon: GraduationCap, label: 'Departamentos', roles: ['Admin'] },
   { to: '/sanctions', icon: ShieldAlert, label: 'Sanciones', roles: ['Admin', 'Staff'] },
   { to: '/incidents', icon: AlertTriangle, label: 'Incidentes', roles: ['Admin', 'Staff'] },
   { to: '/reports', icon: FileText, label: 'Reportes', roles: ['Admin', 'Staff'] },
   { to: '/notifications', icon: Bell, label: 'Notificaciones', roles: ['Admin', 'Staff', 'Teacher', 'Student'] },
   { to: '/config-email', icon: Settings, label: 'Config. Email', roles: ['Admin'] },
-  { to: '/solicitudes-alta', icon: UserPlus, label: 'Solicitudes Alta', roles: ['Admin'] },
 ];
 
 export default function MainLayout() {
@@ -46,6 +51,25 @@ export default function MainLayout() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const { data: pendingRequests } = useQuery({
+    queryKey: ['account-requests', 'pending-count'],
+    queryFn: async () => {
+      const { data } = await api.get('/account-requests/pending/count');
+      return data.count as number;
+    },
+    refetchInterval: 30000,
+    enabled: user?.role === 'Admin',
+  });
+
+  const { data: unreadCount } = useQuery({
+    queryKey: ['notifications', 'unread-count'],
+    queryFn: async () => {
+      const { data } = await api.get('/notifications/unread-count');
+      return data.count as number;
+    },
+    refetchInterval: 30000,
+  });
 
   useEffect(() => {
     const token = localStorage.getItem('cara_token');
@@ -79,6 +103,7 @@ export default function MainLayout() {
           });
         }
         queryClient.invalidateQueries({ queryKey: ['notifications'] });
+        queryClient.invalidateQueries({ queryKey: ['notifications', 'unread-count'] });
       };
 
       connection.on('ReceiveNotification', handleNotification);
@@ -124,25 +149,36 @@ export default function MainLayout() {
         </div>
 
         <nav className="mt-4 space-y-1 px-3">
-          {visibleItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.to === '/'}
-              onClick={() => setSidebarOpen(false)}
-              className={({ isActive }) =>
-                clsx(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                  isActive
-                    ? 'bg-cara-700 text-white'
-                    : 'text-cara-300 hover:bg-cara-800 hover:text-white',
-                )
-              }
-            >
-              <item.icon className="h-5 w-5" />
-              {item.label}
-            </NavLink>
-          ))}
+          {visibleItems.map((item) => {
+            const badgeCount =
+              item.to === '/notifications' ? (unreadCount ?? 0) :
+              item.to === '/solicitudes-alta' ? (pendingRequests ?? 0) :
+              0;
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === '/'}
+                onClick={() => setSidebarOpen(false)}
+                className={({ isActive }) =>
+                  clsx(
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                    isActive
+                      ? 'bg-cara-700 text-white'
+                      : 'text-cara-300 hover:bg-cara-800 hover:text-white',
+                  )
+                }
+              >
+                <item.icon className="h-5 w-5 shrink-0" />
+                <span className="flex-1">{item.label}</span>
+                {badgeCount > 0 && (
+                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-xs font-bold text-white">
+                    {badgeCount > 99 ? '99+' : badgeCount}
+                  </span>
+                )}
+              </NavLink>
+            );
+          })}
         </nav>
 
         <div className="absolute bottom-0 left-0 right-0 border-t border-cara-700 p-4">

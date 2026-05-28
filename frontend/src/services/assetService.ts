@@ -49,4 +49,11 @@ export const assetService = {
   async delete(id: string): Promise<void> {
     await api.delete(`/assets/${id}`);
   },
+
+  async getZpl(assetIds: string[], frontendUrl?: string): Promise<Blob> {
+    const { data } = await api.post<Blob>('/assets/zpl', { assetIds, frontendUrl }, {
+      responseType: 'blob',
+    });
+    return data;
+  },
 };

@@ -39,9 +39,18 @@ public class Loan
         if (Status != LoanStatus.Pending)
             throw new InvalidOperationException("Only pending loans can be approved");
 
-        Status = LoanStatus.Active;
+        Status = LoanStatus.Approved;
         ApprovedAt = DateTime.UtcNow;
         ApprovedBy = approvedBy;
+    }
+
+    public void PickUp()
+    {
+        if (Status != LoanStatus.Approved)
+            throw new InvalidOperationException("Only approved loans can be picked up");
+
+        Status = LoanStatus.Active;
+        // Period.Start could be adjusted here if needed when picked up
     }
 
     public void Reject(string reason, Guid rejectedBy)

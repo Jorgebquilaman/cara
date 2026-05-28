@@ -20,6 +20,10 @@ public class AccountRequestRepository : IAccountRequestRepository
     public async Task<AccountRequest?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         => await _context.AccountRequests.FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
 
+    public async Task<int> GetPendingCountAsync(CancellationToken cancellationToken = default)
+        => await _context.AccountRequests
+            .CountAsync(r => !r.IsApproved && !r.IsRejected, cancellationToken);
+
     public void Add(AccountRequest request) => _context.AccountRequests.Add(request);
     public void Update(AccountRequest request) => _context.AccountRequests.Update(request);
 }

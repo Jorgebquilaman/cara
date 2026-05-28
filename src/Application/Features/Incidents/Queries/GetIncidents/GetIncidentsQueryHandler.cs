@@ -19,6 +19,13 @@ public class GetIncidentsQueryHandler : IRequestHandler<GetIncidentsQuery, IRead
     public async Task<IReadOnlyList<IncidentDto>> Handle(GetIncidentsQuery request, CancellationToken cancellationToken)
     {
         var incidents = await _incidentRepository.GetAllAsync(cancellationToken);
-        return _mapper.Map<IReadOnlyList<IncidentDto>>(incidents);
+        var dtos = _mapper.Map<List<IncidentDto>>(incidents);
+
+        foreach (var dto in dtos)
+        {
+            Console.WriteLine($"Incident {dto.Id}: Asset={dto.AssetName}, Code={dto.AssetCode}");
+        }
+
+        return dtos;
     }
 }

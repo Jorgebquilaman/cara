@@ -38,7 +38,10 @@ public class MappingProfile : Profile
             .ForMember(d => d.UserName, o => o.MapFrom(s => $"{s.User.FirstName} {s.User.LastName}"))
             .ForMember(d => d.UserEmail, o => o.MapFrom(s => s.User.InstitutionalEmail.Value));
 
-        CreateMap<Incident, IncidentDto>();
+        CreateMap<Incident, IncidentDto>()
+            .ForMember(d => d.AssetName, o => o.MapFrom(s => s.Loan.Asset.Name))
+            .ForMember(d => d.AssetCode, o => o.MapFrom(s => s.Loan.Asset.Code))
+            .ForMember(d => d.AssetImageUrl, o => o.MapFrom(s => s.Loan.Asset.ImageUrl));
 
         CreateMap<Notification, NotificationDto>()
             .ForMember(d => d.Type, o => o.MapFrom(s => s.Type.ToString()));

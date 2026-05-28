@@ -12,4 +12,7 @@ public interface INotificationService
     Task NotifySanctionIssuedAsync(Sanction sanction, CancellationToken cancellationToken = default);
     Task NotifyNewLoanRequestAsync(Loan loan, CancellationToken cancellationToken = default);
     Task NotifyLoanReturnedAsync(Loan loan, CancellationToken cancellationToken = default);
+    Task NotifyReservationCreatedAsync(Reservation reservation, CancellationToken cancellationToken = default);
+    Task NotifyReservationConfirmedAsync(Reservation reservation, CancellationToken cancellationToken = default);
+    Task NotifyReservationCancelledAsync(Reservation reservation, CancellationToken cancellationToken = default);
 }

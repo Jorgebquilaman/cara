@@ -18,6 +18,7 @@ public class AuthController : ControllerBase
     private readonly IUnitOfWork _unitOfWork;
     private readonly IConfiguration _configuration;
     private readonly IAccountRequestRepository _accountRequestRepository;
+    private readonly INotificationService _notificationService;
 
     public AuthController(
         IAuthService authService,
@@ -26,7 +27,8 @@ public class AuthController : ControllerBase
         IEmailService emailService,
         IUnitOfWork unitOfWork,
         IConfiguration configuration,
-        IAccountRequestRepository accountRequestRepository)
+        IAccountRequestRepository accountRequestRepository,
+        INotificationService notificationService)
     {
         _authService = authService;
         _userRepository = userRepository;
@@ -35,6 +37,7 @@ public class AuthController : ControllerBase
         _unitOfWork = unitOfWork;
         _configuration = configuration;
         _accountRequestRepository = accountRequestRepository;
+        _notificationService = notificationService;
     }
 
     [HttpPost("login")]
@@ -71,7 +74,7 @@ public class AuthController : ControllerBase
             return Ok(new { message = "Si el email existe, recibirás un enlace de recuperación." });
             
         if (!user.IsActive)
-            return BadRequest(new { message = "Tu cuenta aún no está activa. Por favor, esperá a que un administrativo autorice el uso del sistema." });
+            return BadRequest(new { message = "No se puede enviar el correo porque el usuario no está autorizado. Espere a que un administrativo autorice el acceso al sistema." });
 
         var token = Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
         var resetToken = new Domain.Entities.PasswordResetToken(user.Id, token, DateTime.UtcNow.AddHours(1));
@@ -178,8 +181,22 @@ public class AuthController : ControllerBase
 
             // 4. Notify admins about the new request
             var admins = await _userRepository.GetByRoleAsync("Admin");
-            var adminEmails = admins.Select(a => a.InstitutionalEmail.Value).ToList();
+            
+            // System Notification
+            foreach (var admin in admins)
+            {
+                var notification = new Domain.Entities.Notification(
+                    admin.Id,
+                    Domain.Enums.NotificationType.AccountRequestCreated,
+                    "Nueva solicitud de alta",
+                    $"El usuario {dto.FirstName} {dto.LastName} ha solicitado acceso al sistema.",
+                    request.Id.ToString()
+                );
+                try { await _notificationService.SendNotificationAsync(notification); } catch { }
+            }
 
+            // Email Notification
+            var adminEmails = admins.Select(a => a.InstitutionalEmail.Value).ToList();
             if (adminEmails.Count > 0)
             {
                 var frontendUrl = _configuration["FrontendUrl"] ?? $"{Request.Scheme}://{Request.Host}";

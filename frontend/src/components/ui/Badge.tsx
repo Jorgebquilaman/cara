@@ -16,6 +16,7 @@ const statusStyles: Record<string, string> = {
   Overdue: 'bg-red-100 text-red-800',
   Returned: 'bg-green-100 text-green-800',
   Rejected: 'bg-red-100 text-red-800',
+  ApprovedRequest: 'bg-green-100 text-green-800',
   Confirmed: 'bg-blue-100 text-blue-800',
   Cancelled: 'bg-gray-100 text-gray-600',
   Completed: 'bg-green-100 text-green-800',
@@ -24,9 +25,12 @@ const statusStyles: Record<string, string> = {
   LoanRejected: 'bg-red-100 text-red-800',
   LoanDueReminder: 'bg-amber-100 text-amber-800',
   SanctionIssued: 'bg-red-100 text-red-800',
-  ReservationConfirmed: 'bg-blue-100 text-blue-800',
+  ReservationCreated: 'bg-blue-100 text-blue-800',
+  ReservationConfirmed: 'bg-green-100 text-green-800',
+  ReservationCancelled: 'bg-gray-100 text-gray-600',
   IncidentReported: 'bg-orange-100 text-orange-800',
   LoanReturned: 'bg-green-600 text-white',
+  AccountRequestCreated: 'bg-purple-100 text-purple-800',
 };
 
 const statusLabels: Record<string, string> = {
@@ -35,10 +39,12 @@ const statusLabels: Record<string, string> = {
   Maintenance: 'Mantenimiento',
   Decommissioned: 'De Baja',
   Pending: 'Pendiente',
-  Active: 'Activo',
+  Approved: 'Aprobado (Listo para retirar)',
+  Active: 'Activo (En poder del usuario)',
   Overdue: 'Vencido',
   Returned: 'Devuelto',
   Rejected: 'Rechazado',
+  ApprovedRequest: 'Aprobado',
   Confirmed: 'Confirmada',
   Cancelled: 'Cancelada',
   Completed: 'Completada',
@@ -47,9 +53,12 @@ const statusLabels: Record<string, string> = {
   LoanRejected: 'Rechazado',
   LoanDueReminder: 'Recordatorio',
   SanctionIssued: 'Sanción',
+  ReservationCreated: 'Creada',
   ReservationConfirmed: 'Confirmada',
+  ReservationCancelled: 'Cancelada',
   IncidentReported: 'Incidente',
   LoanReturned: 'Devuelto',
+  AccountRequestCreated: 'Solicitud Alta',
 };
 
 export function Badge({ status, size = 'sm' }: BadgeProps) {

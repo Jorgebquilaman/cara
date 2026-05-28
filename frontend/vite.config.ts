@@ -14,16 +14,16 @@ export default defineConfig({
     allowedHosts: ['monty-ethnohistorical-alphanumerically.ngrok-free.dev'],
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:5001',
         changeOrigin: true,
       },
       '/hubs': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:5001',
         changeOrigin: true,
         ws: true,
       },
       '/uploads': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:5001',
         changeOrigin: true,
       },
     },

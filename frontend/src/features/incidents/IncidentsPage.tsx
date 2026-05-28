@@ -1,15 +1,19 @@
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/services/api';
 import { Card } from '@/components/ui/Card';
 import { Table } from '@/components/ui/Table';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { Modal } from '@/components/ui/Modal';
 import { Incident } from '@/types';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function IncidentsPage() {
   const queryClient = useQueryClient();
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
   const { data: incidents, isLoading } = useQuery({
     queryKey: ['incidents'],
     queryFn: async () => {
@@ -28,7 +32,31 @@ export default function IncidentsPage() {
   });
 
   const columns = [
+    {
+      key: 'asset',
+      header: 'Activo',
+      render: (i: Incident) => (
+        <div className="flex items-center gap-3">
+          {i.assetImageUrl && (
+            <img src={i.assetImageUrl} alt={i.assetName} className="h-10 w-10 rounded-lg object-cover" />
+          )}
+          <div>
+            <p className="font-medium text-cara-900">{i.assetName}</p>
+            <p className="text-xs text-cara-500">{i.assetCode}</p>
+          </div>
+        </div>
+      ),
+    },
     { key: 'description', header: 'Descripción' },
+    {
+      key: 'photoUrl',
+      header: 'Evidencia',
+      render: (i: Incident) => i.photoUrl ? (
+        <Button variant="ghost" size="sm" onClick={() => setPreviewUrl(i.photoUrl!)}>
+            <Eye className="h-4 w-4" />
+        </Button>
+      ) : <span className="text-cara-400">—</span>,
+    },
     {
       key: 'reportedAt',
       header: 'Reportado',
@@ -68,6 +96,12 @@ export default function IncidentsPage() {
           emptyMessage="No hay incidentes reportados"
         />
       </Card>
+
+      <Modal isOpen={!!previewUrl} onClose={() => setPreviewUrl(null)} title="Evidencia del incidente">
+        {previewUrl && (
+          <img src={previewUrl} alt="Evidencia" className="max-h-[70vh] w-full rounded-lg object-contain" />
+        )}
+      </Modal>
     </div>
   );
 }

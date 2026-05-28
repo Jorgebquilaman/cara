@@ -13,6 +13,7 @@ public interface IApplicationDbContext
     DbSet<Sanction> Sanctions { get; }
     DbSet<Notification> Notifications { get; }
     DbSet<AuditLog> AuditLogs { get; }
+    DbSet<SatisfactionSurvey> SatisfactionSurveys { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

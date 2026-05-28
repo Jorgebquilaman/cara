@@ -24,6 +24,10 @@ export const loanService = {
     await api.post(`/loans/${id}/approve`);
   },
 
+  async pickup(id: string): Promise<void> {
+    await api.post(`/loans/${id}/pickup`);
+  },
+
   async reject(id: string, reason: string): Promise<void> {
     await api.post(`/loans/${id}/reject`, { reason });
   },

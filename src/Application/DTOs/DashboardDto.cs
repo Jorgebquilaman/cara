@@ -26,6 +26,7 @@ public class UserDashboardDto
     public int OverdueLoans { get; set; }
     public IReadOnlyList<LoanDto> RecentLoans { get; set; }
     public int TotalReservations { get; set; }
+    public int PendingReservations { get; set; }
     public int ConfirmedReservations { get; set; }
     public int CompletedReservations { get; set; }
     public int CancelledReservations { get; set; }

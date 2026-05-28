@@ -89,8 +89,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
                 {
                     context.Token = accessToken;
+                    Console.WriteLine($"SignalR Token received for {path}: {accessToken.ToString().Substring(0, 10)}...");
                 }
 
+                return Task.CompletedTask;
+            },
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
                 return Task.CompletedTask;
             }
         };
@@ -151,7 +157,22 @@ if (app.Environment.IsDevelopment())
 app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
+
+var endpointDataSource = app.Services.GetRequiredService<Microsoft.AspNetCore.Routing.EndpointDataSource>();
+foreach (var endpoint in endpointDataSource.Endpoints)
+{
+    if (endpoint is Microsoft.AspNetCore.Routing.RouteEndpoint routeEndpoint)
+    {
+        Console.WriteLine($"Route: {routeEndpoint.RoutePattern.RawText}");
+    }
+}
+
 app.MapControllers();
+// DEBUG
+var controllerTypes = builder.Services
+    .Where(s => s.ServiceType == typeof(Microsoft.AspNetCore.Mvc.Controllers.IControllerFactoryProvider))
+    .ToList();
+Console.WriteLine($"Controllers registered: {controllerTypes.Count}");
 app.MapHub<LoanHub>("/hubs/loans");
 app.MapHub<NotificationHub>("/hubs/notifications");
 
@@ -166,30 +187,29 @@ if (app.Environment.IsDevelopment())
     await db.Database.EnsureCreatedAsync();
 
     // Force creation of missing tables if they weren't in the initial EnsureCreated
-    var tables = new[] { "EmailSettings", "PasswordResetTokens", "AccountRequests", "Departments", "Careers" };
-    foreach (var table in tables)
-    {
-        try {
-            await db.Database.ExecuteSqlRawAsync($@"
-                CREATE TABLE IF NOT EXISTS ""{table}"" (
-                    ""Id"" UUID PRIMARY KEY
-                )");
-        } catch { }
-    }
-
-    // Re-run creation for specific columns and types
-    await db.Database.ExecuteSqlRawAsync(@"
-        CREATE TABLE IF NOT EXISTS ""Departments"" (
+    await db.Database.ExecuteSqlRawAsync(
+        @"CREATE TABLE IF NOT EXISTS ""Departments"" (
             ""Id"" UUID PRIMARY KEY,
             ""Name"" VARCHAR(200) NOT NULL
         )");
-
-    await db.Database.ExecuteSqlRawAsync(@"
-        CREATE TABLE IF NOT EXISTS ""Careers"" (
+    await db.Database.ExecuteSqlRawAsync(
+        @"CREATE TABLE IF NOT EXISTS ""Careers"" (
             ""Id"" UUID PRIMARY KEY,
             ""Name"" VARCHAR(200) NOT NULL,
             ""DepartmentId"" UUID NOT NULL REFERENCES ""Departments""(""Id"")
         )");
+    await db.Database.ExecuteSqlRawAsync(
+        @"CREATE TABLE IF NOT EXISTS ""SatisfactionSurveys"" (
+            ""Id"" UUID PRIMARY KEY,
+            ""LoanId"" UUID NOT NULL REFERENCES ""Loans""(""Id""),
+            ""OverallRating"" INTEGER NOT NULL,
+            ""ServiceRating"" INTEGER NOT NULL,
+            ""RequestTimeRating"" INTEGER NOT NULL,
+            ""AssetQualityRating"" INTEGER NOT NULL,
+            ""Comments"" TEXT NULL,
+            ""CreatedAt"" TIMESTAMPTZ NOT NULL
+        )");
+
 
     await db.Database.ExecuteSqlRawAsync(@"
         CREATE TABLE IF NOT EXISTS ""AccountRequests"" (

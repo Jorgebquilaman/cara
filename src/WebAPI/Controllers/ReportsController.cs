@@ -1,8 +1,10 @@
+using Application.Common.Interfaces;
 using Application.DTOs;
 using Application.Services;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebAPI.Controllers;
 
@@ -18,6 +20,7 @@ public class ReportsController : ControllerBase
     private readonly IAuditLogRepository _auditLogRepository;
     private readonly IUserRepository _userRepository;
     private readonly IIncidentRepository _incidentRepository;
+    private readonly IApplicationDbContext _context;
 
     public ReportsController(
         IExportService exportService,
@@ -26,7 +29,8 @@ public class ReportsController : ControllerBase
         ISanctionRepository sanctionRepository,
         IAuditLogRepository auditLogRepository,
         IUserRepository userRepository,
-        IIncidentRepository incidentRepository)
+        IIncidentRepository incidentRepository,
+        IApplicationDbContext context)
     {
         _exportService = exportService;
         _loanRepository = loanRepository;
@@ -35,6 +39,7 @@ public class ReportsController : ControllerBase
         _auditLogRepository = auditLogRepository;
         _userRepository = userRepository;
         _incidentRepository = incidentRepository;
+        _context = context;
     }
 
     [HttpGet("loans/csv")]
@@ -124,6 +129,96 @@ public class ReportsController : ControllerBase
                 IsActive = s.IsActive,
             }).ToList(),
         });
+    }
+
+    [HttpGet("statistics")]
+    public async Task<IActionResult> GetStatistics()
+    {
+        var loans = await _loanRepository.GetAllLoansAsync();
+        var assets = await _assetRepository.GetAllAsync();
+        var users = await _userRepository.GetAllAsync();
+        
+        var mostRequested = loans.GroupBy(l => l.Asset.Name)
+            .Select(g => new { Name = g.Key, Count = g.Count() })
+            .OrderByDescending(g => g.Count)
+            .Take(10);
+
+        var deptStats = loans.Where(l => l.User.Career != null)
+            .GroupBy(l => l.User.Career!.Department.Name)
+            .Select(g => new { Department = g.Key, Count = g.Count() });
+
+        var careerStats = loans.Where(l => l.User.Career != null)
+            .GroupBy(l => l.User.Career!.Name)
+            .Select(g => new { Career = g.Key, Count = g.Count() });
+
+        var usageTime = loans.Where(l => l.ReturnedAt.HasValue)
+            .GroupBy(l => l.Asset.Name)
+            .Select(g => new { 
+                Asset = g.Key, 
+                AverageHours = g.Average(l => (l.ReturnedAt!.Value - l.Period.Start).TotalHours) 
+            })
+            .OrderByDescending(g => g.AverageHours)
+            .Take(10);
+
+        var surveys = await _context.SatisfactionSurveys
+            .Include(s => s.Loan).ThenInclude(l => l.Asset)
+            .ToListAsync();
+
+        var totalSurveys = surveys.Count;
+        var avgOverall = totalSurveys > 0 ? surveys.Average(s => s.OverallRating) : 0;
+        var avgService = totalSurveys > 0 ? surveys.Average(s => s.ServiceRating) : 0;
+        var avgTime = totalSurveys > 0 ? surveys.Average(s => s.RequestTimeRating) : 0;
+        var avgQuality = totalSurveys > 0 ? surveys.Average(s => s.AssetQualityRating) : 0;
+
+        var surveyByAsset = surveys.GroupBy(s => s.Loan.Asset.Name)
+            .Select(g => new { Asset = g.Key, Count = g.Count(), AvgRating = Math.Round(g.Average(s => s.OverallRating), 1) })
+            .OrderByDescending(g => g.Count)
+            .Take(10)
+            .ToList();
+
+        return Ok(new { 
+            KPIs = new {
+                TotalAssets = assets.Count,
+                ActiveLoans = loans.Count(l => l.Status == Domain.Enums.LoanStatus.Active),
+                TotalUsers = users.Count,
+                TotalSurveys = totalSurveys,
+                AvgOverallRating = Math.Round(avgOverall, 1),
+                AvgServiceRating = Math.Round(avgService, 1),
+                AvgRequestTimeRating = Math.Round(avgTime, 1),
+                AvgAssetQualityRating = Math.Round(avgQuality, 1)
+            },
+            MostRequested = mostRequested, 
+            DepartmentStats = deptStats, 
+            CareerStats = careerStats,
+            UsageTime = usageTime,
+            SurveyByAsset = surveyByAsset
+        });
+    }
+
+    [HttpGet("surveys/csv")]
+    public async Task<IActionResult> ExportSurveysCsv()
+    {
+        var surveys = await _context.SatisfactionSurveys
+            .Include(s => s.Loan).ThenInclude(l => l.User)
+            .Include(s => s.Loan).ThenInclude(l => l.Asset)
+            .OrderByDescending(s => s.CreatedAt)
+            .ToListAsync();
+
+        var rows = surveys.Select(s => new
+        {
+            Fecha = s.CreatedAt.ToString("yyyy-MM-dd"),
+            Usuario = $"{s.Loan.User.FirstName} {s.Loan.User.LastName}",
+            Email = s.Loan.User.InstitutionalEmail.Value,
+            Activo = s.Loan.Asset.Name,
+            ValoracionGeneral = s.OverallRating,
+            Atencion = s.ServiceRating,
+            TiempoSolicitud = s.RequestTimeRating,
+            CalidadActivo = s.AssetQualityRating,
+            Comentarios = s.Comments ?? ""
+        }).ToList();
+
+        var bytes = await _exportService.ExportToCsvAsync(rows, "surveys");
+        return File(bytes, "text/csv", "encuestas.csv");
     }
 
     private class UserHistoryCsvRow

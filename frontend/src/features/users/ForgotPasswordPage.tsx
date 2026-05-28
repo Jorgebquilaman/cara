@@ -15,49 +15,86 @@ export default function ForgotPasswordPage() {
     try {
       await api.post('/auth/forgot-password', { email });
       setSent(true);
-    } catch {
-      toast.error('Error al procesar la solicitud');
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Error al procesar la solicitud';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
   };
 
+  const ContentWrapper = ({ children }: { children: React.ReactNode }) => (
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
+      <div className="flex w-full max-w-4xl flex-col md:flex-row overflow-hidden rounded-3xl bg-white shadow-2xl">
+        {/* Left Side: Image/Branding */}
+        <div className="hidden md:flex md:w-1/2 bg-cara-900 items-center justify-center p-12 relative">
+          <div className="absolute inset-0 bg-cara-950/20" />
+          <div className="relative z-10 text-white text-center">
+            <img
+              src="/imagenes/logo%20cara.png"
+              alt="CARA Logo"
+              className="w-48 h-48 object-contain mb-8 mx-auto bg-white rounded-full p-4"
+            />
+            <h1 className="text-3xl font-bold mb-2">Recuperar Acceso</h1>
+            <p className="text-cara-200">Restablecé tu contraseña de forma segura.</p>
+          </div>
+        </div>
+
+        {/* Right Side: Form */}
+        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+          <div className="md:hidden text-center mb-8">
+            <img
+              src="/imagenes/logo%20cara.png"
+              alt="CARA Logo"
+              className="w-24 h-24 object-contain mx-auto"
+            />
+          </div>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+
   if (sent) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-        <div className="w-full max-w-sm text-center space-y-4 rounded-xl border bg-white p-8 shadow-sm">
-          <div className="text-4xl">📧</div>
-          <h1 className="text-xl font-bold text-cara-900">Revisá tu correo</h1>
+      <ContentWrapper>
+        <div className="text-center space-y-4">
+          <div className="text-5xl">📧</div>
+          <h1 className="text-2xl font-bold text-cara-900">Revisá tu correo</h1>
           <p className="text-sm text-cara-500">
             Si el email está registrado, vas a recibir un enlace para restablecer tu contraseña.
           </p>
           <a href="/login" className="block text-sm text-cara-600 hover:underline">Volver al inicio de sesión</a>
         </div>
-      </div>
+      </ContentWrapper>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm space-y-6">
-        <div className="text-center">
-          <img src="/imagenes/logo%20cara.png" alt="CARA" className="w-full object-contain rounded-xl border bg-white p-6 shadow-sm" />
+    <ContentWrapper>
+      <h2 className="text-2xl font-bold text-cara-900 mb-6 text-center md:text-left">Recuperar contraseña</h2>
+      <p className="text-sm text-cara-500 mb-6 text-center md:text-left">Ingresá tu email institucional y te enviaremos los pasos a seguir.</p>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input
+          label="Email institucional"
+          type="email"
+          placeholder="usuario@iupa.edu.ar"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <Button type="submit" className="w-full" isLoading={loading}>
+          Enviar enlace
+        </Button>
+        
+        <div className="flex flex-col items-center gap-3 text-sm mt-6">
+          <a href="/login" className="text-cara-600 hover:text-cara-900 hover:underline">Volver al inicio de sesión</a>
+          <p className="text-xs text-danger text-center mt-4 border-t pt-4">
+            Recordá: Si tu cuenta no está activa, debés esperar a que un administrativo autorice tu acceso al sistema.
+          </p>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-cara-900 text-center">Recuperar contraseña</h2>
-          <p className="text-sm text-cara-500 text-center">Ingresá tu email institucional</p>
-          <Input
-            label="Email institucional"
-            type="email"
-            placeholder="usuario@iupa.edu.ar"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <Button type="submit" className="w-full" isLoading={loading}>Enviar enlace</Button>
-          <a href="/login" className="block text-center text-sm text-cara-600 hover:underline">Volver al inicio de sesión</a>
-        </form>
-      </div>
-    </div>
+      </form>
+    </ContentWrapper>
   );
 }

@@ -7,7 +7,10 @@ public enum NotificationType
     LoanDueReminder,
     LoanOverdue,
     SanctionIssued,
+    ReservationCreated,
     ReservationConfirmed,
+    ReservationCancelled,
     IncidentReported,
-    LoanReturned
+    LoanReturned,
+    AccountRequestCreated
 }

@@ -98,6 +98,26 @@ public class LoanRepository : ILoanRepository
             .CountAsync(l => l.UserId == userId
                 && (l.Status == LoanStatus.Active || l.Status == LoanStatus.Overdue), cancellationToken);
 
+    public async Task<IReadOnlyList<Loan>> GetLoansByCareerAsync(Guid careerId, CancellationToken cancellationToken = default)
+        => await _context.Loans
+            .Include(l => l.User)
+            .Where(l => l.User.CareerId == careerId)
+            .ToListAsync(cancellationToken);
+
+    public async Task<IReadOnlyList<Loan>> GetAllLoansAsync(CancellationToken cancellationToken = default)
+        => await _context.Loans
+            .Include(l => l.Asset)
+            .Include(l => l.User)
+            .ThenInclude(u => u.Career)
+            .ToListAsync(cancellationToken);
+
+    public async Task<IReadOnlyList<Loan>> GetLoansByDepartmentAsync(Guid departmentId, CancellationToken cancellationToken = default)
+        => await _context.Loans
+            .Include(l => l.User)
+            .ThenInclude(u => u.Career)
+            .Where(l => l.User.Career != null && l.User.Career.DepartmentId == departmentId)
+            .ToListAsync(cancellationToken);
+
     public async Task<bool> HasOverlappingActiveLoanAsync(Guid assetId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
         => await _context.Loans
             .AnyAsync(l =>

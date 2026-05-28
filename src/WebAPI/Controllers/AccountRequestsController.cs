@@ -36,6 +36,13 @@ public class AccountRequestsController : ControllerBase
         _configuration = configuration;
     }
 
+    [HttpGet("pending/count")]
+    public async Task<IActionResult> GetPendingCount()
+    {
+        var count = await _repository.GetPendingCountAsync();
+        return Ok(new { count });
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {

@@ -144,7 +144,7 @@ export default function AccountRequestsPage() {
       header: 'Estado',
       render: (r: AccountRequest) => {
         if (r.isRejected) return <Badge status="Rejected" />;
-        if (r.isApproved) return <Badge status="Active" />;
+        if (r.isApproved) return <Badge status="ApprovedRequest" />;
         return <Badge status="Pending" />;
       },
     },

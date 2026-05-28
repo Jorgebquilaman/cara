@@ -74,34 +74,71 @@ export default function AccountRequestPage() {
     }
   };
 
+  const ContentWrapper = ({ children }: { children: React.ReactNode }) => (
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
+      <div className="flex w-full max-w-4xl flex-col md:flex-row overflow-hidden rounded-3xl bg-white shadow-2xl">
+        {/* Left Side: Image/Branding */}
+        <div className="hidden md:flex md:w-1/3 bg-cara-900 items-center justify-center p-12 relative">
+          <div className="absolute inset-0 bg-cara-950/20" />
+          <div className="relative z-10 text-white text-center">
+            <img
+              src="/imagenes/logo%20cara.png"
+              alt="CARA Logo"
+              className="w-40 h-40 object-contain mb-8 mx-auto bg-white rounded-full p-4"
+            />
+            <h1 className="text-3xl font-bold mb-2">Solicitar Alta</h1>
+            <p className="text-cara-200">Completá el formulario para acceder al sistema.</p>
+          </div>
+        </div>
+
+        {/* Right Side: Form */}
+        <div className="w-full md:w-2/3 p-8 md:p-12 flex flex-col justify-center">
+          <div className="md:hidden text-center mb-6">
+            <img
+              src="/imagenes/logo%20cara.png"
+              alt="CARA Logo"
+              className="w-20 h-20 object-contain mx-auto"
+            />
+          </div>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+
   if (sent) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-        <div className="w-full max-w-sm text-center space-y-4 rounded-xl border bg-white p-8 shadow-sm">
-          <div className="text-4xl">✅</div>
-          <h1 className="text-xl font-bold text-cara-900">¡Cuenta Creada!</h1>
+      <ContentWrapper>
+        <div className="text-center space-y-4">
+          <div className="text-5xl">✅</div>
+          <h1 className="text-2xl font-bold text-cara-900">¡Solicitud enviada!</h1>
           <p className="text-sm text-cara-500">
-            Tu usuario ha sido activado automáticamente. Revisá tu correo institucional para establecer tu contraseña y comenzar a usar el sistema.
+            Tu cuenta ha sido creada exitosamente. Revisá tu correo institucional para instrucciones sobre cómo establecer tu contraseña.
           </p>
           <a href="/login" className="block text-sm text-cara-600 hover:underline">Ir al inicio de sesión</a>
         </div>
-      </div>
+      </ContentWrapper>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm space-y-6">
-        <div className="text-center">
-          <img src="/imagenes/logo%20cara.png" alt="CARA" className="w-full object-contain rounded-xl border bg-white p-6 shadow-sm" />
-        </div>
-        <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-cara-900 text-center">Solicitar alta de usuario</h2>
+    <ContentWrapper>
+      <h2 className="text-2xl font-bold text-cara-900 mb-6 text-center md:text-left">Alta de usuario</h2>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input label="Nombre" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
           <Input label="Apellido" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
-          <Input label="Email institucional" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        </div>
+        
+        <Input label="Email institucional" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input label="DNI" value={dni} onChange={(e) => setDni(e.target.value)} required />
           <Input label="Teléfono (opcional)" type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="mb-1 block text-sm font-medium text-cara-700">Departamento (opcional)</label>
             <select value={departmentId} onChange={(e) => setDepartmentId(e.target.value)}
@@ -120,45 +157,49 @@ export default function AccountRequestPage() {
               {careers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-cara-700">Rol solicitado</label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none"
-            >
-              <option value="Student">Estudiante</option>
-              <option value="Teacher">Docente</option>
-            </select>
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-cara-700">Motivo</label>
-            <textarea
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              rows={3}
-              className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none"
-              placeholder="Contanos por qué necesitás acceso..."
-              required
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-cara-700">Certificado de alumno regular (opcional)</label>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".jpg,.jpeg,.png,.pdf"
-              onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
-              className="block w-full text-sm text-cara-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-cara-50 file:text-cara-700 hover:file:bg-cara-100"
-            />
-            {selectedFile && (
-              <p className="text-xs text-cara-500 mt-1">Seleccionado: {selectedFile.name}</p>
-            )}
-          </div>
-          <Button type="submit" className="w-full" isLoading={loading || uploading}>Enviar solicitud</Button>
-          <a href="/login" className="block text-center text-sm text-cara-600 hover:underline">Volver al inicio de sesión</a>
-        </form>
-      </div>
-    </div>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium text-cara-700">Rol solicitado</label>
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none"
+          >
+            <option value="Student">Estudiante</option>
+            <option value="Teacher">Docente</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium text-cara-700">Motivo</label>
+          <textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            rows={3}
+            className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none"
+            placeholder="Contanos por qué necesitás acceso..."
+            required
+          />
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium text-cara-700">Certificado (opcional)</label>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".jpg,.jpeg,.png,.pdf"
+            onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
+            className="block w-full text-sm text-cara-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-cara-50 file:text-cara-700 hover:file:bg-cara-100"
+          />
+        </div>
+
+        <Button type="submit" className="w-full" isLoading={loading || uploading}>
+          Enviar solicitud
+        </Button>
+        
+        <a href="/login" className="block text-center text-sm text-cara-600 hover:underline">Volver al inicio de sesión</a>
+      </form>
+    </ContentWrapper>
   );
 }

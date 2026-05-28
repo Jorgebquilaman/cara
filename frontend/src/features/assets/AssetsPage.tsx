@@ -11,10 +11,11 @@ import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import Pagination from '@/components/ui/Pagination';
-import { Search, Plus, Trash2, Eye, Pencil, FileSpreadsheet, FileText, Image } from 'lucide-react';
+import { Search, Plus, Trash2, Eye, Pencil, FileSpreadsheet, FileText, Image, Printer } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Asset } from '@/types';
 import api from '@/services/api';
+import { assetService } from '@/services/assetService';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -61,6 +62,7 @@ export default function AssetsPage() {
   const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [editSelectedFile, setEditSelectedFile] = useState<File | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const searchTimeout = useRef<ReturnType<typeof setTimeout>>();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editFileInputRef = useRef<HTMLInputElement>(null);
@@ -151,12 +153,49 @@ export default function AssetsPage() {
     searchTimeout.current = setTimeout(() => {
       setSearch(value);
       setPage(1);
+      setSelectedIds(new Set());
     }, 400);
   };
 
   const handleStatusChange = (value: string) => {
     setStatusFilter(value);
     setPage(1);
+    setSelectedIds(new Set());
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (!data?.items) return;
+    if (selectedIds.size === data.items.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(data.items.map(a => a.id)));
+    }
+  };
+
+  const downloadZpl = async (assetIds: string[]) => {
+    try {
+      const blob = await assetService.getZpl(assetIds, window.location.origin);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = assetIds.length === 1 ? 'etiqueta.zpl' : 'etiquetas.zpl';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success('Etiqueta(s) generada(s) correctamente');
+    } catch {
+      toast.error('Error al generar etiquetas');
+    }
   };
 
   const exportExcel = () => {
@@ -196,6 +235,25 @@ export default function AssetsPage() {
 
   const columns = [
     {
+      key: 'select',
+      header: (
+        <input
+          type="checkbox"
+          checked={data?.items ? data.items.length > 0 && selectedIds.size === data.items.length : false}
+          onChange={toggleSelectAll}
+          className="h-4 w-4 rounded border-cara-300 text-cara-600 focus:ring-cara-500"
+        />
+      ),
+      render: (a: Asset) => (
+        <input
+          type="checkbox"
+          checked={selectedIds.has(a.id)}
+          onChange={() => toggleSelect(a.id)}
+          className="h-4 w-4 rounded border-cara-300 text-cara-600 focus:ring-cara-500"
+        />
+      ),
+    },
+    {
       key: 'image',
       header: '',
       render: (a: Asset) =>
@@ -217,15 +275,18 @@ export default function AssetsPage() {
       key: 'actions',
       header: 'Acciones',
       render: (a: Asset) => (
-        <div className="flex gap-2">
-          <Button variant="ghost" size="sm" onClick={() => navigate(`/assets/${a.id}`)}>
+        <div className="flex gap-1">
+          <Button variant="ghost" size="sm" onClick={() => navigate(`/assets/${a.id}`)} title="Ver detalle">
             <Eye className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => openEdit(a)}>
+          <Button variant="ghost" size="sm" onClick={() => openEdit(a)} title="Editar">
             <Pencil className="h-4 w-4 text-cara-600" />
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => deleteAsset.mutate(a.id)}>
+          <Button variant="ghost" size="sm" onClick={() => deleteAsset.mutate(a.id)} title="Eliminar">
             <Trash2 className="h-4 w-4 text-danger" />
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => downloadZpl([a.id])} title="Imprimir etiqueta">
+            <Printer className="h-4 w-4 text-cara-600" />
           </Button>
         </div>
       ),
@@ -248,6 +309,12 @@ export default function AssetsPage() {
             <FileText className="h-4 w-4 mr-2" />
             PDF
           </Button>
+          {selectedIds.size > 0 && (
+            <Button variant="secondary" onClick={() => downloadZpl(Array.from(selectedIds))}>
+              <Printer className="h-4 w-4 mr-2" />
+              Imprimir ({selectedIds.size})
+            </Button>
+          )}
           <Button onClick={() => setIsCreateOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Nuevo Activo

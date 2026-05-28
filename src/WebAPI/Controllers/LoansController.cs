@@ -8,6 +8,7 @@ using Application.Features.Loans.Queries.GetActiveLoans;
 using Application.Features.Loans.Queries.GetManagedLoans;
 using Application.Features.Loans.Queries.GetPastDueLoans;
 using Application.Features.Loans.Queries.GetUserLoans;
+using Application.Features.Loans.Commands.PickUpLoan;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +31,10 @@ public class LoansController : ControllerBase
     [Authorize(Roles = "Admin,Staff")]
     public async Task<ActionResult<IReadOnlyList<LoanDto>>> GetAll()
     {
-        return Ok(await _mediator.Send(new GetManagedLoansQuery()));
+        var loans = await _mediator.Send(new GetManagedLoansQuery());
+        Console.WriteLine($"Admin fetched {loans.Count} managed loans.");
+        foreach(var l in loans) Console.WriteLine($"Loan: {l.Id}, Status: {l.Status}");
+        return Ok(loans);
     }
 
     [HttpGet("active")]
@@ -59,6 +63,14 @@ public class LoansController : ControllerBase
     {
         var userId = Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
         await _mediator.Send(new ApproveLoanCommand(id, userId));
+        return NoContent();
+    }
+
+    [HttpPost("{id:guid}/pickup")]
+    [Authorize(Roles = "Admin,Staff")]
+    public async Task<IActionResult> PickUp(Guid id)
+    {
+        await _mediator.Send(new PickUpLoanCommand(id));
         return NoContent();
     }
 

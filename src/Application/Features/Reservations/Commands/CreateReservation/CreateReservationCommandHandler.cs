@@ -1,5 +1,6 @@
 using Application.Common.Interfaces;
 using Application.DTOs;
+using Application.Services;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;
@@ -14,15 +15,25 @@ public class CreateReservationCommandHandler : IRequestHandler<CreateReservation
 {
     private readonly IAssetRepository _assetRepository;
     private readonly IApplicationDbContext _context;
+    private readonly IIncidentRepository _incidentRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly INotificationService _notificationService;
 
-    public CreateReservationCommandHandler(IAssetRepository assetRepository, IApplicationDbContext context, IUnitOfWork unitOfWork, IMapper mapper)
+    public CreateReservationCommandHandler(
+        IAssetRepository assetRepository, 
+        IApplicationDbContext context, 
+        IIncidentRepository incidentRepository,
+        IUnitOfWork unitOfWork, 
+        IMapper mapper,
+        INotificationService notificationService)
     {
         _assetRepository = assetRepository;
         _context = context;
+        _incidentRepository = incidentRepository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _notificationService = notificationService;
     }
 
     public async Task<ReservationDto> Handle(CreateReservationCommand request, CancellationToken cancellationToken)
@@ -30,6 +41,9 @@ public class CreateReservationCommandHandler : IRequestHandler<CreateReservation
         var asset = await _assetRepository.GetByIdAsync(request.AssetId, cancellationToken);
         if (asset == null)
             throw new KeyNotFoundException($"Asset {request.AssetId} not found.");
+
+        if (await _incidentRepository.HasUnresolvedIncidentsAsync(request.AssetId, cancellationToken))
+            throw new InvalidOperationException("El activo no puede ser reservado porque tiene incidentes sin resolver.");
 
         var startDate = DateTime.SpecifyKind(request.StartDate, DateTimeKind.Utc);
         var endDate = DateTime.SpecifyKind(request.EndDate, DateTimeKind.Utc);
@@ -57,6 +71,8 @@ public class CreateReservationCommandHandler : IRequestHandler<CreateReservation
 
         _context.Reservations.Add(reservation);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await _notificationService.NotifyReservationCreatedAsync(reservation, cancellationToken);
 
         return _mapper.Map<ReservationDto>(reservation);
     }

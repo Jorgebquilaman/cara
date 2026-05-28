@@ -1,10 +1,12 @@
 export type UserRole = 'Admin' | 'Staff' | 'Teacher' | 'Student';
 export type AssetStatus = 'Available' | 'InUse' | 'Maintenance' | 'Decommissioned';
-export type LoanStatus = 'Pending' | 'Active' | 'Overdue' | 'Returned' | 'Rejected';
+export type LoanStatus = 'Pending' | 'Approved' | 'Active' | 'Overdue' | 'Returned' | 'Rejected';
 export type ReservationStatus = 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed';
 export type NotificationType =
   | 'LoanApproved' | 'LoanRejected' | 'LoanDueReminder'
-  | 'LoanOverdue' | 'SanctionIssued' | 'ReservationConfirmed' | 'IncidentReported' | 'LoanReturned';
+  | 'LoanOverdue' | 'SanctionIssued'
+  | 'ReservationCreated' | 'ReservationConfirmed' | 'ReservationCancelled'
+  | 'IncidentReported' | 'LoanReturned' | 'AccountRequestCreated';
 
 export interface User {
   id: string;
@@ -72,6 +74,9 @@ export interface Reservation {
 export interface Incident {
   id: string;
   loanId: string;
+  assetName: string;
+  assetCode: string;
+  assetImageUrl?: string;
   description: string;
   photoUrl?: string;
   reportedAt: string;
@@ -98,6 +103,7 @@ export interface Notification {
   type: NotificationType;
   title: string;
   message: string;
+  referenceId?: string;
   isRead: boolean;
   sentAt: string;
 }
@@ -146,6 +152,7 @@ export interface UserDashboardData {
   overdueLoans: number;
   recentLoans: Loan[];
   totalReservations: number;
+  pendingReservations: number;
   confirmedReservations: number;
   completedReservations: number;
   cancelledReservations: number;

@@ -1,0 +1,88 @@
+.rbc-month-view {
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.rbc-day-bg + .rbc-day-bg {
+  border-left: 1px solid #f3f4f6 !important;
+}
+
+.rbc-header {
+  padding: 8px 4px !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  color: #374151 !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  background: #f9fafb !important;
+}
+
+.rbc-month-row {
+  min-height: 80px !important;
+}
+
+.rbc-date-cell {
+  padding: 4px 6px !important;
+  font-size: 12px !important;
+  text-align: right !important;
+}
+
+.rbc-date-cell > a {
+  color: #6b7280 !important;
+  font-weight: 500 !important;
+}
+
+.rbc-row-content {
+  z-index: 1 !important;
+}
+
+.rbc-event,
+.rbc-row-segment {
+  padding: 0 !important;
+  margin: 1px 2px !important;
+}
+
+.rbc-event {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.rbc-event.rbc-selected {
+  background-color: inherit !important;
+}
+
+.rbc-show-more {
+  font-size: 11px !important;
+  color: #6b7280 !important;
+  font-weight: 500 !important;
+  padding: 0 4px !important;
+}
+
+.rbc-off-range-bg {
+  background: #f9fafb !important;
+}
+
+.rbc-today {
+  background-color: #eff6ff !important;
+}
+
+.rbc-button-link {
+  color: inherit !important;
+}
+
+.rbc-time-view {
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+}
+
+.rbc-time-header {
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+.rbc-time-content {
+  border-top: 1px solid #e5e7eb !important;
+}
+
+.rbc-toolbar {
+  display: none !important;
+}
