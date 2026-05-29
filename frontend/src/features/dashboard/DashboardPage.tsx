@@ -32,8 +32,9 @@ export default function DashboardPage() {
     enabled: !isAdminOrStaff && !!user?.id,
   });
 
-  const StatCard = ({ label, value, icon: Icon, color }: { label: string, value: number, icon: any, color: string }) => (
-    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4">
+  const StatCard = ({ label, value, icon: Icon, color, accentColor }: { label: string, value: number, icon: any, color: string, accentColor?: string }) => (
+    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4 relative overflow-hidden">
+      <div className={`absolute left-0 top-0 bottom-0 w-1 ${accentColor || 'bg-transparent'}`} />
       <div className={`rounded-xl p-3 ${color}`}>
         <Icon className="h-6 w-6" />
       </div>
@@ -46,16 +47,16 @@ export default function DashboardPage() {
 
   if (isAdminOrStaff) {
     const adminStats = [
-      { label: 'Préstamos Activos', value: dashboard?.activeLoans ?? 0, icon: BookOpen, color: 'text-amber-600 bg-amber-50' },
-      { label: 'Vencidos', value: dashboard?.overdueLoans ?? 0, icon: AlertTriangle, color: 'text-red-600 bg-red-50' },
-      { label: 'Pendientes', value: (dashboard?.pendingApprovals ?? 0) + (dashboard?.pendingReservations ?? 0), icon: Clock, color: 'text-purple-600 bg-purple-50' },
+      { label: 'Préstamos Activos', value: dashboard?.activeLoans ?? 0, icon: BookOpen, color: 'text-amber-600 bg-amber-50', accentColor: 'bg-amber-500' },
+      { label: 'Vencidos', value: dashboard?.overdueLoans ?? 0, icon: AlertTriangle, color: 'text-red-600 bg-red-50', accentColor: 'bg-red-500' },
+      { label: 'Pendientes', value: (dashboard?.pendingApprovals ?? 0) + (dashboard?.pendingReservations ?? 0), icon: Clock, color: 'text-purple-600 bg-purple-50', accentColor: 'bg-purple-500' },
     ];
 
     const adminReservationStats = [
-      { label: 'Total', value: dashboard?.totalReservations ?? 0, icon: Clock, color: 'text-cyan-600 bg-cyan-50' },
-      { label: 'Confirmadas', value: dashboard?.confirmedReservations ?? 0, icon: CheckCircle, color: 'text-green-600 bg-green-50' },
-      { label: 'Completadas', value: dashboard?.completedReservations ?? 0, icon: TrendingUp, color: 'text-blue-600 bg-blue-50' },
-      { label: 'Canceladas', value: dashboard?.cancelledReservations ?? 0, icon: RotateCcw, color: 'text-gray-600 bg-gray-50' },
+      { label: 'Total', value: dashboard?.totalReservations ?? 0, icon: Clock, color: 'text-cyan-600 bg-cyan-50', accentColor: 'bg-cyan-500' },
+      { label: 'Confirmadas', value: dashboard?.confirmedReservations ?? 0, icon: CheckCircle, color: 'text-green-600 bg-green-50', accentColor: 'bg-green-500' },
+      { label: 'Completadas', value: dashboard?.completedReservations ?? 0, icon: TrendingUp, color: 'text-blue-600 bg-blue-50', accentColor: 'bg-blue-500' },
+      { label: 'Canceladas', value: dashboard?.cancelledReservations ?? 0, icon: RotateCcw, color: 'text-gray-600 bg-gray-50', accentColor: 'bg-gray-400' },
     ];
 
     const adminReservationColumns = [
@@ -78,7 +79,7 @@ export default function DashboardPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-extrabold text-gray-900">Dashboard Administrativo</h1>
+          <h1 className="text-3xl font-extrabold text-gray-900">Panel de Control</h1>
           <p className="text-gray-500 mt-1">Resumen general de actividad y gestión.</p>
         </div>
 

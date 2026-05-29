@@ -25,6 +25,7 @@ public class ApproveReservationCommandHandler : IRequestHandler<ApproveReservati
     public async Task Handle(ApproveReservationCommand request, CancellationToken cancellationToken)
     {
         var reservation = await _context.Reservations
+            .Include(r => r.Asset)
             .FirstOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
 
         if (reservation == null)

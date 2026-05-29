@@ -38,7 +38,7 @@ public class ReturnLoanCommandHandler : IRequestHandler<ReturnLoanCommand>
         if (loan == null)
             throw new KeyNotFoundException($"Loan {request.LoanId} not found.");
 
-        loan.Return();
+        loan.Return(request.UserRating, request.UserRatingComment);
 
         var asset = await _assetRepository.GetByIdAsync(loan.AssetId, cancellationToken);
 

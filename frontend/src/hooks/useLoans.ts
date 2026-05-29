@@ -106,8 +106,8 @@ export function useReturnLoan() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, incidentDescription, incidentPhotoUrl }: { id: string; incidentDescription?: string; incidentPhotoUrl?: string }) =>
-      loanService.returnAsset(id, incidentDescription, incidentPhotoUrl),
+    mutationFn: ({ id, incidentDescription, incidentPhotoUrl, userRating, userRatingComment }: { id: string; incidentDescription?: string; incidentPhotoUrl?: string; userRating?: number; userRatingComment?: string }) =>
+      loanService.returnAsset(id, incidentDescription, incidentPhotoUrl, userRating, userRatingComment),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['loans'] });
       queryClient.invalidateQueries({ queryKey: ['assets'] });

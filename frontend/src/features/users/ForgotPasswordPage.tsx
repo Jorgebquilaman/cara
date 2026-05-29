@@ -1,8 +1,38 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import api from '@/services/api';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import toast from 'react-hot-toast';
+
+const ContentWrapper = ({ children }: { children: ReactNode }) => (
+  <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
+    <div className="flex w-full max-w-4xl flex-col md:flex-row overflow-hidden rounded-3xl bg-white shadow-2xl">
+      <div className="hidden md:flex md:w-1/2 bg-cara-900 items-center justify-center p-12 relative">
+        <div className="absolute inset-0 bg-cara-950/20" />
+        <div className="relative z-10 text-white text-center">
+          <img
+            src="/imagenes/logo%20cara.png"
+            alt="CARA Logo"
+            className="w-48 h-48 object-contain mb-8 mx-auto bg-white rounded-full p-4"
+          />
+          <h1 className="text-3xl font-bold mb-2">Recuperar Acceso</h1>
+          <p className="text-cara-200">Restablecé tu contraseña de forma segura.</p>
+        </div>
+      </div>
+
+      <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+        <div className="md:hidden text-center mb-8">
+          <img
+            src="/imagenes/logo%20cara.png"
+            alt="CARA Logo"
+            className="w-24 h-24 object-contain mx-auto"
+          />
+        </div>
+        {children}
+      </div>
+    </div>
+  </div>
+);
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -22,38 +52,6 @@ export default function ForgotPasswordPage() {
       setLoading(false);
     }
   };
-
-  const ContentWrapper = ({ children }: { children: React.ReactNode }) => (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
-      <div className="flex w-full max-w-4xl flex-col md:flex-row overflow-hidden rounded-3xl bg-white shadow-2xl">
-        {/* Left Side: Image/Branding */}
-        <div className="hidden md:flex md:w-1/2 bg-cara-900 items-center justify-center p-12 relative">
-          <div className="absolute inset-0 bg-cara-950/20" />
-          <div className="relative z-10 text-white text-center">
-            <img
-              src="/imagenes/logo%20cara.png"
-              alt="CARA Logo"
-              className="w-48 h-48 object-contain mb-8 mx-auto bg-white rounded-full p-4"
-            />
-            <h1 className="text-3xl font-bold mb-2">Recuperar Acceso</h1>
-            <p className="text-cara-200">Restablecé tu contraseña de forma segura.</p>
-          </div>
-        </div>
-
-        {/* Right Side: Form */}
-        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
-          <div className="md:hidden text-center mb-8">
-            <img
-              src="/imagenes/logo%20cara.png"
-              alt="CARA Logo"
-              className="w-24 h-24 object-contain mx-auto"
-            />
-          </div>
-          {children}
-        </div>
-      </div>
-    </div>
-  );
 
   if (sent) {
     return (

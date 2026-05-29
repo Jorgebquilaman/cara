@@ -14,9 +14,13 @@ public class LoanDto
     public string? RejectionReason { get; set; }
     public string? Observations { get; set; }
     public decimal Prenda { get; set; }
+    public bool PrendaReturned { get; set; }
+    public DateTime? PrendaReturnedAt { get; set; }
     public DateTime RequestedAt { get; set; }
     public DateTime? ApprovedAt { get; set; }
     public DateTime? ReturnedAt { get; set; }
+    public int? UserRating { get; set; }
+    public string? UserRatingComment { get; set; }
     public string? Message { get; set; }
 }
 
@@ -43,4 +47,6 @@ public class ReturnLoanDto
 {
     public string? IncidentDescription { get; set; }
     public string? IncidentPhotoUrl { get; set; }
+    public int? UserRating { get; set; }
+    public string? UserRatingComment { get; set; }
 }

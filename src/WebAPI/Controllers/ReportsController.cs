@@ -85,6 +85,11 @@ public class ReportsController : ControllerBase
         var sanctions = await _sanctionRepository.GetByUserAsync(userId);
         var incidents = await _incidentRepository.GetByUserIdAsync(userId);
 
+        var ratedLoans = loans.Where(l => l.UserRating.HasValue).ToList();
+        var userAvgRating = ratedLoans.Count != 0
+            ? ratedLoans.Average(l => l.UserRating!.Value)
+            : (double?)null;
+
         return Ok(new UserHistoryDto
         {
             Id = user.Id,
@@ -93,6 +98,7 @@ public class ReportsController : ControllerBase
             InstitutionalEmail = user.InstitutionalEmail.Value,
             Role = user.Role.ToString(),
             IsActive = user.IsActive,
+            UserAverageRating = userAvgRating,
             Loans = loans.Select(l => new LoanDto
             {
                 Id = l.Id,
@@ -128,6 +134,44 @@ public class ReportsController : ControllerBase
                 ResolvedAt = s.ResolvedAt,
                 IsActive = s.IsActive,
             }).ToList(),
+        });
+    }
+
+    [HttpGet("prenda-stats")]
+    public async Task<IActionResult> GetPrendaStats()
+    {
+        var loans = await _context.Loans
+            .Include(l => l.User)
+            .Include(l => l.Asset)
+            .Where(l => l.Prenda > 0)
+            .OrderByDescending(l => l.RequestedAt)
+            .ToListAsync();
+
+        var totalPrenda = loans.Sum(l => l.Prenda);
+        var totalWithPrenda = loans.Count;
+        var avgPrenda = totalWithPrenda > 0 ? Math.Round(loans.Average(l => l.Prenda), 2) : 0;
+        var saldoPendiente = totalPrenda - loans.Where(l => l.PrendaReturned).Sum(l => l.Prenda);
+
+        var recent = loans.Take(10).Select(l => new
+        {
+            Id = l.Id,
+            AssetCode = l.Asset.Code,
+            AssetName = l.Asset.Name,
+            UserName = $"{l.User.FirstName} {l.User.LastName}",
+            Prenda = l.Prenda,
+            PrendaReturned = l.PrendaReturned,
+            PrendaReturnedAt = l.PrendaReturnedAt,
+            RequestedAt = l.RequestedAt,
+            Status = l.Status.ToString()
+        }).ToList();
+
+        return Ok(new
+        {
+            TotalPrenda = totalPrenda,
+            TotalWithPrenda = totalWithPrenda,
+            AveragePrenda = avgPrenda,
+            SaldoPendiente = saldoPendiente,
+            Recent = recent
         });
     }
 
@@ -176,6 +220,23 @@ public class ReportsController : ControllerBase
             .Take(10)
             .ToList();
 
+        var incidents = await _context.Incidents
+            .Include(i => i.Loan).ThenInclude(l => l.Asset)
+            .ToListAsync();
+
+        var incidentStats = new
+        {
+            TotalIncidents = incidents.Count,
+            UnresolvedIncidents = incidents.Count(i => !i.IsResolved),
+            AssetsWithIncidents = incidents.Select(i => i.Loan.Asset.Name).Distinct().Count(),
+            TopIncidentAssets = incidents
+                .GroupBy(i => new { i.Loan.Asset.Name, i.Loan.Asset.Code })
+                .Select(g => new { Asset = $"{g.Key.Code} - {g.Key.Name}", Count = g.Count() })
+                .OrderByDescending(g => g.Count)
+                .Take(10)
+                .ToList()
+        };
+
         return Ok(new { 
             KPIs = new {
                 TotalAssets = assets.Count,
@@ -191,7 +252,8 @@ public class ReportsController : ControllerBase
             DepartmentStats = deptStats, 
             CareerStats = careerStats,
             UsageTime = usageTime,
-            SurveyByAsset = surveyByAsset
+            SurveyByAsset = surveyByAsset,
+            IncidentStats = incidentStats
         });
     }
 

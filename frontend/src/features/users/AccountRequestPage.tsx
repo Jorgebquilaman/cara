@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type ReactNode } from 'react';
 import api from '@/services/api';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -6,6 +6,35 @@ import toast from 'react-hot-toast';
 
 interface Department { id: string; name: string; }
 interface Career { id: string; name: string; departmentId: string; }
+
+const ContentWrapper = ({ children }: { children: ReactNode }) => (
+  <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
+    <div className="flex w-full max-w-4xl flex-col md:flex-row overflow-hidden rounded-3xl bg-white shadow-2xl">
+      <div className="hidden md:flex md:w-1/3 bg-cara-900 items-center justify-center p-12 relative">
+        <div className="absolute inset-0 bg-cara-950/20" />
+        <div className="relative z-10 text-white text-center">
+          <img
+            src="/imagenes/logo%20cara.png"
+            alt="CARA Logo"
+            className="w-40 h-40 object-contain mb-8 mx-auto bg-white rounded-full p-4"
+          />
+          <h1 className="text-3xl font-bold mb-2">Solicitar Alta</h1>
+          <p className="text-cara-200">Completá el formulario para acceder al sistema.</p>
+        </div>
+      </div>
+      <div className="w-full md:w-2/3 p-8 md:p-12 flex flex-col justify-center">
+        <div className="md:hidden text-center mb-6">
+          <img
+            src="/imagenes/logo%20cara.png"
+            alt="CARA Logo"
+            className="w-20 h-20 object-contain mx-auto"
+          />
+        </div>
+        {children}
+      </div>
+    </div>
+  </div>
+);
 
 export default function AccountRequestPage() {
   const [firstName, setFirstName] = useState('');
@@ -73,38 +102,6 @@ export default function AccountRequestPage() {
       setLoading(false);
     }
   };
-
-  const ContentWrapper = ({ children }: { children: React.ReactNode }) => (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
-      <div className="flex w-full max-w-4xl flex-col md:flex-row overflow-hidden rounded-3xl bg-white shadow-2xl">
-        {/* Left Side: Image/Branding */}
-        <div className="hidden md:flex md:w-1/3 bg-cara-900 items-center justify-center p-12 relative">
-          <div className="absolute inset-0 bg-cara-950/20" />
-          <div className="relative z-10 text-white text-center">
-            <img
-              src="/imagenes/logo%20cara.png"
-              alt="CARA Logo"
-              className="w-40 h-40 object-contain mb-8 mx-auto bg-white rounded-full p-4"
-            />
-            <h1 className="text-3xl font-bold mb-2">Solicitar Alta</h1>
-            <p className="text-cara-200">Completá el formulario para acceder al sistema.</p>
-          </div>
-        </div>
-
-        {/* Right Side: Form */}
-        <div className="w-full md:w-2/3 p-8 md:p-12 flex flex-col justify-center">
-          <div className="md:hidden text-center mb-6">
-            <img
-              src="/imagenes/logo%20cara.png"
-              alt="CARA Logo"
-              className="w-20 h-20 object-contain mx-auto"
-            />
-          </div>
-          {children}
-        </div>
-      </div>
-    </div>
-  );
 
   if (sent) {
     return (

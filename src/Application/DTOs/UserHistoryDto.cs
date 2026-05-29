@@ -9,6 +9,7 @@ public class UserHistoryDto
     public string InstitutionalEmail { get; set; }
     public string Role { get; set; }
     public bool IsActive { get; set; }
+    public double? UserAverageRating { get; set; }
     public List<LoanDto> Loans { get; set; } = [];
     public List<IncidentDto> Incidents { get; set; } = [];
     public List<SanctionDto> Sanctions { get; set; } = [];

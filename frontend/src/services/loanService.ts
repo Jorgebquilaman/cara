@@ -32,8 +32,8 @@ export const loanService = {
     await api.post(`/loans/${id}/reject`, { reason });
   },
 
-  async returnAsset(id: string, incidentDescription?: string, incidentPhotoUrl?: string): Promise<void> {
-    await api.post(`/loans/${id}/return`, { incidentDescription, incidentPhotoUrl });
+  async returnAsset(id: string, incidentDescription?: string, incidentPhotoUrl?: string, userRating?: number, userRatingComment?: string): Promise<void> {
+    await api.post(`/loans/${id}/return`, { incidentDescription, incidentPhotoUrl, userRating, userRatingComment });
   },
 
   async getPastDue(): Promise<Loan[]> {

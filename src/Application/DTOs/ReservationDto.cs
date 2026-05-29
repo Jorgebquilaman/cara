@@ -13,4 +13,5 @@ public class ReservationDto
     public string Space { get; set; }
     public string Status { get; set; }
     public DateTime CreatedAt { get; set; }
+    public double? UserAverageRating { get; set; }
 }

@@ -236,7 +236,10 @@ if (app.Environment.IsDevelopment())
         @"ALTER TABLE ""Users"" ADD COLUMN IF NOT EXISTS ""PhoneNumber"" VARCHAR(50) NULL",
         @"ALTER TABLE ""Users"" ADD COLUMN IF NOT EXISTS ""CareerId"" UUID NULL",
         @"ALTER TABLE ""AccountRequests"" ADD COLUMN IF NOT EXISTS ""PhoneNumber"" VARCHAR(50) NULL",
-        @"ALTER TABLE ""AccountRequests"" ADD COLUMN IF NOT EXISTS ""CareerId"" UUID NULL"
+        @"ALTER TABLE ""AccountRequests"" ADD COLUMN IF NOT EXISTS ""CareerId"" UUID NULL",
+        @"ALTER TABLE ""Loans"" ADD COLUMN IF NOT EXISTS ""PrendaReturnedAt"" timestamp with time zone NULL",
+        @"ALTER TABLE ""Loans"" ADD COLUMN IF NOT EXISTS ""UserRating"" INTEGER NULL",
+        @"ALTER TABLE ""Loans"" ADD COLUMN IF NOT EXISTS ""UserRatingComment"" VARCHAR(500) NULL"
     };
 
     foreach (var sql in userAlters)

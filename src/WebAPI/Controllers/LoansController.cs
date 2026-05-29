@@ -1,3 +1,4 @@
+using Application.Common.Interfaces;
 using Application.DTOs;
 using Application.Features.Loans.Commands.ApproveLoan;
 using Application.Features.Loans.Commands.CreateLoan;
@@ -9,9 +10,11 @@ using Application.Features.Loans.Queries.GetManagedLoans;
 using Application.Features.Loans.Queries.GetPastDueLoans;
 using Application.Features.Loans.Queries.GetUserLoans;
 using Application.Features.Loans.Commands.PickUpLoan;
+using Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebAPI.Controllers;
 
@@ -21,10 +24,14 @@ namespace WebAPI.Controllers;
 public class LoansController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly IApplicationDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public LoansController(IMediator mediator)
+    public LoansController(IMediator mediator, IApplicationDbContext context, IUnitOfWork unitOfWork)
     {
         _mediator = mediator;
+        _context = context;
+        _unitOfWork = unitOfWork;
     }
 
     [HttpGet]
@@ -102,7 +109,31 @@ public class LoansController : ControllerBase
     [Authorize(Roles = "Admin,Staff")]
     public async Task<IActionResult> Return(Guid id, ReturnLoanDto dto)
     {
-        await _mediator.Send(new ReturnLoanCommand(id, dto.IncidentDescription, dto.IncidentPhotoUrl));
+        await _mediator.Send(new ReturnLoanCommand(id, dto.IncidentDescription, dto.IncidentPhotoUrl, dto.UserRating, dto.UserRatingComment));
+        return NoContent();
+    }
+
+    [HttpPost("{id:guid}/prenda-return")]
+    [Authorize(Roles = "Admin,Staff")]
+    public async Task<IActionResult> MarkPrendaReturned(Guid id)
+    {
+        var loan = await _context.Loans.FirstOrDefaultAsync(l => l.Id == id);
+        if (loan == null) return NotFound();
+
+        loan.MarkPrendaReturned();
+        await _unitOfWork.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpPost("{id:guid}/prenda-unreturn")]
+    [Authorize(Roles = "Admin,Staff")]
+    public async Task<IActionResult> MarkPrendaNotReturned(Guid id)
+    {
+        var loan = await _context.Loans.FirstOrDefaultAsync(l => l.Id == id);
+        if (loan == null) return NotFound();
+
+        loan.MarkPrendaNotReturned();
+        await _unitOfWork.SaveChangesAsync();
         return NoContent();
     }
 

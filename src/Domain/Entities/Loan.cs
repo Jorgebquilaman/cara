@@ -13,10 +13,14 @@ public class Loan
     public string? RejectionReason { get; private set; }
     public string? Observations { get; private set; }
     public decimal Prenda { get; private set; }
+    public bool PrendaReturned { get; private set; }
+    public DateTime? PrendaReturnedAt { get; private set; }
     public DateTime RequestedAt { get; private set; }
     public DateTime? ApprovedAt { get; private set; }
     public DateTime? ReturnedAt { get; private set; }
     public Guid? ApprovedBy { get; private set; }
+    public int? UserRating { get; private set; }
+    public string? UserRatingComment { get; private set; }
 
     public Asset Asset { get; private set; }
     public User User { get; private set; }
@@ -67,13 +71,45 @@ public class Loan
         ApprovedBy = rejectedBy;
     }
 
-    public void Return()
+    public void Return(int? userRating = null, string? userRatingComment = null)
     {
         if (Status is not (LoanStatus.Active or LoanStatus.Overdue))
             throw new InvalidOperationException("Only active or overdue loans can be returned");
 
         Status = LoanStatus.Returned;
         ReturnedAt = DateTime.UtcNow;
+        if (Prenda > 0 && !PrendaReturned)
+        {
+            PrendaReturned = true;
+            PrendaReturnedAt = DateTime.UtcNow;
+        }
+        if (userRating.HasValue)
+        {
+            UserRating = userRating.Value;
+            UserRatingComment = userRatingComment;
+        }
+    }
+
+    public void MarkPrendaReturned()
+    {
+        if (Prenda <= 0)
+            throw new InvalidOperationException("El préstamo no tiene prenda");
+        if (PrendaReturned)
+            throw new InvalidOperationException("La prenda ya fue devuelta");
+
+        PrendaReturned = true;
+        PrendaReturnedAt = DateTime.UtcNow;
+    }
+
+    public void MarkPrendaNotReturned()
+    {
+        if (Prenda <= 0)
+            throw new InvalidOperationException("El préstamo no tiene prenda");
+        if (!PrendaReturned)
+            throw new InvalidOperationException("La prenda ya está marcada como no devuelta");
+
+        PrendaReturned = false;
+        PrendaReturnedAt = null;
     }
 
     public void MarkOverdue()

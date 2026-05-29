@@ -51,6 +51,12 @@ export interface Loan {
   dueDate: string;
   status: LoanStatus;
   rejectionReason?: string;
+  observations?: string;
+  prenda?: number;
+  prendaReturned?: boolean;
+  prendaReturnedAt?: string;
+  userRating?: number;
+  userRatingComment?: string;
   requestedAt: string;
   approvedAt?: string;
   returnedAt?: string;
@@ -69,6 +75,7 @@ export interface Reservation {
   space: string;
   status: ReservationStatus;
   createdAt: string;
+  userAverageRating?: number;
 }
 
 export interface Incident {

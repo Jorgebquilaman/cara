@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import Calendar from '@/components/ui/Calendar';
 import Pagination from '@/components/ui/Pagination';
-import { Search, Plus, CheckCircle, XCircle, FileSpreadsheet, FileText } from 'lucide-react';
+import { Search, Plus, CheckCircle, XCircle, FileSpreadsheet, FileText, Star } from 'lucide-react';
 import { Reservation, AssetAvailability } from '@/types';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,6 +21,7 @@ import toast from 'react-hot-toast';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import ReactStars from 'react-stars';
 
 const reservationSchema = z.object({
   assetId: z.string().min(1, 'Seleccioná un activo'),
@@ -47,10 +48,14 @@ export default function ReservationsPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [dateRange, setDateRange] = useState<{ start: Date; end: Date } | null>(null);
   const [selectedAssetId, setSelectedAssetId] = useState('');
+  const [assetSearch, setAssetSearch] = useState('');
+  const [showAssetDropdown, setShowAssetDropdown] = useState(false);
   const [rangeError, setRangeError] = useState('');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
+  const [sortKey, setSortKey] = useState('');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const pageSize = 10;
   const searchTimeout = useRef<ReturnType<typeof setTimeout>>();
 
@@ -149,8 +154,15 @@ export default function ReservationsPage() {
           (r.userName && r.userName.toLowerCase().includes(q))
       );
     }
+    if (sortKey) {
+      result = [...result].sort((a, b) => {
+        const aVal = String((a as any)[sortKey] ?? '');
+        const bVal = String((b as any)[sortKey] ?? '');
+        return sortDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      });
+    }
     return result;
-  }, [allReservations, statusFilter, search]);
+  }, [allReservations, statusFilter, search, sortKey, sortDir]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
@@ -168,12 +180,22 @@ export default function ReservationsPage() {
     setPage(1);
   };
 
+  const handleSort = (key: string) => {
+    if (sortKey === key) {
+      setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
+  };
+
   const exportExcel = () => {
     if (!allReservations.length) return;
     const ws = XLSX.utils.json_to_sheet(
       allReservations.map((r) => ({
         Espacio: r.space,
         Usuario: r.userName,
+        Valoración: r.userAverageRating ? r.userAverageRating.toFixed(1) : '',
         Inicio: new Date(r.startDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
         Fin: new Date(r.endDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
         Estado: r.status,
@@ -193,10 +215,11 @@ export default function ReservationsPage() {
     doc.text(`Generado: ${new Date().toLocaleDateString()}`, 14, 28);
     autoTable(doc, {
       startY: 34,
-      head: [['Espacio', 'Usuario', 'Inicio', 'Fin', 'Estado']],
+      head: [['Espacio', 'Usuario', 'Valoración', 'Inicio', 'Fin', 'Estado']],
       body: allReservations.map((r) => [
         r.space,
         r.userName,
+        r.userAverageRating ? r.userAverageRating.toFixed(1) : '',
         new Date(r.startDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
         new Date(r.endDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
         r.status,
@@ -208,20 +231,42 @@ export default function ReservationsPage() {
   };
 
   const columns = [
-    { key: 'space', header: 'Espacio' },
-    { key: 'assetName', header: 'Activo' },
-    ...(isAdminOrStaff ? [{ key: 'userName' as string, header: 'Usuario' as string }] : []),
+    { key: 'space', header: 'Espacio', sortable: true },
+    { key: 'assetName', header: 'Activo', sortable: true },
+    ...(isAdminOrStaff ? [{ key: 'userName' as string, header: 'Usuario' as string, sortable: true }] : []),
+    ...(isAdminOrStaff ? [{
+      key: 'userAverageRating' as string,
+      header: 'Valoración' as string,
+      render: (r: Reservation) => r.userAverageRating ? (
+        <div className="flex items-center gap-1">
+          <ReactStars
+            count={5}
+            value={r.userAverageRating}
+            size={16}
+            color2="#facc15"
+            color1="#d1d5db"
+            edit={false}
+            half={true}
+          />
+          <span className="text-xs text-cara-400 ml-1">{r.userAverageRating.toFixed(1)}</span>
+        </div>
+      ) : (
+        <span className="text-xs text-cara-300">—</span>
+      ),
+    }] : []),
     {
       key: 'startDate',
       header: 'Inicio',
+      sortable: true,
       render: (r: Reservation) => new Date(r.startDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
     },
     {
       key: 'endDate',
       header: 'Fin',
+      sortable: true,
       render: (r: Reservation) => new Date(r.endDate).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }),
     },
-    { key: 'status', header: 'Estado', render: (r: Reservation) => <Badge status={r.status} /> },
+    { key: 'status', header: 'Estado', sortable: true, render: (r: Reservation) => <Badge status={r.status} /> },
     {
       key: 'actions',
       header: 'Acciones',
@@ -306,6 +351,9 @@ export default function ReservationsPage() {
           keyExtractor={(r) => r.id}
           isLoading={isLoading}
           emptyMessage="No se encontraron reservas"
+          sortKey={sortKey}
+          sortDir={sortDir}
+          onSort={handleSort}
         />
         <Pagination
           pageNumber={page}
@@ -315,100 +363,104 @@ export default function ReservationsPage() {
         />
       </div>
 
-      <Modal isOpen={isCreateOpen} onClose={() => { setIsCreateOpen(false); setDateRange(null); setSelectedAssetId(''); }} title="Nueva Reserva">
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <Select
-            label="Activo"
-            options={assetOptions}
-            placeholder="Seleccioná un activo"
-            error={form.formState.errors.assetId?.message}
-            {...form.register('assetId', {
-              onChange: (e) => {
-                setSelectedAssetId(e.target.value);
-                setDateRange(null);
-              },
-            })}
-          />
-
-          {selectedAssetId && selectedAsset?.imageUrl && (
-            <div className="flex justify-center">
-              <img
-                src={selectedAsset.imageUrl}
-                alt={selectedAsset.name}
-                className="h-32 w-32 rounded-xl object-cover border shadow-sm"
+      <Modal isOpen={isCreateOpen} onClose={() => { setIsCreateOpen(false); setDateRange(null); setSelectedAssetId(''); }} title="Nueva Reserva" size="lg">
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <Select
+                label="Activo"
+                options={assetOptions}
+                placeholder="Seleccioná un activo"
+                error={form.formState.errors.assetId?.message}
+                {...form.register('assetId', {
+                  onChange: (e) => {
+                    setSelectedAssetId(e.target.value);
+                    setDateRange(null);
+                  },
+                })}
               />
-            </div>
-          )}
-
-          {selectedAssetId && (
-            <div>
-              {selectedAsset && (
-                <p className="text-xs text-cara-500 mb-2 text-center">
-                  Máximo {selectedAsset.maxLoanDays} días por reserva
-                </p>
+              {selectedAssetId && selectedAsset?.imageUrl && (
+                <div className="flex justify-center">
+                  <img
+                    src={selectedAsset.imageUrl}
+                    alt={selectedAsset.name}
+                    className="h-32 w-32 rounded-xl object-cover border shadow-sm"
+                  />
+                </div>
               )}
-              <div className="flex justify-center">
-                <Calendar
-                  bookedRanges={availability?.bookedRanges}
-                  value={dateRange ?? undefined}
-                  onChange={(range) => {
-                    const days = Math.ceil((range.end.getTime() - range.start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-                    if (selectedAsset && days > selectedAsset.maxLoanDays) {
-                      setRangeError(`Supera el máximo de ${selectedAsset.maxLoanDays} días.`);
-                      return;
-                    }
-                    setRangeError('');
-                    setDateRange(range);
-                    form.setValue('startDate', range.start.toISOString().split('T')[0]);
-                    form.setValue('endDate', range.end.toISOString().split('T')[0]);
-                    form.clearErrors(['startDate', 'endDate']);
-                  }}
-                  minDate={new Date()}
+            </div>
+
+            <div className="space-y-4">
+              <Input
+                label="Espacio"
+                placeholder="Ej: Sala A, Auditorio, etc."
+                error={form.formState.errors.space?.message}
+                {...form.register('space')}
+              />
+
+              <Controller
+                name="startDate"
+                control={form.control}
+                render={({ field }) => <input type="hidden" {...field} />}
+              />
+              <Controller
+                name="endDate"
+                control={form.control}
+                render={({ field }) => <input type="hidden" {...field} />}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  label="Hora de inicio"
+                  type="time"
+                  defaultValue={new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                  error={form.formState.errors.startTime?.message}
+                  {...form.register('startTime')}
+                />
+                <Input
+                  label="Hora de fin"
+                  type="time"
+                  defaultValue={new Date(Date.now() + 3600000).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                  error={form.formState.errors.endTime?.message}
+                  {...form.register('endTime')}
                 />
               </div>
-              {rangeError && (
-                <p className="text-xs text-red-500 text-center mt-1">{rangeError}</p>
+
+              {selectedAssetId && (
+                <div>
+                  {selectedAsset && (
+                    <p className="text-xs text-cara-500 mb-2">
+                      Máximo {selectedAsset.maxLoanDays} días por reserva
+                    </p>
+                  )}
+                  <Calendar
+                    bookedRanges={availability?.bookedRanges}
+                    value={dateRange ?? undefined}
+                    onChange={(range) => {
+                      const days = Math.ceil((range.end.getTime() - range.start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+                      if (selectedAsset && days > selectedAsset.maxLoanDays) {
+                        setRangeError(`Supera el máximo de ${selectedAsset.maxLoanDays} días.`);
+                        return;
+                      }
+                      setRangeError('');
+                      setDateRange(range);
+                      form.setValue('startDate', range.start.toISOString().split('T')[0]);
+                      form.setValue('endDate', range.end.toISOString().split('T')[0]);
+                      form.clearErrors(['startDate', 'endDate']);
+                    }}
+                    minDate={new Date()}
+                  />
+                  {rangeError && (
+                    <p className="text-xs text-red-500 mt-1">{rangeError}</p>
+                  )}
+                </div>
               )}
+
+              <div className="flex justify-end gap-3 pt-2">
+                <Button variant="secondary" onClick={() => { setIsCreateOpen(false); setDateRange(null); setSelectedAssetId(''); }}>Cancelar</Button>
+                <Button type="submit" isLoading={createMutation.isPending}>Crear</Button>
+              </div>
             </div>
-          )}
-
-          <Controller
-            name="startDate"
-            control={form.control}
-            render={({ field }) => <input type="hidden" {...field} />}
-          />
-          <Controller
-            name="endDate"
-            control={form.control}
-            render={({ field }) => <input type="hidden" {...field} />}
-          />
-
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="Hora de inicio"
-              type="time"
-              defaultValue={new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false })}
-              error={form.formState.errors.startTime?.message}
-              {...form.register('startTime')}
-            />
-            <Input
-              label="Hora de fin"
-              type="time"
-              defaultValue={new Date(Date.now() + 3600000).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false })}
-              error={form.formState.errors.endTime?.message}
-              {...form.register('endTime')}
-            />
-          </div>
-
-          <Input
-            label="Espacio"
-            placeholder="Ej: Sala A, Auditorio, etc."
-            error={form.formState.errors.space?.message}
-            {...form.register('space')}
-          />
-          <div className="flex justify-end gap-3">
-            <Button variant="secondary" onClick={() => { setIsCreateOpen(false); setDateRange(null); setSelectedAssetId(''); }}>Cancelar</Button>
-            <Button type="submit" isLoading={createMutation.isPending}>Crear</Button>
           </div>
         </form>
       </Modal>

@@ -25,6 +25,7 @@ public class CancelReservationCommandHandler : IRequestHandler<CancelReservation
     public async Task Handle(CancelReservationCommand request, CancellationToken cancellationToken)
     {
         var reservation = await _context.Reservations
+            .Include(r => r.Asset)
             .FirstOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
         if (reservation == null)
             throw new KeyNotFoundException($"Reservation {request.Id} not found.");

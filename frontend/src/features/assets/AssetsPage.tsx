@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -66,6 +66,9 @@ export default function AssetsPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [editSelectedFile, setEditSelectedFile] = useState<File | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [deleteTarget, setDeleteTarget] = useState<Asset | null>(null);
+  const [sortKey, setSortKey] = useState('');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const searchTimeout = useRef<ReturnType<typeof setTimeout>>();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editFileInputRef = useRef<HTMLInputElement>(null);
@@ -149,6 +152,26 @@ export default function AssetsPage() {
     setEditSelectedFile(null);
     setIsEditOpen(false);
     setEditingAsset(null);
+  };
+
+  const sortedData = useMemo(() => {
+    const items = data?.items ?? [];
+    if (!sortKey) return items;
+    return [...items].sort((a, b) => {
+      const aVal = String((a as any)[sortKey] ?? '');
+      const bVal = String((b as any)[sortKey] ?? '');
+      return sortDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+    });
+  }, [data?.items, sortKey, sortDir]);
+
+  const handleSort = (key: string) => {
+    setPage(1);
+    if (sortKey === key) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
   };
 
   const handleSearch = (value: string) => {
@@ -282,12 +305,12 @@ export default function AssetsPage() {
           </div>
         ),
     },
-    { key: 'code', header: 'Código' },
-    { key: 'name', header: 'Nombre' },
-    { key: 'category', header: 'Categoría' },
-    { key: 'department', header: 'Departamento' },
-    { key: 'status', header: 'Estado', render: (a: Asset) => <Badge status={a.status} /> },
-    { key: 'location', header: 'Ubicación' },
+    { key: 'code', header: 'Código', sortable: true },
+    { key: 'name', header: 'Nombre', sortable: true },
+    { key: 'category', header: 'Categoría', sortable: true },
+    { key: 'department', header: 'Departamento', sortable: true },
+    { key: 'status', header: 'Estado', sortable: true, render: (a: Asset) => <Badge status={a.status} /> },
+    { key: 'location', header: 'Ubicación', sortable: true },
     {
       key: 'actions',
       header: 'Acciones',
@@ -300,7 +323,7 @@ export default function AssetsPage() {
             <Pencil className="h-4 w-4 text-cara-600" />
           </Button>
           {isAdmin && (
-            <Button variant="ghost" size="sm" onClick={() => deleteAsset.mutate(a.id)} title="Eliminar">
+            <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(a)} title="Eliminar">
               <Trash2 className="h-4 w-4 text-danger" />
             </Button>
           )}
@@ -364,10 +387,13 @@ export default function AssetsPage() {
       <div className="rounded-lg border border-cara-200 bg-white overflow-hidden shadow-sm">
         <Table
           columns={columns}
-          data={data?.items ?? []}
+          data={sortedData}
           keyExtractor={(a) => a.id}
           isLoading={isLoading}
           emptyMessage="No se encontraron activos"
+          sortKey={sortKey}
+          sortDir={sortDir}
+          onSort={handleSort}
         />
         <Pagination
           pageNumber={data?.pageNumber ?? 1}
@@ -454,6 +480,19 @@ export default function AssetsPage() {
             <Button type="submit" isLoading={updateAsset.isPending}>Guardar</Button>
           </div>
         </form>
+      </Modal>
+
+      <Modal isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Confirmar Eliminación">
+        <div className="space-y-4">
+          <p className="text-sm text-cara-700">
+            ¿Estás seguro de que querés eliminar el activo <strong>{deleteTarget?.name}</strong> ({deleteTarget?.code})?
+          </p>
+          <p className="text-xs text-cara-500">El activo pasará a estado "De Baja" y no estará disponible para nuevos préstamos.</p>
+          <div className="flex justify-end gap-3">
+            <Button variant="secondary" onClick={() => setDeleteTarget(null)}>Cancelar</Button>
+            <Button onClick={() => { if (deleteTarget) deleteAsset.mutate(deleteTarget.id); setDeleteTarget(null); }} isLoading={deleteAsset.isPending}>Eliminar</Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );

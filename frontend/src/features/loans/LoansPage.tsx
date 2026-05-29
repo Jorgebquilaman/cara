@@ -15,11 +15,12 @@ import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import Pagination from '@/components/ui/Pagination';
-import { Search, CheckCircle, XCircle, Undo2, Plus, Bell, FileSpreadsheet, FileText } from 'lucide-react';
+import { Search, CheckCircle, XCircle, Undo2, Plus, Bell, FileSpreadsheet, FileText, Star } from 'lucide-react';
 import { Loan, User } from '@/types';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import ReactStars from 'react-stars';
 
 const loanSchema = z.object({
   userId: z.string().min(1, 'Seleccioná un usuario'),
@@ -78,6 +79,7 @@ export default function LoansPage() {
   const [returnModal, setReturnModal] = useState<{ id: string; open: boolean }>({ id: '', open: false });
   const [incidentDescription, setIncidentDescription] = useState('');
   const [incidentPhotoUrl, setIncidentPhotoUrl] = useState('');
+  const [userRating, setUserRating] = useState(0);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useState('');
@@ -85,6 +87,10 @@ export default function LoansPage() {
   const [page, setPage] = useState(1);
   const [sortKey, setSortKey] = useState('');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+  const [userSearch, setUserSearch] = useState('');
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [assetSearch, setAssetSearch] = useState('');
+  const [showAssetDropdown, setShowAssetDropdown] = useState(false);
   const pageSize = 10;
   const searchTimeout = useRef<ReturnType<typeof setTimeout>>();
 
@@ -101,10 +107,12 @@ export default function LoansPage() {
   const handleReturn = async () => {
     const desc = incidentDescription.trim() || undefined;
     const photo = incidentPhotoUrl || undefined;
-    await returnLoan.mutateAsync({ id: returnModal.id, incidentDescription: desc, incidentPhotoUrl: photo });
+    const rating = userRating > 0 ? userRating : undefined;
+    await returnLoan.mutateAsync({ id: returnModal.id, incidentDescription: desc, incidentPhotoUrl: photo, userRating: rating, userRatingComment: desc });
     setReturnModal({ id: '', open: false });
     setIncidentDescription('');
     setIncidentPhotoUrl('');
+    setUserRating(0);
   };
 
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,6 +133,27 @@ export default function LoansPage() {
     }
   };
 
+  const openCreateModal = () => {
+    setSelectedUserId('');
+    setUserSearch('');
+    setShowUserDropdown(false);
+    setSelectedAssetId('');
+    setAssetSearch('');
+    setShowAssetDropdown(false);
+    setIsCreateOpen(true);
+  };
+
+  const closeCreateModal = () => {
+    setSelectedUserId('');
+    setUserSearch('');
+    setShowUserDropdown(false);
+    setSelectedAssetId('');
+    setAssetSearch('');
+    setShowAssetDropdown(false);
+    setIsCreateOpen(false);
+    form.reset();
+  };
+
   const onCreateSubmit = async (data: LoanForm) => {
     await createLoan.mutateAsync({
       userId: data.userId,
@@ -134,7 +163,7 @@ export default function LoansPage() {
       observations: data.observations || undefined,
       prenda: parseFloat(data.prenda || '0'),
     });
-    form.reset();
+    closeCreateModal();
     setIsCreateOpen(false);
   };
 
@@ -149,6 +178,12 @@ export default function LoansPage() {
     value: u.id,
     label: `${u.fullName} (${u.institutionalEmail})`,
   }));
+  const filteredUserOptions = userOptions.filter((opt) =>
+    opt.label.toLowerCase().includes(userSearch.toLowerCase())
+  );
+  const filteredAssetOptions = assetOptions.filter((opt) =>
+    opt.label.toLowerCase().includes(assetSearch.toLowerCase())
+  );
 
   const allLoans = loans ?? [];
 
@@ -363,76 +398,153 @@ export default function LoansPage() {
         />
       </div>
 
-      <Modal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} title="Nuevo Préstamo">
-        <form onSubmit={form.handleSubmit(onCreateSubmit)} className="space-y-4">
-          <Select
-            label="Usuario"
-            options={userOptions}
-            placeholder="Seleccioná un usuario"
-            error={form.formState.errors.userId?.message}
-            {...form.register('userId', {
-              onChange: (e) => setSelectedUserId(e.target.value),
-            })}
-          />
-          {selectedUser?.hasActiveSanctions && (
-            <div className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700">
-              <strong className="block mb-1">Usuario suspendido</strong>
-              Este usuario tiene sanciones activas y no está autorizado para solicitar préstamos ni hacer reservas.
+      <Modal isOpen={isCreateOpen} onClose={closeCreateModal} title="Nuevo Préstamo" size="lg">
+        <form onSubmit={form.handleSubmit(onCreateSubmit)}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Usuario</label>
+                <input
+                  type="text"
+                  placeholder="Buscá por nombre o email..."
+                  value={userSearch}
+                  onChange={(e) => {
+                    setUserSearch(e.target.value);
+                    setShowUserDropdown(true);
+                  }}
+                  onFocus={() => setShowUserDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowUserDropdown(false), 200)}
+                  className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cara-500"
+                />
+                {showUserDropdown && (
+                  <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
+                    {filteredUserOptions.length === 0 ? (
+                      <p className="px-3 py-2 text-sm text-cara-400">Sin resultados</p>
+                    ) : (
+                      filteredUserOptions.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          className={`w-full text-left px-3 py-2 text-sm hover:bg-cara-50 transition-colors ${
+                            selectedUserId === opt.value ? 'bg-cara-100 font-medium' : ''
+                          }`}
+                          onClick={() => {
+                            setSelectedUserId(opt.value);
+                            setUserSearch(opt.label);
+                            setShowUserDropdown(false);
+                            form.setValue('userId', opt.value, { shouldValidate: true });
+                          }}
+                        >
+                          {opt.label}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+                {form.formState.errors.userId?.message && (
+                  <p className="text-xs text-red-500 mt-1">{form.formState.errors.userId?.message}</p>
+                )}
+                <input type="hidden" name="userId" value={selectedUserId} />
+              </div>
+              {selectedUser?.hasActiveSanctions && (
+                <div className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+                  <strong className="block mb-1">Usuario suspendido</strong>
+                  Este usuario tiene sanciones activas y no está autorizado para solicitar préstamos ni hacer reservas.
+                </div>
+              )}
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Activo</label>
+                <input
+                  type="text"
+                  placeholder="Buscá por código o nombre..."
+                  value={assetSearch}
+                  onChange={(e) => {
+                    setAssetSearch(e.target.value);
+                    setShowAssetDropdown(true);
+                  }}
+                  onFocus={() => setShowAssetDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowAssetDropdown(false), 200)}
+                  className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cara-500"
+                />
+                {showAssetDropdown && (
+                  <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
+                    {filteredAssetOptions.length === 0 ? (
+                      <p className="px-3 py-2 text-sm text-cara-400">Sin resultados</p>
+                    ) : (
+                      filteredAssetOptions.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          className={`w-full text-left px-3 py-2 text-sm hover:bg-cara-50 transition-colors ${
+                            selectedAssetId === opt.value ? 'bg-cara-100 font-medium' : ''
+                          }`}
+                          onClick={() => {
+                            setSelectedAssetId(opt.value);
+                            setAssetSearch(opt.label);
+                            setShowAssetDropdown(false);
+                            form.setValue('assetId', opt.value, { shouldValidate: true });
+                          }}
+                        >
+                          {opt.label}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+                {form.formState.errors.assetId?.message && (
+                  <p className="text-xs text-red-500 mt-1">{form.formState.errors.assetId?.message}</p>
+                )}
+                <input type="hidden" name="assetId" value={selectedAssetId} />
+              </div>
+              {selectedAsset?.imageUrl && (
+                <div className="flex justify-center">
+                  <img
+                    src={selectedAsset.imageUrl}
+                    alt={selectedAsset.name}
+                    className="h-32 w-32 rounded-xl object-cover border shadow-sm"
+                  />
+                </div>
+              )}
+              {selectedAsset && (
+                <p className="text-xs text-cara-500">Máximo {selectedAsset.maxLoanDays} días por préstamo</p>
+              )}
             </div>
-          )}
-          <Select
-            label="Activo"
-            options={assetOptions}
-            placeholder="Seleccioná un activo"
-            error={form.formState.errors.assetId?.message}
-            {...form.register('assetId', {
-              onChange: (e) => setSelectedAssetId(e.target.value),
-            })}
-          />
-          {selectedAsset?.imageUrl && (
-            <div className="flex justify-center">
-              <img
-                src={selectedAsset.imageUrl}
-                alt={selectedAsset.name}
-                className="h-32 w-32 rounded-xl object-cover border shadow-sm"
+
+            <div className="space-y-4">
+              <Input
+                label="Fecha y hora de inicio"
+                type="datetime-local"
+                error={form.formState.errors.startDate?.message}
+                {...form.register('startDate')}
               />
+              <Input
+                label="Fecha y hora de devolución"
+                type="datetime-local"
+                error={form.formState.errors.dueDate?.message}
+                {...form.register('dueDate')}
+              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Observaciones</label>
+                <textarea
+                  className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cara-500"
+                  rows={3}
+                  {...form.register('observations')}
+                />
+              </div>
+              <Input
+                label="Prenda ($)"
+                type="number"
+                step="0.01"
+                min="0"
+                defaultValue="0"
+                error={form.formState.errors.prenda?.message}
+                {...form.register('prenda')}
+              />
+              <div className="flex justify-end gap-3 pt-2">
+                <Button variant="secondary" onClick={() => setIsCreateOpen(false)}>Cancelar</Button>
+                <Button type="submit" isLoading={createLoan.isPending}>Crear</Button>
+              </div>
             </div>
-          )}
-          {selectedAsset && (
-            <p className="text-xs text-cara-500">Máximo {selectedAsset.maxLoanDays} días por préstamo</p>
-          )}
-          <Input
-            label="Fecha y hora de inicio"
-            type="datetime-local"
-            error={form.formState.errors.startDate?.message}
-            {...form.register('startDate')}
-          />
-          <Input
-            label="Fecha y hora de devolución"
-            type="datetime-local"
-            error={form.formState.errors.dueDate?.message}
-            {...form.register('dueDate')}
-          />
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Observaciones</label>
-            <textarea
-              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cara-500"
-              rows={3}
-              {...form.register('observations')}
-            />
-          </div>
-          <Input
-            label="Prenda ($)"
-            type="number"
-            step="0.01"
-            min="0"
-            defaultValue="0"
-            error={form.formState.errors.prenda?.message}
-            {...form.register('prenda')}
-          />
-          <div className="flex justify-end gap-3">
-            <Button variant="secondary" onClick={() => setIsCreateOpen(false)}>Cancelar</Button>
-            <Button type="submit" isLoading={createLoan.isPending}>Crear</Button>
           </div>
         </form>
       </Modal>
@@ -461,10 +573,22 @@ export default function LoansPage() {
 
       <Modal
         isOpen={returnModal.open}
-        onClose={() => { setReturnModal({ id: '', open: false }); setIncidentDescription(''); setIncidentPhotoUrl(''); }}
+        onClose={() => { setReturnModal({ id: '', open: false }); setIncidentDescription(''); setIncidentPhotoUrl(''); setUserRating(0); }}
         title="Devolver Préstamo"
       >
         <div className="space-y-4">
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-cara-700">Valoración del préstamo</p>
+            <ReactStars
+              count={5}
+              value={userRating}
+              onChange={(val: number) => setUserRating(val)}
+              size={32}
+              color2="#facc15"
+              color1="#d1d5db"
+              half={false}
+            />
+          </div>
           <p className="text-sm text-cara-600">¿Hubo algún daño o novedad en la devolución?</p>
           <textarea
             className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none"
@@ -507,7 +631,7 @@ export default function LoansPage() {
             )}
           </div>
           <div className="flex justify-end gap-3">
-            <Button variant="secondary" onClick={() => { setReturnModal({ id: '', open: false }); setIncidentDescription(''); setIncidentPhotoUrl(''); }}>
+            <Button variant="secondary" onClick={() => { setReturnModal({ id: '', open: false }); setIncidentDescription(''); setIncidentPhotoUrl(''); setUserRating(0); }}>
               Cancelar
             </Button>
             <Button onClick={handleReturn} isLoading={returnLoan.isPending}>

@@ -72,6 +72,10 @@ public class CreateReservationCommandHandler : IRequestHandler<CreateReservation
         _context.Reservations.Add(reservation);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+        // Set asset navigation manually since the saved entity doesn't include it
+        var db = (DbContext)_context;
+        await db.Entry(reservation).Reference(r => r.Asset).LoadAsync(cancellationToken);
+
         await _notificationService.NotifyReservationCreatedAsync(reservation, cancellationToken);
 
         return _mapper.Map<ReservationDto>(reservation);

@@ -1,21 +1,23 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useRef } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { Modal } from '@/components/ui/Modal';
 import { Select } from '@/components/ui/Select';
-import { FileText, Download, Search, Users, Package, BookOpen, ThumbsUp } from 'lucide-react';
+import { FileText, Download, Users, Package, BookOpen, ThumbsUp, Undo2, ArrowRightCircle, File } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { User } from '@/types';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart as RePieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine, ResponsiveContainer, PieChart as RePieChart, Pie, Cell } from 'recharts';
 import ReactStars from 'react-stars';
 import clsx from 'clsx';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 interface UserHistory {
   id: string; fullName: string; institutionalEmail: string; role: string; isActive: boolean;
+  userAverageRating: number | null;
   loans: any[]; incidents: any[]; sanctions: any[];
 }
 
@@ -26,6 +28,7 @@ interface ReportStats {
     careerStats: { career: string; count: number }[];
     usageTime: { asset: string; averageHours: number }[];
     surveyByAsset: { asset: string; count: number; avgRating: number }[];
+    incidentStats: { totalIncidents: number; unresolvedIncidents: number; assetsWithIncidents: number; topIncidentAssets: { asset: string; count: number }[] };
 }
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
@@ -38,8 +41,9 @@ const reports = [
   { title: 'Encuestas de Satisfacción', description: 'Resultados de encuestas completadas por usuarios', endpoint: 'surveys/csv', filename: 'encuestas.csv' },
 ];
 
-const StatCard = ({ label, value, icon: Icon, color }: { label: string, value: number, icon: any, color: string }) => (
-    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+const StatCard = ({ label, value, icon: Icon, color, accentColor }: { label: string, value: number, icon: any, color: string, accentColor?: string }) => (
+    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 relative overflow-hidden">
+      <div className={`absolute left-0 top-0 bottom-0 w-1 ${accentColor || 'bg-transparent'}`} />
       <div className={`rounded-xl p-3 ${color}`}>
         <Icon className="h-6 w-6" />
       </div>
@@ -53,15 +57,39 @@ const StatCard = ({ label, value, icon: Icon, color }: { label: string, value: n
 export default function ReportsPage() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'Admin';
-  const [historyModalOpen, setHistoryModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState('');
-  const [activeTab, setActiveTab] = useState<'graphics' | 'csv'>('graphics');
+  const historyRef = useRef<HTMLDivElement>(null);
+  const [activeTab, setActiveTab] = useState<'graphics' | 'csv' | 'prenda' | 'historial'>('graphics');
 
   const { data: stats } = useQuery<ReportStats>({
     queryKey: ['report-stats'],
     queryFn: async () => {
       const { data } = await api.get('/reports/statistics');
       return data;
+    },
+  });
+
+  const queryClient = useQueryClient();
+
+  const { data: prendaStats } = useQuery({
+    queryKey: ['prenda-stats'],
+    queryFn: async () => {
+      const { data } = await api.get('/reports/prenda-stats');
+      return data;
+    },
+  });
+
+  const togglePrendaReturn = useMutation({
+    mutationFn: async (params: { loanId: string; returned: boolean }) => {
+      const endpoint = params.returned ? 'prenda-return' : 'prenda-unreturn';
+      await api.post(`/loans/${params.loanId}/${endpoint}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['prenda-stats'] });
+      toast.success('Estado de prenda actualizado');
+    },
+    onError: () => {
+      toast.error('Error al actualizar la prenda');
     },
   });
 
@@ -109,6 +137,42 @@ export default function ReportsPage() {
     await handleExport(`user-history/${selectedUserId}/csv`, `historial-${user?.fullName ?? selectedUserId}.csv`);
   };
 
+  const handleExportUserHistoryPdf = async () => {
+    if (!userHistory || !historyRef.current) return;
+    try {
+      toast.loading('Generando PDF...');
+      const canvas = await html2canvas(historyRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+      });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 190;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 10;
+
+      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+      heightLeft -= pdf.internal.pageSize.getHeight() - 20;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight + 10;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+        heightLeft -= pdf.internal.pageSize.getHeight() - 20;
+      }
+
+      const fileName = `historial-${userHistory.fullName.replace(/\s+/g, '_')}.pdf`;
+      pdf.save(fileName);
+      toast.dismiss();
+      toast.success('PDF descargado');
+    } catch {
+      toast.dismiss();
+      toast.error('Error al generar el PDF');
+    }
+  };
+
   const userOptions = (users ?? []).map((u) => ({
     value: u.id,
     label: `${u.fullName} (${u.institutionalEmail})`,
@@ -118,27 +182,21 @@ export default function ReportsPage() {
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-cara-900">Reportes y Estadísticas</h1>
-        {isAdmin && (
-          <Button variant="secondary" size="sm" onClick={() => setHistoryModalOpen(true)}>
-              <Search className="h-4 w-4 mr-2" />
-              Historial de Usuario
-          </Button>
-        )}
       </div>
 
       {/* Tabs */}
       <div className="border-b border-gray-200">
         <nav className="flex gap-4">
-            {['graphics', 'csv'].map((tab) => (
+            {(isAdmin ? (['graphics', 'prenda', 'historial', 'csv'] as const) : (['graphics', 'prenda', 'csv'] as const)).map((tab) => (
                 <button
                     key={tab}
-                    onClick={() => setActiveTab(tab as 'graphics' | 'csv')}
+                    onClick={() => setActiveTab(tab)}
                     className={clsx(
                         "py-3 px-4 border-b-2 font-medium text-sm transition-colors capitalize",
                         activeTab === tab ? "border-cara-600 text-cara-600" : "border-transparent text-gray-500 hover:text-gray-700"
                     )}
                 >
-                    {tab === 'graphics' ? 'Estadísticas' : 'Reportes CSV'}
+                    {tab === 'graphics' ? 'Estadísticas' : tab === 'prenda' ? 'Prendas' : tab === 'historial' ? 'Historial de Usuarios' : 'Reportes CSV'}
                 </button>
             ))}
         </nav>
@@ -149,10 +207,10 @@ export default function ReportsPage() {
             {/* KPI Cards */}
             {stats && stats.kpIs && (
                 <div className="grid gap-6 md:grid-cols-4">
-                    <StatCard label="Total Activos" value={stats.kpIs.totalAssets} icon={Package} color="text-blue-600 bg-blue-50" />
-                    <StatCard label="Préstamos Activos" value={stats.kpIs.activeLoans} icon={BookOpen} color="text-amber-600 bg-amber-50" />
-                    <StatCard label="Usuarios Totales" value={stats.kpIs.totalUsers} icon={Users} color="text-green-600 bg-green-50" />
-                    <StatCard label="Encuestas Realizadas" value={stats.kpIs.totalSurveys} icon={ThumbsUp} color="text-purple-600 bg-purple-50" />
+                    <StatCard label="Total Activos" value={stats.kpIs.totalAssets} icon={Package} color="text-blue-600 bg-blue-50" accentColor="bg-blue-500" />
+                    <StatCard label="Préstamos Activos" value={stats.kpIs.activeLoans} icon={BookOpen} color="text-amber-600 bg-amber-50" accentColor="bg-amber-500" />
+                    <StatCard label="Usuarios Totales" value={stats.kpIs.totalUsers} icon={Users} color="text-green-600 bg-green-50" accentColor="bg-green-500" />
+                    <StatCard label="Encuestas Realizadas" value={stats.kpIs.totalSurveys} icon={ThumbsUp} color="text-purple-600 bg-purple-50" accentColor="bg-purple-500" />
                 </div>
             )}
 
@@ -183,6 +241,39 @@ export default function ReportsPage() {
                     </div>
                   ))}
                 </div>
+              </Card>
+            )}
+
+            {/* Incident Stats */}
+            {stats && stats.incidentStats && (
+              <Card title="Incidentes / Instrumentos Rotos">
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-cara-700">{stats.incidentStats.totalIncidents}</p>
+                    <p className="text-xs text-cara-500">Total Incidentes</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-danger">{stats.incidentStats.unresolvedIncidents}</p>
+                    <p className="text-xs text-cara-500">Sin Resolver</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-cara-700">{stats.incidentStats.assetsWithIncidents}</p>
+                    <p className="text-xs text-cara-500">Activos Afectados</p>
+                  </div>
+                </div>
+                {stats.incidentStats.topIncidentAssets.length > 0 && (
+                  <div>
+                    <p className="text-sm font-semibold text-cara-700 mb-2">Activos con más incidentes</p>
+                    <div className="space-y-2">
+                      {stats.incidentStats.topIncidentAssets.map((item: any, i: number) => (
+                        <div key={i} className="flex items-center justify-between text-sm">
+                          <span className="text-cara-800">{item.asset}</span>
+                          <span className="font-semibold text-cara-600">{item.count}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </Card>
             )}
 
@@ -229,55 +320,174 @@ export default function ReportsPage() {
                 </div>
             )}
         </div>
-      ) : (
-        /* Export Reports Tab */
-        <div className="grid gap-4 sm:grid-cols-2">
-            {reports.map((report) => (
-            <Card key={report.title} title={report.title} subtitle={report.description}>
-                <div className="flex items-center gap-3">
-                <div className="rounded-lg bg-cara-100 p-2">
-                    <FileText className="h-5 w-5 text-cara-600" />
-                </div>
-                <Button variant="secondary" size="sm" onClick={() => handleExport(report.endpoint, report.filename)}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Exportar CSV
-                </Button>
-                </div>
-            </Card>
-            ))}
-        </div>
-      )}
-
-      <Modal isOpen={historyModalOpen} onClose={() => { setHistoryModalOpen(false); setSelectedUserId(''); }} title="Historial de Usuario" size="lg">
-        <div className="space-y-4">
-          <div className="flex gap-3 items-end">
-            <div className="flex-1">
-              <Select
-                label="Seleccioná un usuario"
-                options={userOptions}
-                placeholder="Buscar usuario..."
-                value={selectedUserId}
-                onChange={(e) => setSelectedUserId(e.target.value)}
-              />
+      ) : activeTab === 'prenda' ? (
+        /* Prendas Tab */
+        <div className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-4">
+            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500" />
+              <p className="text-3xl font-extrabold text-gray-900">${prendaStats?.totalPrenda.toFixed(2) ?? '0.00'}</p>
+              <p className="text-sm text-gray-500 font-medium">Total en Prendas</p>
             </div>
-            {selectedUserId && (
-              <Button variant="secondary" size="sm" onClick={handleExportUserHistory}>
-                <Download className="h-4 w-4 mr-2" />
-                CSV
-              </Button>
-            )}
+            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-purple-500" />
+              <p className="text-3xl font-extrabold text-gray-900">{prendaStats?.totalWithPrenda ?? 0}</p>
+              <p className="text-sm text-gray-500 font-medium">Préstamos con Prenda</p>
+            </div>
+            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-teal-500" />
+              <p className="text-3xl font-extrabold text-gray-900">${prendaStats?.averagePrenda.toFixed(2) ?? '0.00'}</p>
+              <p className="text-sm text-gray-500 font-medium">Promedio por Prenda</p>
+            </div>
+            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
+              <div className={clsx('absolute left-0 top-0 bottom-0 w-1', (prendaStats?.saldoPendiente ?? 0) > 0 ? 'bg-amber-500' : 'bg-green-500')} />
+              <p className={clsx('text-3xl font-extrabold', (prendaStats?.saldoPendiente ?? 0) > 0 ? 'text-amber-600' : 'text-green-600')}>
+                ${prendaStats?.saldoPendiente.toFixed(2) ?? '0.00'}
+              </p>
+              <p className="text-sm text-gray-500 font-medium">Saldo Pendiente</p>
+            </div>
           </div>
+
+          <Card title="Últimos préstamos con prenda">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-cara-200">
+                <thead className="bg-cara-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-cara-600">Activo</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-cara-600">Usuario</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-cara-600">Prenda</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-cara-600">Retiro</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-cara-600">Fecha</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-cara-600">Estado</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-cara-100">
+                  {(prendaStats?.recent ?? []).map((r: any, i: number) => (
+                    <tr key={i} className="hover:bg-cara-50 transition-colors">
+                      <td className="px-4 py-3 text-sm text-cara-800">{r.assetCode} - {r.assetName}</td>
+                      <td className="px-4 py-3 text-sm text-cara-800">{r.userName}</td>
+                      <td className="px-4 py-3 text-sm text-cara-800 font-medium">${r.prenda.toFixed(2)}</td>
+                      <td className="px-4 py-3">
+                        {r.prendaReturned ? (
+                          <span className="inline-flex items-center gap-1 text-xs text-green-600 font-medium">
+                            <Undo2 className="h-3 w-3" />
+                            Devuelta
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-xs text-amber-600 font-medium">
+                            <ArrowRightCircle className="h-3 w-3" />
+                            Pendiente
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-cara-500">{new Date(r.requestedAt).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <Badge status={r.status} />
+                          <button
+                            onClick={() => togglePrendaReturn.mutate({ loanId: r.id, returned: !r.prendaReturned })}
+                            className="text-xs text-cara-500 hover:text-cara-700 underline"
+                            title={r.prendaReturned ? 'Marcar como no devuelta' : 'Marcar como devuelta'}
+                          >
+                            {r.prendaReturned ? 'Anular' : 'Retirar'}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {(!prendaStats?.recent || prendaStats.recent.length === 0) && (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-8 text-center text-sm text-cara-400">Sin préstamos con prenda</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </div>
+      ) : activeTab === 'historial' ? (
+        /* Historial de Usuarios Tab */
+        <div className="space-y-4">
+          <Card>
+            <div className="flex gap-3 items-end">
+              <div className="flex-1">
+                <Select
+                  label="Seleccioná un usuario"
+                  options={userOptions}
+                  placeholder="Buscar usuario..."
+                  value={selectedUserId}
+                  onChange={(e) => setSelectedUserId(e.target.value)}
+                />
+              </div>
+              {selectedUserId && (
+                <div className="flex gap-2">
+                  <Button variant="secondary" size="sm" onClick={handleExportUserHistory}>
+                    <Download className="h-4 w-4 mr-2" />
+                    CSV
+                  </Button>
+                  <Button variant="secondary" size="sm" onClick={handleExportUserHistoryPdf} disabled={!userHistory}>
+                    <File className="h-4 w-4 mr-2" />
+                    PDF
+                  </Button>
+                </div>
+              )}
+            </div>
+          </Card>
 
           {historyLoading && <p className="text-sm text-cara-500">Cargando historial...</p>}
 
           {userHistory && (
-            <div className="space-y-6 max-h-[60vh] overflow-y-auto">
+            <div className="space-y-6" ref={historyRef}>
               <div className="rounded-lg border border-cara-200 bg-cara-50 p-4">
-                <h3 className="font-semibold text-cara-900">{userHistory.fullName}</h3>
-                <p className="text-sm text-cara-600">{userHistory.institutionalEmail} · {userHistory.role}</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="font-semibold text-cara-900">{userHistory.fullName}</h3>
+                    <p className="text-sm text-cara-600">{userHistory.institutionalEmail} · {userHistory.role}</p>
+                    {userHistory.userAverageRating != null && (
+                      <div className="mt-2 flex items-center gap-2">
+                        <span className="text-sm text-cara-600">Calificación promedio:</span>
+                        <ReactStars
+                          count={5}
+                          value={userHistory.userAverageRating}
+                          size={20}
+                          color2="#f59e0b"
+                          color1="#d1d5db"
+                          edit={false}
+                          half
+                        />
+                        <span className="text-xs text-cara-500">({userHistory.userAverageRating.toFixed(1)})</span>
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold text-cara-700 mb-2">Duración de préstamos (horas)</h4>
+                    {(() => {
+                      const chartData = userHistory.loans
+                        .filter((l: any) => l.startDate && (l.returnedAt || l.dueDate))
+                        .map((l: any) => {
+                          const end = l.returnedAt || l.dueDate;
+                          const diff = Math.round((new Date(end).getTime() - new Date(l.startDate).getTime()) / (1000 * 60 * 60));
+                          return { name: l.assetName?.length > 20 ? l.assetName.slice(0, 18) + '...' : l.assetName || 'N/A', días: Math.max(diff, 0) };
+                        });
+                      const mean = chartData.reduce((s: number, d: any) => s + d.días, 0) / chartData.length;
+                      return chartData.length > 0 ? (
+                        <ResponsiveContainer width="100%" height={140}>
+                          <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                            <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-20} textAnchor="end" height={30} />
+                            <YAxis tick={{ fontSize: 10 }} />
+                            <Tooltip contentStyle={{ fontSize: 12 }} />
+                            <Bar dataKey="días" fill="#0ea5e9" radius={[2, 2, 0, 0]} />
+                            <ReferenceLine y={mean} stroke="#ef4444" strokeDasharray="4 4" label={{ value: `Media: ${mean.toFixed(1)}h`, position: 'right', fontSize: 10, fill: '#ef4444' }} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <p className="text-xs text-cara-400 italic">Sin datos</p>
+                      );
+                    })()}
+                  </div>
+                </div>
               </div>
 
-              {/* Préstamos */}
               <div>
                 <h4 className="font-semibold text-cara-800 mb-2">Préstamos ({userHistory.loans.length})</h4>
                 <div className="space-y-2">
@@ -301,7 +511,6 @@ export default function ReportsPage() {
                 </div>
               </div>
 
-              {/* Incidentes */}
               <div>
                 <h4 className="font-semibold text-cara-800 mb-2">Incidentes ({userHistory.incidents.length})</h4>
                 <div className="space-y-2">
@@ -318,7 +527,6 @@ export default function ReportsPage() {
                 </div>
               </div>
 
-              {/* Sanciones */}
               <div>
                 <h4 className="font-semibold text-cara-800 mb-2">Sanciones ({userHistory.sanctions.length})</h4>
                 <div className="space-y-2">
@@ -334,7 +542,25 @@ export default function ReportsPage() {
             </div>
           )}
         </div>
-      </Modal>
+      ) : (
+        /* Export Reports Tab */
+        <div className="grid gap-4 sm:grid-cols-2">
+            {reports.map((report) => (
+            <Card key={report.title} title={report.title} subtitle={report.description}>
+                <div className="flex items-center gap-3">
+                <div className="rounded-lg bg-cara-100 p-2">
+                    <FileText className="h-5 w-5 text-cara-600" />
+                </div>
+                <Button variant="secondary" size="sm" onClick={() => handleExport(report.endpoint, report.filename)}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Exportar CSV
+                </Button>
+                </div>
+            </Card>
+            ))}
+        </div>
+      )}
+
     </div>
   );
 }

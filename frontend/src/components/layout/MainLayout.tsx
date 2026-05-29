@@ -32,7 +32,7 @@ import api from '@/services/api';
 import { useTheme } from '@/hooks/useTheme';
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Dashboard', roles: ['Admin', 'Staff', 'Teacher', 'Student'] },
+  { to: '/', icon: LayoutDashboard, label: 'Panel de Control', roles: ['Admin', 'Staff', 'Teacher', 'Student'] },
   { to: '/assets', icon: Package, label: 'Activos', roles: ['Admin', 'Staff'] },
   { to: '/assets/import', icon: Upload, label: 'Importar', roles: ['Admin'] },
   { to: '/my-loans', icon: BookOpen, label: 'Mis Préstamos', roles: ['Teacher', 'Student'] },

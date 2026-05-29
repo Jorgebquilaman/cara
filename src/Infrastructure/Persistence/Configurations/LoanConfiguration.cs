@@ -41,12 +41,21 @@ public class LoanConfiguration : IEntityTypeConfiguration<Loan>
             .HasDefaultValue(0)
             .HasColumnType("decimal(18,2)");
 
+        builder.Property(l => l.PrendaReturned)
+            .HasDefaultValue(false);
+
+        builder.Property(l => l.PrendaReturnedAt)
+            .HasColumnType("timestamp with time zone");
+
         builder.Property(l => l.RequestedAt)
             .IsRequired();
 
         builder.Property(l => l.ApprovedAt);
         builder.Property(l => l.ReturnedAt);
         builder.Property(l => l.ApprovedBy);
+        builder.Property(l => l.UserRating);
+        builder.Property(l => l.UserRatingComment)
+            .HasMaxLength(500);
 
         builder.HasOne(l => l.Asset)
             .WithMany(a => a.Loans)

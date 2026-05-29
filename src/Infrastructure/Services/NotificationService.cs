@@ -129,7 +129,7 @@ public class NotificationService : INotificationService
             reservation.UserId,
             NotificationType.ReservationCreated,
             "Reserva Creada",
-            $"Tu reserva del espacio {reservation.Space} para el {reservation.StartDate:dd/MM/yyyy} fue creada exitosamente.",
+            $"Reservaste {reservation.Asset.Name} en {reservation.Space} del {reservation.StartDate:dd/MM/yyyy HH:mm} al {reservation.EndDate:dd/MM/yyyy HH:mm}.",
             reservation.Id.ToString());
 
         await SendNotificationAsync(notification, cancellationToken);
@@ -141,7 +141,7 @@ public class NotificationService : INotificationService
             reservation.UserId,
             NotificationType.ReservationConfirmed,
             "Reserva Confirmada",
-            $"Tu reserva del espacio {reservation.Space} fue confirmada.",
+            $"Tu reserva de {reservation.Asset.Name} en {reservation.Space} del {reservation.StartDate:dd/MM/yyyy HH:mm} al {reservation.EndDate:dd/MM/yyyy HH:mm} fue confirmada.",
             reservation.Id.ToString());
 
         await SendNotificationAsync(notification, cancellationToken);
@@ -153,7 +153,7 @@ public class NotificationService : INotificationService
             reservation.UserId,
             NotificationType.ReservationCancelled,
             "Reserva Cancelada",
-            $"Tu reserva del espacio {reservation.Space} del {reservation.StartDate:dd/MM/yyyy} fue cancelada.",
+            $"Tu reserva de {reservation.Asset.Name} en {reservation.Space} del {reservation.StartDate:dd/MM/yyyy HH:mm} al {reservation.EndDate:dd/MM/yyyy HH:mm} fue cancelada.",
             reservation.Id.ToString());
 
         await SendNotificationAsync(notification, cancellationToken);
