@@ -24,6 +24,7 @@ interface UserHistory {
 interface ReportStats {
     kpIs: { totalAssets: number; activeLoans: number; totalUsers: number; totalSurveys: number; avgOverallRating: number; avgServiceRating: number; avgRequestTimeRating: number; avgAssetQualityRating: number };
     mostRequested: { name: string; count: number }[];
+    topUsedAssets: { code: string; name: string; description: string | null; count: number }[];
     departmentStats: { department: string; count: number }[];
     careerStats: { career: string; count: number }[];
     usageTime: { asset: string; averageHours: number }[];
@@ -59,6 +60,8 @@ export default function ReportsPage() {
   const isAdmin = user?.role === 'Admin';
   const [selectedUserId, setSelectedUserId] = useState('');
   const historyRef = useRef<HTMLDivElement>(null);
+  const topAssetsRef = useRef<HTMLDivElement>(null);
+  const incidentsRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<'graphics' | 'csv' | 'prenda' | 'historial'>('graphics');
 
   const { data: stats } = useQuery<ReportStats>({
@@ -173,6 +176,112 @@ export default function ReportsPage() {
     }
   };
 
+  const handleExportTopAssets = () => {
+    if (!stats?.topUsedAssets) return;
+    const header = 'Código,Nombre,Descripción,Usos';
+    const rows = stats.topUsedAssets.map(a =>
+      `"${a.code}","${a.name}","${(a.description || '').replace(/"/g, '""')}","${a.count}"`
+    ).join('\n');
+    const blob = new Blob(['\uFEFF' + header + '\n' + rows], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'activos-mas-usados.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    toast.success('Reporte descargado');
+  };
+
+  const handleExportTopAssetsPdf = async () => {
+    if (!stats?.topUsedAssets || !topAssetsRef.current) return;
+    try {
+      toast.loading('Generando PDF...');
+      const canvas = await html2canvas(topAssetsRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+      });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 190;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 10;
+
+      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+      heightLeft -= pdf.internal.pageSize.getHeight() - 20;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight + 10;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+        heightLeft -= pdf.internal.pageSize.getHeight() - 20;
+      }
+
+      pdf.save('activos-mas-usados.pdf');
+      toast.dismiss();
+      toast.success('PDF descargado');
+    } catch {
+      toast.dismiss();
+      toast.error('Error al generar el PDF');
+    }
+  };
+
+  const handleExportIncidents = () => {
+    if (!stats?.incidentStats) return;
+    const header = 'Activo,Cantidad de Incidentes';
+    const rows = stats.incidentStats.topIncidentAssets.map(a =>
+      `"${a.asset}","${a.count}"`
+    ).join('\n');
+    const blob = new Blob(['\uFEFF' + header + '\n' + rows], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'incidentes.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    toast.success('Reporte descargado');
+  };
+
+  const handleExportIncidentsPdf = async () => {
+    if (!stats?.incidentStats || !incidentsRef.current) return;
+    try {
+      toast.loading('Generando PDF...');
+      const canvas = await html2canvas(incidentsRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+      });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 190;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 10;
+
+      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+      heightLeft -= pdf.internal.pageSize.getHeight() - 20;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight + 10;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+        heightLeft -= pdf.internal.pageSize.getHeight() - 20;
+      }
+
+      pdf.save('incidentes.pdf');
+      toast.dismiss();
+      toast.success('PDF descargado');
+    } catch {
+      toast.dismiss();
+      toast.error('Error al generar el PDF');
+    }
+  };
+
   const userOptions = (users ?? []).map((u) => ({
     value: u.id,
     label: `${u.fullName} (${u.institutionalEmail})`,
@@ -244,37 +353,81 @@ export default function ReportsPage() {
               </Card>
             )}
 
-            {/* Incident Stats */}
+            {/* Incident Stats + Top Used Assets */}
             {stats && stats.incidentStats && (
-              <Card title="Incidentes / Instrumentos Rotos">
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-cara-700">{stats.incidentStats.totalIncidents}</p>
-                    <p className="text-xs text-cara-500">Total Incidentes</p>
+              <div className="grid gap-6 lg:grid-cols-2">
+                <Card title="Incidentes / Instrumentos Rotos" action={
+                  <div className="flex gap-2">
+                    <Button variant="secondary" size="sm" onClick={handleExportIncidents}>
+                      <Download className="h-4 w-4 mr-1" /> CSV
+                    </Button>
+                    <Button variant="secondary" size="sm" onClick={handleExportIncidentsPdf}>
+                      <File className="h-4 w-4 mr-1" /> PDF
+                    </Button>
                   </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-danger">{stats.incidentStats.unresolvedIncidents}</p>
-                    <p className="text-xs text-cara-500">Sin Resolver</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-cara-700">{stats.incidentStats.assetsWithIncidents}</p>
-                    <p className="text-xs text-cara-500">Activos Afectados</p>
-                  </div>
-                </div>
-                {stats.incidentStats.topIncidentAssets.length > 0 && (
-                  <div>
-                    <p className="text-sm font-semibold text-cara-700 mb-2">Activos con más incidentes</p>
-                    <div className="space-y-2">
-                      {stats.incidentStats.topIncidentAssets.map((item: any, i: number) => (
-                        <div key={i} className="flex items-center justify-between text-sm">
-                          <span className="text-cara-800">{item.asset}</span>
-                          <span className="font-semibold text-cara-600">{item.count}</span>
-                        </div>
-                      ))}
+                }>
+                  <div ref={incidentsRef}>
+                  <div className="grid grid-cols-3 gap-4 mb-6">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-cara-700">{stats.incidentStats.totalIncidents}</p>
+                      <p className="text-xs text-cara-500">Total Incidentes</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-danger">{stats.incidentStats.unresolvedIncidents}</p>
+                      <p className="text-xs text-cara-500">Sin Resolver</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-cara-700">{stats.incidentStats.assetsWithIncidents}</p>
+                      <p className="text-xs text-cara-500">Activos Afectados</p>
                     </div>
                   </div>
-                )}
-              </Card>
+                  {stats.incidentStats.topIncidentAssets.length > 0 && (
+                    <div>
+                      <p className="text-sm font-semibold text-cara-700 mb-2">Activos con más incidentes</p>
+                      <div className="space-y-2">
+                        {stats.incidentStats.topIncidentAssets.map((item: any, i: number) => (
+                          <div key={i} className="flex items-center justify-between text-sm">
+                            <span className="text-cara-800">{item.asset}</span>
+                            <span className="font-semibold text-cara-600">{item.count}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  </div>
+                </Card>
+
+                <Card title="Activos más usados" subtitle="Top 10" action={
+                  <div className="flex gap-2">
+                    <Button variant="secondary" size="sm" onClick={handleExportTopAssets}>
+                      <Download className="h-4 w-4 mr-1" /> CSV
+                    </Button>
+                    <Button variant="secondary" size="sm" onClick={handleExportTopAssetsPdf}>
+                      <File className="h-4 w-4 mr-1" /> PDF
+                    </Button>
+                  </div>
+                }>
+                  <div ref={topAssetsRef}>
+                    <div className="space-y-3">
+                    {stats.topUsedAssets.map((item, i) => (
+                      <div key={i} className="flex items-start gap-3 text-sm border-b border-gray-100 dark:border-gray-700 pb-2 last:border-0 last:pb-0">
+                        <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-cara-100 dark:bg-cara-800 text-cara-600 dark:text-cara-300 flex items-center justify-center text-xs font-bold">
+                          {i + 1}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-cara-800 dark:text-cara-200 truncate">{item.name}</p>
+                          <p className="text-xs text-cara-400 font-mono">{item.code}</p>
+                          {item.description && (
+                            <p className="text-xs text-cara-500 mt-0.5 line-clamp-2">{item.description}</p>
+                          )}
+                        </div>
+                        <span className="flex-shrink-0 font-semibold text-cara-600 dark:text-cara-300">{item.count} usos</span>
+                      </div>
+                    ))}
+                    </div>
+                  </div>
+                </Card>
+              </div>
             )}
 
             {/* Charts */}

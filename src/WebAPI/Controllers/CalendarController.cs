@@ -23,7 +23,9 @@ public class CalendarController : ControllerBase
     public async Task<IActionResult> GetEvents(
         [FromQuery] DateTime start,
         [FromQuery] DateTime end,
-        [FromQuery] Guid? assetId = null)
+        [FromQuery] Guid? assetId = null,
+        [FromQuery] string? typeId = null,
+        [FromQuery] string? eventStatus = null)
     {
         var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
@@ -42,6 +44,31 @@ public class CalendarController : ControllerBase
         {
             loansQuery = loansQuery.Where(l => l.AssetId == assetId.Value);
             reservationsQuery = reservationsQuery.Where(r => r.AssetId == assetId.Value);
+        }
+
+        if (!string.IsNullOrEmpty(typeId))
+        {
+            if (typeId == "Loan")
+                reservationsQuery = reservationsQuery.Where(r => false);
+            else if (typeId == "Reservation")
+                loansQuery = loansQuery.Where(l => false);
+        }
+
+        if (!string.IsNullOrEmpty(eventStatus))
+        {
+            loansQuery = loansQuery.Where(l =>
+                l.Status == LoanStatus.Pending && eventStatus == "Pendiente" ||
+                l.Status == LoanStatus.Approved && eventStatus == "Aprobado" ||
+                l.Status == LoanStatus.Active && eventStatus == "Activo" ||
+                l.Status == LoanStatus.Overdue && eventStatus == "Vencido" ||
+                l.Status == LoanStatus.Returned && eventStatus == "Devuelto" ||
+                l.Status == LoanStatus.Rejected && eventStatus == "Rechazado");
+
+            reservationsQuery = reservationsQuery.Where(r =>
+                r.Status == ReservationStatus.Pending && eventStatus == "Pendiente" ||
+                r.Status == ReservationStatus.Confirmed && eventStatus == "Confirmada" ||
+                r.Status == ReservationStatus.Cancelled && eventStatus == "Cancelada" ||
+                r.Status == ReservationStatus.Completed && eventStatus == "Completada");
         }
 
         if (userRole != "Admin" && userRole != "Staff")

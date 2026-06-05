@@ -68,6 +68,8 @@ export default function UsersPage() {
   const [formCareers, setFormCareers] = useState<Career[]>([]);
   const [editCareers, setEditCareers] = useState<Career[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [sortKey, setSortKey] = useState('');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const pageSize = 10;
   const searchTimeout = useRef<ReturnType<typeof setTimeout>>();
 
@@ -159,8 +161,15 @@ export default function UsersPage() {
           u.dni.toLowerCase().includes(q)
       );
     }
+    if (sortKey) {
+      result = [...result].sort((a, b) => {
+        const aVal = String((a as any)[sortKey] ?? '');
+        const bVal = String((b as any)[sortKey] ?? '');
+        return sortDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      });
+    }
     return result;
-  }, [allUsers, roleFilter, search]);
+  }, [allUsers, roleFilter, search, sortKey, sortDir]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
@@ -176,6 +185,15 @@ export default function UsersPage() {
   const handleRoleChange = (value: string) => {
     setRoleFilter(value);
     setPage(1);
+  };
+
+  const handleSort = (key: string) => {
+    if (sortKey === key) {
+      setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
   };
 
   const exportExcel = () => {
@@ -226,31 +244,33 @@ export default function UsersPage() {
   };
 
   const columns = [
-    { key: 'fullName', header: 'Nombre' },
-    { key: 'institutionalEmail', header: 'Email' },
-    { key: 'dni', header: 'DNI' },
+    { key: 'fullName', header: 'Nombre', sortable: true },
+    { key: 'institutionalEmail', header: 'Email', sortable: true },
+    { key: 'dni', header: 'DNI', sortable: true },
     {
       key: 'phoneNumber',
       header: 'Teléfono',
       render: (u: User) => u.phoneNumber || <span className="text-cara-400">—</span>,
     },
     {
-      key: 'career',
+      key: 'careerName',
       header: 'Carrera / Depto',
+      sortable: true,
       render: (u: User) => {
         if (u.careerName) return u.careerName;
         if (u.departmentName) return <span className="text-cara-400">{u.departmentName}</span>;
         return <span className="text-cara-400">—</span>;
       },
     },
-    { key: 'role', header: 'Rol', render: (u: User) => <Badge status={u.role} /> },
+    { key: 'role', header: 'Rol', sortable: true, render: (u: User) => <Badge status={u.role} /> },
     {
       key: 'isActive',
       header: 'Activo',
+      sortable: true,
       render: (u: User) => (u.isActive ? 'Sí' : 'No'),
     },
-    { key: 'activeLoanCount', header: 'Préstamos Activos' },
-    { key: 'hasActiveSanctions', header: 'Sanciones', render: (u: User) => (u.hasActiveSanctions ? 'Sí' : 'No') },
+    { key: 'activeLoanCount', header: 'Préstamos Activos', sortable: true },
+    { key: 'hasActiveSanctions', header: 'Sanciones', sortable: true, render: (u: User) => (u.hasActiveSanctions ? 'Sí' : 'No') },
     {
       key: 'acciones',
       header: '',
@@ -326,6 +346,9 @@ export default function UsersPage() {
           keyExtractor={(u) => u.id}
           isLoading={isLoading}
           emptyMessage="No se encontraron usuarios"
+          sortKey={sortKey}
+          sortDir={sortDir}
+          onSort={handleSort}
         />
         <Pagination
           pageNumber={page}

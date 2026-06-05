@@ -187,6 +187,11 @@ public class ReportsController : ControllerBase
             .OrderByDescending(g => g.Count)
             .Take(10);
 
+        var topUsedAssets = loans.GroupBy(l => new { l.Asset.Code, l.Asset.Name, l.Asset.Description })
+            .Select(g => new { g.Key.Code, g.Key.Name, g.Key.Description, Count = g.Count() })
+            .OrderByDescending(g => g.Count)
+            .Take(10);
+
         var deptStats = loans.Where(l => l.User.Career != null)
             .GroupBy(l => l.User.Career!.Department.Name)
             .Select(g => new { Department = g.Key, Count = g.Count() });
@@ -249,6 +254,7 @@ public class ReportsController : ControllerBase
                 AvgAssetQualityRating = Math.Round(avgQuality, 1)
             },
             MostRequested = mostRequested, 
+            TopUsedAssets = topUsedAssets,
             DepartmentStats = deptStats, 
             CareerStats = careerStats,
             UsageTime = usageTime,
