@@ -10,6 +10,7 @@ using Application.Features.Loans.Queries.GetManagedLoans;
 using Application.Features.Loans.Queries.GetPastDueLoans;
 using Application.Features.Loans.Queries.GetUserLoans;
 using Application.Features.Loans.Commands.PickUpLoan;
+using Application.Features.Loans.Commands.PickUpLoanWithContract;
 using Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -88,6 +89,18 @@ public class LoansController : ControllerBase
         var userId = Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
         await _mediator.Send(new RejectLoanCommand(id, userId, dto.Reason));
         return NoContent();
+    }
+
+    [HttpPost("{id:guid}/pickup-with-contract")]
+    [Authorize(Roles = "Admin,Staff")]
+    public async Task<ActionResult<ContractDto>> PickUpWithContract(Guid id, [FromQuery] Guid? templateId)
+    {
+        var command = new PickUpLoanWithContractCommand(id);
+        if (templateId.HasValue)
+            command = command with { TemplateId = templateId };
+
+        var contract = await _mediator.Send(command);
+        return Ok(contract);
     }
 
     [HttpGet("past-due")]

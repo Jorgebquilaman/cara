@@ -166,3 +166,19 @@ export interface UserDashboardData {
   cancelledReservations: number;
   recentReservations: Reservation[];
 }
+
+export type ContractStatus = 'Active' | 'Expired' | 'Cancelled' | 'Draft';
+
+export interface Contract {
+  id: string;
+  code: string;
+  title: string;
+  content?: string;
+  provider?: string;
+  startDate: string;
+  endDate?: string;
+  fileUrl?: string;
+  status: ContractStatus;
+  createdAt: string;
+  updatedAt?: string;
+}

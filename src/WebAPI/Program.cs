@@ -18,6 +18,8 @@ using WebAPI.Hubs;
 using WebAPI.Middlewares;
 using WebAPI.Services;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ── Database ──────────────────────────────────────────────
@@ -41,6 +43,7 @@ builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepo
 builder.Services.AddScoped<IAccountRequestRepository, AccountRequestRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<ICareerRepository, CareerRepository>();
+builder.Services.AddScoped<IContractRepository, ContractRepository>();
 builder.Services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
 builder.Services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
 
@@ -239,7 +242,28 @@ if (app.Environment.IsDevelopment())
         @"ALTER TABLE ""AccountRequests"" ADD COLUMN IF NOT EXISTS ""CareerId"" UUID NULL",
         @"ALTER TABLE ""Loans"" ADD COLUMN IF NOT EXISTS ""PrendaReturnedAt"" timestamp with time zone NULL",
         @"ALTER TABLE ""Loans"" ADD COLUMN IF NOT EXISTS ""UserRating"" INTEGER NULL",
-        @"ALTER TABLE ""Loans"" ADD COLUMN IF NOT EXISTS ""UserRatingComment"" VARCHAR(500) NULL"
+        @"ALTER TABLE ""Loans"" ADD COLUMN IF NOT EXISTS ""UserRatingComment"" VARCHAR(500) NULL",
+        @"DO $$ BEGIN
+            IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Contracts' AND column_name = 'Description') THEN
+                ALTER TABLE ""Contracts"" RENAME COLUMN ""Description"" TO ""Content"";
+            END IF;
+        END $$;",
+        @"CREATE TABLE IF NOT EXISTS ""Contracts"" (
+            ""Id"" UUID PRIMARY KEY,
+            ""Code"" VARCHAR(50) NOT NULL,
+            ""Title"" VARCHAR(200) NOT NULL,
+            ""Content"" TEXT NULL,
+            ""Provider"" VARCHAR(200) NULL,
+            ""StartDate"" TIMESTAMP NOT NULL,
+            ""EndDate"" TIMESTAMP NULL,
+            ""FileUrl"" VARCHAR(500) NULL,
+            ""Status"" VARCHAR(20) NOT NULL DEFAULT 'Active',
+            ""IsDeleted"" BOOLEAN NOT NULL DEFAULT FALSE,
+            ""CreatedAt"" TIMESTAMP NOT NULL,
+            ""UpdatedAt"" TIMESTAMP NULL
+        )",
+        @"CREATE UNIQUE INDEX IF NOT EXISTS ""IX_Contracts_Code"" ON ""Contracts"" (""Code"")"
+
     };
 
     foreach (var sql in userAlters)

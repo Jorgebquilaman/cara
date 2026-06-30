@@ -20,6 +20,7 @@ import {
   MessageSquare,
   CalendarDays,
   Upload,
+  FileSignature,
   Moon,
   Sun,
 } from 'lucide-react';
@@ -46,6 +47,7 @@ const navItems = [
   { to: '/departamentos', icon: GraduationCap, label: 'Departamentos', roles: ['Admin'] },
   { to: '/sanctions', icon: ShieldAlert, label: 'Sanciones', roles: ['Admin', 'Staff'] },
   { to: '/incidents', icon: AlertTriangle, label: 'Incidentes', roles: ['Admin', 'Staff'] },
+  { to: '/contracts', icon: FileSignature, label: 'Contratos', roles: ['Admin', 'Staff'] },
   { to: '/reports', icon: FileText, label: 'Reportes', roles: ['Admin', 'Staff'] },
   { to: '/notifications', icon: Bell, label: 'Notificaciones', roles: ['Admin', 'Staff', 'Teacher', 'Student'] },
   { to: '/config-email', icon: Settings, label: 'Config. Email', roles: ['Admin'] },

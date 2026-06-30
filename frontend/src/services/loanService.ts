@@ -1,5 +1,5 @@
 import api from './api';
-import { Loan } from '@/types';
+import { Loan, Contract } from '@/types';
 
 export const loanService = {
   async getActive(): Promise<Loan[]> {
@@ -26,6 +26,11 @@ export const loanService = {
 
   async pickup(id: string): Promise<void> {
     await api.post(`/loans/${id}/pickup`);
+  },
+
+  async pickupWithContract(id: string): Promise<Contract> {
+    const { data } = await api.post<Contract>(`/loans/${id}/pickup-with-contract`);
+    return data;
   },
 
   async reject(id: string, reason: string): Promise<void> {

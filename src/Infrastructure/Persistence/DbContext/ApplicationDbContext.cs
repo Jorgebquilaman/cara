@@ -32,6 +32,7 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext, IUn
     public DbSet<Department> Departments => Set<Department>();
     public DbSet<Career> Careers => Set<Career>();
     public DbSet<SatisfactionSurvey> SatisfactionSurveys => Set<SatisfactionSurvey>();
+    public DbSet<Contract> Contracts => Set<Contract>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

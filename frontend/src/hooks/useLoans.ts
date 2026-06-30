@@ -68,6 +68,18 @@ export function usePickUpLoan() {
   });
 }
 
+export function usePickUpLoanWithContract() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: loanService.pickupWithContract,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['loans'] });
+      toast.success('Retiro confirmado — contrato generado');
+    },
+  });
+}
+
 export function useRejectLoan() {
   const queryClient = useQueryClient();
 

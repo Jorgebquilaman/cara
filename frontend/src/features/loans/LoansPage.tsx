@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
-import { useApproveLoan, usePickUpLoan, useRejectLoan, useReturnLoan, useCreateLoan, useSendReminder } from '@/hooks/useLoans';
+import { useApproveLoan, usePickUpLoanWithContract, useRejectLoan, useReturnLoan, useCreateLoan, useSendReminder } from '@/hooks/useLoans';
 import { useAssets } from '@/hooks/useAssets';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/services/api';
@@ -16,11 +16,12 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import Pagination from '@/components/ui/Pagination';
 import { Search, CheckCircle, XCircle, Undo2, Plus, Bell, FileSpreadsheet, FileText, Star } from 'lucide-react';
-import { Loan, User } from '@/types';
+import { Loan, User, Contract } from '@/types';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import ReactStars from 'react-stars';
+import ReactMarkdown from 'react-markdown';
 
 const loanSchema = z.object({
   userId: z.string().min(1, 'Seleccioná un usuario'),
@@ -52,7 +53,7 @@ export default function LoansPage() {
     },
   });
   const approveLoan = useApproveLoan();
-  const pickUpLoan = usePickUpLoan();
+  const pickUpLoan = usePickUpLoanWithContract();
   const rejectLoan = useRejectLoan();
   const returnLoan = useReturnLoan();
   const createLoan = useCreateLoan();
@@ -82,6 +83,7 @@ export default function LoansPage() {
   const [userRating, setUserRating] = useState(0);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const [contractData, setContractData] = useState<Contract | null>(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
@@ -310,7 +312,12 @@ export default function LoansPage() {
             </>
           )}
           {l.status === 'Approved' && (
-            <Button variant="ghost" size="sm" onClick={() => pickUpLoan.mutate(l.id)}>
+            <Button variant="ghost" size="sm" onClick={async () => {
+              try {
+                const contract = await pickUpLoan.mutateAsync(l.id);
+                setContractData(contract);
+              } catch { /* handled by hook */ }
+            }}>
                 <CheckCircle className="h-4 w-4 text-cara-600" />
             </Button>
           )}
@@ -639,6 +646,48 @@ export default function LoansPage() {
             </Button>
           </div>
         </div>
+      </Modal>
+
+      <Modal isOpen={!!contractData} onClose={() => setContractData(null)} title="Contrato de Préstamo" size="lg">
+        {contractData && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-4 text-sm text-cara-500 border-b border-cara-200 pb-3">
+              <span><strong>Código:</strong> {contractData.code}</span>
+              <span><strong>Estado:</strong> <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-green-100 text-green-800">Activo</span></span>
+            </div>
+            <div className="bg-white rounded-lg border p-6 max-h-96 overflow-y-auto text-sm text-cara-800 leading-relaxed" id="contract-content">
+              <ReactMarkdown>{contractData.content || ''}</ReactMarkdown>
+            </div>
+            <div className="flex justify-end gap-3 pt-2">
+              <Button variant="secondary" onClick={() => {
+                const printWindow = window.open('', '_blank');
+                if (printWindow) {
+                  printWindow.document.write(`<!DOCTYPE html><html><head><title>${contractData.code}</title><style>body{font-family:serif;padding:2cm;line-height:1.6}table{border-collapse:collapse;width:100%;margin:1em 0}td,th{border:1px solid #ccc;padding:8px}th{background:#f5f5f5}</style></head><body>${document.getElementById('contract-content')?.innerHTML || ''}</body></html>`);
+                  printWindow.document.close();
+                  printWindow.print();
+                }
+              }}>
+                <FileText className="h-4 w-4 mr-2" />
+                Imprimir
+              </Button>
+              <Button onClick={() => {
+                const doc = new jsPDF();
+                const content = document.getElementById('contract-content');
+                if (content) {
+                  doc.html(content.innerHTML, {
+                    callback: (d) => d.save(`${contractData.code}.pdf`),
+                    x: 10, y: 10,
+                    width: 190,
+                    windowWidth: 800,
+                  });
+                }
+              }}>
+                <FileText className="h-4 w-4 mr-2" />
+                Descargar PDF
+              </Button>
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );

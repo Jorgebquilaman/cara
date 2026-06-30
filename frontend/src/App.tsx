@@ -24,6 +24,7 @@ import AccountRequestsPage from '@/features/users/AccountRequestsPage';
 import EmailConfigPage from '@/features/settings/EmailConfigPage';
 import DepartmentsPage from '@/features/settings/DepartmentsPage';
 import CalendarPage from '@/features/calendar/CalendarPage';
+import ContractsPage from '@/features/contracts/ContractsPage';
 
 function ProtectedRoute({ children, roles }: { children: React.ReactNode; roles?: string[] }) {
   const { user, isAuthenticated } = useAuth();
@@ -61,6 +62,7 @@ export default function App() {
         <Route path="/config-email" element={<ProtectedRoute roles={['Admin']}><EmailConfigPage /></ProtectedRoute>} />
           <Route path="/solicitudes-alta" element={<ProtectedRoute roles={['Admin']}><AccountRequestsPage /></ProtectedRoute>} />
           <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
+          <Route path="/contracts" element={<ProtectedRoute roles={['Admin', 'Staff']}><ContractsPage /></ProtectedRoute>} />
         </Route>
     </Routes>
   );

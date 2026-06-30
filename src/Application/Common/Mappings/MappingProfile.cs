@@ -48,5 +48,8 @@ public class MappingProfile : Profile
 
         CreateMap<Domain.ValueObjects.Email, string>()
             .ConvertUsing(src => src.Value);
+
+        CreateMap<Contract, ContractDto>()
+            .ForMember(d => d.Status, o => o.MapFrom(s => s.Status.ToString()));
     }
 }
