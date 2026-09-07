@@ -386,7 +386,7 @@ export default function LoansPage() {
         </div>
       </Card>
 
-      <div className="rounded-lg border border-cara-200 bg-white overflow-hidden shadow-sm">
+      <div className="card-surface overflow-hidden">
         <Table
           columns={columns}
           data={paged}
@@ -424,7 +424,7 @@ export default function LoansPage() {
                   className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cara-500"
                 />
                 {showUserDropdown && (
-                  <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
+                  <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-xl border border-gray-200 bg-white dark:bg-neutral-800 dark:border-neutral-700 shadow-lg">
                     {filteredUserOptions.length === 0 ? (
                       <p className="px-3 py-2 text-sm text-cara-400">Sin resultados</p>
                     ) : (
@@ -474,7 +474,7 @@ export default function LoansPage() {
                   className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cara-500"
                 />
                 {showAssetDropdown && (
-                  <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
+                  <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-xl border border-gray-200 bg-white dark:bg-neutral-800 dark:border-neutral-700 shadow-lg">
                     {filteredAssetOptions.length === 0 ? (
                       <p className="px-3 py-2 text-sm text-cara-400">Sin resultados</p>
                     ) : (
@@ -655,7 +655,7 @@ export default function LoansPage() {
               <span><strong>Código:</strong> {contractData.code}</span>
               <span><strong>Estado:</strong> <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-green-100 text-green-800">Activo</span></span>
             </div>
-            <div className="bg-white rounded-lg border p-6 max-h-96 overflow-y-auto text-sm text-cara-800 leading-relaxed" id="contract-content">
+            <div className="bg-white dark:bg-[#1E1E1E] rounded-xl border border-gray-100 dark:border-white/10 p-6 max-h-96 overflow-y-auto text-sm text-gray-800 dark:text-gray-200 leading-relaxed" id="contract-content">
               <ReactMarkdown>{contractData.content || ''}</ReactMarkdown>
             </div>
             <div className="flex justify-end gap-3 pt-2">

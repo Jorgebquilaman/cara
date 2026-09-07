@@ -293,7 +293,7 @@ export default function ContractsPage() {
         </div>
       </Card>
 
-      <div className="rounded-lg border border-cara-200 bg-white overflow-hidden shadow-sm">
+      <div className="card-surface overflow-hidden">
         <Table
           columns={columns}
           data={filtered}
@@ -384,7 +384,7 @@ export default function ContractsPage() {
               <span><strong>Estado:</strong> {statusBadgeMap[viewContract.status] || viewContract.status}</span>
             </div>
             {viewContract.content ? (
-              <div className="bg-white rounded-lg border p-4 max-h-96 overflow-y-auto text-sm text-cara-800 leading-relaxed">
+              <div className="bg-white dark:bg-[#1E1E1E] rounded-xl border border-gray-100 dark:border-white/10 p-4 max-h-96 overflow-y-auto text-sm text-gray-800 dark:text-gray-200 leading-relaxed">
                 <ReactMarkdown>{viewContract.content}</ReactMarkdown>
               </div>
             ) : (

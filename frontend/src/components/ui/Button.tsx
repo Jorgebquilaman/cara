@@ -13,12 +13,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={clsx(
-          'inline-flex items-center justify-center rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed',
+          'inline-flex items-center justify-center rounded-xl font-medium transition-all focus:outline-none focus:ring-2 focus:ring-cara-500 focus:ring-offset-2 dark:focus:ring-offset-[#121212] disabled:opacity-50 disabled:cursor-not-allowed',
           {
-            'bg-cara-700 text-white hover:bg-cara-800 focus:ring-cara-500 dark:bg-cara-600 dark:hover:bg-cara-500': variant === 'primary',
-            'bg-white text-cara-700 border border-cara-300 hover:bg-cara-50 focus:ring-cara-500 dark:bg-cara-800 dark:text-cara-200 dark:border-cara-600 dark:hover:bg-cara-700': variant === 'secondary',
-            'bg-danger text-white hover:bg-red-600 focus:ring-red-500': variant === 'danger',
-            'text-cara-600 hover:bg-cara-100 focus:ring-cara-500 dark:text-cara-400 dark:hover:bg-cara-800': variant === 'ghost',
+            'bg-cara-500 text-white hover:bg-cara-600 shadow-sm': variant === 'primary',
+            'bg-white text-cara-700 border border-gray-200 hover:bg-cara-50 hover:border-cara-300 dark:bg-neutral-800 dark:text-cara-300 dark:border-neutral-700 dark:hover:bg-neutral-700': variant === 'secondary',
+            'bg-danger text-white hover:bg-red-600 shadow-sm': variant === 'danger',
+            'text-cara-600 hover:bg-cara-100 dark:text-cara-400 dark:hover:bg-neutral-800': variant === 'ghost',
           },
           {
             'px-3 py-1.5 text-sm': size === 'sm',

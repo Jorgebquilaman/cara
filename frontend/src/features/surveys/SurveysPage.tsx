@@ -79,7 +79,7 @@ export default function SurveysPage() {
           ) : (
               <div className="space-y-3">
                   {completedSurveys.map((s) => (
-                      <div key={s.id} className="p-4 rounded-lg border border-cara-200 bg-white">
+                      <div key={s.id} className="p-4 rounded-xl border border-cara-100 dark:border-white/10 bg-white dark:bg-[#1E1E1E]">
                           <div className="flex items-center justify-between mb-2">
                               <p className="text-sm font-medium text-cara-800">{s.assetName}</p>
                               <span className="text-xs text-cara-400">

@@ -191,7 +191,7 @@ export default function AccountRequestsPage() {
         <p className="text-sm text-cara-500 mt-1">Revisá y aprobá las solicitudes de nuevos usuarios</p>
       </div>
 
-      <div className="rounded-lg border border-cara-200 bg-white overflow-hidden shadow-sm">
+      <div className="card-surface overflow-hidden">
         <Table
           columns={columns}
           data={requests ?? []}

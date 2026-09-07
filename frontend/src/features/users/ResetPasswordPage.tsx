@@ -49,7 +49,7 @@ export default function ResetPasswordPage() {
         <div className="text-center">
           <img src="/imagenes/logo%20cara.png" alt="CARA" className="w-full object-contain rounded-xl border bg-white p-6 shadow-sm" />
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border bg-white p-6 shadow-sm">
+        <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-gray-100 dark:border-white/10 bg-white dark:bg-[#1E1E1E] p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-cara-900 text-center">Nueva contraseña</h2>
           <Input label="Nueva contraseña" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           <Input label="Confirmar contraseña" type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} required />

@@ -339,7 +339,7 @@ export default function UsersPage() {
         </div>
       </Card>
 
-      <div className="rounded-lg border border-cara-200 bg-white overflow-hidden shadow-sm">
+      <div className="card-surface overflow-hidden">
         <Table
           columns={columns}
           data={paged}
@@ -369,7 +369,7 @@ export default function UsersPage() {
             <div>
               <label className="mb-1 block text-sm font-medium text-cara-700 dark:text-cara-300">Departamento</label>
               <select value={formDepartmentId} onChange={(e) => setFormDepartmentId(e.target.value)}
-                className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none dark:bg-cara-800 dark:text-cara-200 dark:border-cara-600"
+                className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none dark:bg-neutral-800 dark:text-gray-200 dark:border-neutral-700"
               >
                 <option value="">Sin departamento</option>
                 {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
@@ -379,7 +379,7 @@ export default function UsersPage() {
               <label className="mb-1 block text-sm font-medium text-cara-700 dark:text-cara-300">Carrera</label>
               <select disabled={!formDepartmentId}
                 {...form.register('careerId')}
-                className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none disabled:opacity-50 dark:bg-cara-800 dark:text-cara-200 dark:border-cara-600"
+                className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none disabled:opacity-50 dark:bg-neutral-800 dark:text-gray-200 dark:border-neutral-700"
               >
                 <option value="">Sin carrera</option>
                 {formCareers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}

@@ -33,7 +33,7 @@ export function Table<T>({
 }: TableProps<T>) {
   if (isLoading) {
     return (
-      <div className="rounded-lg border border-cara-200 bg-white p-8 text-center text-cara-500 dark:border-cara-700 dark:bg-cara-900 dark:text-cara-400">
+      <div className="card-surface p-8 text-center text-gray-500 dark:text-gray-400">
         Cargando...
       </div>
     );
@@ -41,24 +41,24 @@ export function Table<T>({
 
   if (data.length === 0) {
     return (
-      <div className="rounded-lg border border-cara-200 bg-white p-8 text-center text-cara-500 dark:border-cara-700 dark:bg-cara-900 dark:text-cara-400">
+      <div className="card-surface p-8 text-center text-gray-500 dark:text-gray-400">
         {emptyMessage}
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-cara-200 dark:border-cara-700">
-      <table className="min-w-full divide-y divide-cara-200 bg-white dark:divide-cara-700 dark:bg-cara-900">
-        <thead className="bg-cara-50 dark:bg-cara-800">
+    <div className="overflow-x-auto card-surface">
+      <table className="min-w-full divide-y divide-gray-100 dark:divide-white/5">
+        <thead className="bg-gray-50 dark:bg-neutral-800/60">
           <tr>
             {columns.map((col) => (
               <th
                 key={col.key}
                 className={clsx(
-                  'px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-cara-600 dark:text-cara-300',
+                  'px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400',
                   col.className,
-                  col.sortable && 'cursor-pointer select-none hover:text-cara-800 dark:hover:text-cara-100',
+                  col.sortable && 'cursor-pointer select-none hover:text-cara-600 dark:hover:text-cara-400',
                 )}
                 onClick={col.sortable && onSort ? () => onSort(col.key) : undefined}
               >
@@ -74,11 +74,11 @@ export function Table<T>({
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-cara-100 dark:divide-cara-700">
+        <tbody className="divide-y divide-gray-100 dark:divide-white/5">
           {data.map((item) => (
-            <tr key={keyExtractor(item)} className="hover:bg-cara-50 transition-colors dark:hover:bg-cara-800">
+            <tr key={keyExtractor(item)} className="hover:bg-cara-50/50 transition-colors dark:hover:bg-neutral-800/50">
               {columns.map((col) => (
-                <td key={col.key} className={clsx('px-4 py-3 text-sm text-cara-800 dark:text-cara-200', col.className)}>
+                <td key={col.key} className={clsx('px-4 py-3 text-sm text-gray-800 dark:text-gray-200', col.className)}>
                   {col.render ? col.render(item) : String((item as Record<string, unknown>)[col.key] ?? '')}
                 </td>
               ))}

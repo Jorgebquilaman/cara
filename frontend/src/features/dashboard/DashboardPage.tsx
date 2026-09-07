@@ -33,7 +33,7 @@ export default function DashboardPage() {
   });
 
   const StatCard = ({ label, value, icon: Icon, color, accentColor }: { label: string, value: number, icon: any, color: string, accentColor?: string }) => (
-    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4 relative overflow-hidden">
+    <div className="card-surface p-6 hover:shadow-card-hover transition-shadow flex items-center gap-4 relative overflow-hidden">
       <div className={`absolute left-0 top-0 bottom-0 w-1 ${accentColor || 'bg-transparent'}`} />
       <div className={`rounded-xl p-3 ${color}`}>
         <Icon className="h-6 w-6" />

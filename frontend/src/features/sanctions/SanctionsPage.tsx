@@ -249,7 +249,7 @@ export default function SanctionsPage() {
         </div>
       </Card>
 
-      <div className="rounded-lg border border-cara-200 bg-white overflow-hidden shadow-sm">
+      <div className="card-surface overflow-hidden">
         <Table
           columns={columns}
           data={paged}

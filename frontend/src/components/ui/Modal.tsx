@@ -23,11 +23,11 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
       <div
         className={clsx(
-          'relative z-50 w-full rounded-xl bg-white p-6 shadow-xl dark:bg-cara-800',
+          'relative z-50 w-full rounded-2xl bg-white p-6 shadow-card-hover dark:bg-[#1E1E1E]',
           {
             'max-w-sm': size === 'sm',
             'max-w-lg': size === 'md',
@@ -36,8 +36,8 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
         )}
       >
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-cara-900 dark:text-cara-100">{title}</h2>
-          <button onClick={onClose} className="text-cara-400 hover:text-cara-600 transition-colors dark:text-cara-500 dark:hover:text-cara-300">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-50">{title}</h2>
+          <button onClick={onClose} className="rounded-lg p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors dark:text-gray-500 dark:hover:text-gray-300 dark:hover:bg-neutral-800">
             <X className="h-5 w-5" />
           </button>
         </div>

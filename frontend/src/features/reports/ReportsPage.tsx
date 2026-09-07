@@ -43,7 +43,7 @@ const reports = [
 ];
 
 const StatCard = ({ label, value, icon: Icon, color, accentColor }: { label: string, value: number, icon: any, color: string, accentColor?: string }) => (
-    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 relative overflow-hidden">
+    <div className="card-surface p-6 flex items-center gap-4 relative overflow-hidden">
       <div className={`absolute left-0 top-0 bottom-0 w-1 ${accentColor || 'bg-transparent'}`} />
       <div className={`rounded-xl p-3 ${color}`}>
         <Icon className="h-6 w-6" />
@@ -411,7 +411,7 @@ export default function ReportsPage() {
                     <div className="space-y-3">
                     {stats.topUsedAssets.map((item, i) => (
                       <div key={i} className="flex items-start gap-3 text-sm border-b border-gray-100 dark:border-gray-700 pb-2 last:border-0 last:pb-0">
-                        <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-cara-100 dark:bg-cara-800 text-cara-600 dark:text-cara-300 flex items-center justify-center text-xs font-bold">
+                        <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-cara-100 dark:bg-cara-900/40 text-cara-600 dark:text-cara-300 flex items-center justify-center text-xs font-bold">
                           {i + 1}
                         </span>
                         <div className="min-w-0 flex-1">
@@ -477,22 +477,22 @@ export default function ReportsPage() {
         /* Prendas Tab */
         <div className="space-y-6">
           <div className="grid gap-6 md:grid-cols-4">
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
+            <div className="card-surface p-6 relative overflow-hidden">
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500" />
               <p className="text-3xl font-extrabold text-gray-900">${prendaStats?.totalPrenda.toFixed(2) ?? '0.00'}</p>
               <p className="text-sm text-gray-500 font-medium">Total en Prendas</p>
             </div>
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
+            <div className="card-surface p-6 relative overflow-hidden">
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-purple-500" />
               <p className="text-3xl font-extrabold text-gray-900">{prendaStats?.totalWithPrenda ?? 0}</p>
               <p className="text-sm text-gray-500 font-medium">Préstamos con Prenda</p>
             </div>
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
+            <div className="card-surface p-6 relative overflow-hidden">
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-teal-500" />
               <p className="text-3xl font-extrabold text-gray-900">${prendaStats?.averagePrenda.toFixed(2) ?? '0.00'}</p>
               <p className="text-sm text-gray-500 font-medium">Promedio por Prenda</p>
             </div>
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
+            <div className="card-surface p-6 relative overflow-hidden">
               <div className={clsx('absolute left-0 top-0 bottom-0 w-1', (prendaStats?.saldoPendiente ?? 0) > 0 ? 'bg-amber-500' : 'bg-green-500')} />
               <p className={clsx('text-3xl font-extrabold', (prendaStats?.saldoPendiente ?? 0) > 0 ? 'text-amber-600' : 'text-green-600')}>
                 ${prendaStats?.saldoPendiente.toFixed(2) ?? '0.00'}

@@ -40,7 +40,7 @@ export default function ProfilePage() {
     <div className="mx-auto max-w-2xl space-y-8 py-6">
       <h1 className="text-2xl font-bold text-cara-900">Mi Perfil</h1>
 
-      <div className="flex justify-center rounded-xl border border-cara-200 bg-white px-8 shadow-sm">
+      <div className="flex justify-center card-surface px-8">
         <img
           src="/imagenes/logo%20cara.png"
           alt="CARA Logo"

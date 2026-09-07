@@ -43,7 +43,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
       {/* Ticket Container */}
-      <div className="flex w-full max-w-4xl flex-col md:flex-row overflow-hidden rounded-3xl bg-white shadow-2xl">
+      <div className="flex w-full max-w-4xl flex-col md:flex-row overflow-hidden rounded-3xl bg-white dark:bg-[#1E1E1E] shadow-2xl">
         
         {/* Left Side: Image/Branding */}
         <div className="hidden md:flex md:w-1/2 bg-cara-900 items-center justify-center p-12 relative">
