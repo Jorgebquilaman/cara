@@ -133,6 +133,23 @@ export default function MainLayout() {
     (item) => user && item.roles.includes(user.role),
   );
 
+  const isStaff = user?.role === 'Admin' || user?.role === 'Staff';
+  const bottomNavItems = isStaff
+    ? [
+        { to: '/', icon: LayoutDashboard, label: 'Inicio' },
+        { to: '/assets', icon: Package, label: 'Activos' },
+        { to: '/loans', icon: BookOpen, label: 'Préstamos' },
+        { to: '/reservations', icon: Calendar, label: 'Reservas' },
+        { to: '/calendar', icon: CalendarDays, label: 'Calendario' },
+      ]
+    : [
+        { to: '/', icon: LayoutDashboard, label: 'Inicio' },
+        { to: '/my-loans', icon: BookOpen, label: 'Préstamos' },
+        { to: '/reservations', icon: Calendar, label: 'Reservas' },
+        { to: '/calendar', icon: CalendarDays, label: 'Calendario' },
+        { to: '/notifications', icon: Bell, label: 'Avisos' },
+      ];
+
   return (
     <div className="flex h-screen bg-[#FAFAFA] dark:bg-[#121212]">
       <aside
@@ -252,9 +269,33 @@ export default function MainLayout() {
           <h1 className="text-lg font-extrabold text-cara-700 dark:text-cara-400">CARA</h1>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6 pb-24 lg:pb-6">
           <Outlet />
         </main>
+
+        {/* Bottom nav mobile */}
+        <nav className="fixed bottom-0 inset-x-0 z-40 bg-white dark:bg-[#1A1A1A] border-t border-gray-100 dark:border-white/5 lg:hidden">
+          <div className="flex justify-around items-center px-2 py-2">
+            {bottomNavItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === '/'}
+                className={({ isActive }) =>
+                  clsx(
+                    'flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl min-w-[3.5rem] transition-colors',
+                    isActive
+                      ? 'text-cara-600 dark:text-cara-400'
+                      : 'text-gray-400 dark:text-gray-500 hover:text-cara-600 dark:hover:text-cara-400',
+                  )
+                }
+              >
+                <item.icon className="h-5 w-5" />
+                <span className="text-[10px] font-medium">{item.label}</span>
+              </NavLink>
+            ))}
+          </div>
+        </nav>
       </div>
     </div>
   );
