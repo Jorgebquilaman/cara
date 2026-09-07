@@ -8,6 +8,9 @@ public class DashboardDto
     public int OverdueLoans { get; set; }
     public int PendingApprovals { get; set; }
     public int ActiveSanctions { get; set; }
+    public int TotalUsers { get; set; }
+    public int SurveysCompleted { get; set; }
+    public int UpcomingDueCount { get; set; }
     public IReadOnlyList<LoanDto> UpcomingDueLoans { get; set; }
     public IReadOnlyList<LoanDto> OverdueLoansList { get; set; }
     public int TotalReservations { get; set; }

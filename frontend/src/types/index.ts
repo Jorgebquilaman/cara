@@ -142,6 +142,9 @@ export interface DashboardData {
   overdueLoans: number;
   pendingApprovals: number;
   activeSanctions: number;
+  totalUsers: number;
+  surveysCompleted: number;
+  upcomingDueCount: number;
   upcomingDueLoans: Loan[];
   overdueLoansList: Loan[];
   totalReservations: number;
