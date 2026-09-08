@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '@/hooks/useAuth';
+import { useForceLightTheme } from '@/hooks/useTheme';
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -12,6 +13,7 @@ const loginSchema = z.object({
 type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  useForceLightTheme();
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuth();
 

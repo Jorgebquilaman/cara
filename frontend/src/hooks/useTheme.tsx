@@ -43,3 +43,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 export function useTheme() {
   return useContext(ThemeContext);
 }
+
+/**
+ * Fuerza el tema claro mientras el componente está montado
+ * (páginas de auth deslogueadas). Al desmontar, restaura el tema guardado.
+ */
+export function useForceLightTheme() {
+  useEffect(() => {
+    const root = document.documentElement;
+    const wasDark = root.classList.contains('dark');
+    root.classList.remove('dark');
+    return () => {
+      if (wasDark) root.classList.add('dark');
+    };
+  }, []);
+}

@@ -4,8 +4,10 @@ import api from '@/services/api';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import toast from 'react-hot-toast';
+import { useForceLightTheme } from '@/hooks/useTheme';
 
 export default function ResetPasswordPage() {
+  useForceLightTheme();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get('token') || '';

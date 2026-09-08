@@ -1,10 +1,13 @@
 import { useState, type ReactNode } from 'react';
+import { useForceLightTheme } from '@/hooks/useTheme';
 import api from '@/services/api';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import toast from 'react-hot-toast';
 
-const ContentWrapper = ({ children }: { children: ReactNode }) => (
+const ContentWrapper = ({ children }: { children: ReactNode }) => {
+  useForceLightTheme();
+  return (
   <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-[#121212] p-4">
     <div className="flex w-full max-w-4xl flex-col md:flex-row overflow-hidden rounded-3xl bg-white dark:bg-[#1E1E1E] shadow-2xl">
       <div className="hidden md:flex md:w-1/2 bg-cara-900 items-center justify-center p-12 relative">
@@ -32,7 +35,8 @@ const ContentWrapper = ({ children }: { children: ReactNode }) => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
