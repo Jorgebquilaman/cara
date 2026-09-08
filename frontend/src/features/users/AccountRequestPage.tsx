@@ -8,7 +8,7 @@ interface Department { id: string; name: string; }
 interface Career { id: string; name: string; departmentId: string; }
 
 const ContentWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
+  <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-[#121212] p-4">
     <div className="flex w-full max-w-4xl flex-col md:flex-row overflow-hidden rounded-3xl bg-white dark:bg-[#1E1E1E] shadow-2xl">
       <div className="hidden md:flex md:w-1/3 bg-cara-900 items-center justify-center p-12 relative">
         <div className="absolute inset-0 bg-cara-950/20" />
@@ -108,7 +108,7 @@ export default function AccountRequestPage() {
       <ContentWrapper>
         <div className="text-center space-y-4">
           <div className="text-5xl">✅</div>
-          <h1 className="text-2xl font-bold text-cara-900">¡Solicitud enviada!</h1>
+          <h1 className="text-2xl font-bold text-cara-900 dark:text-cara-400">¡Solicitud enviada!</h1>
           <p className="text-sm text-cara-500">
             Tu cuenta ha sido creada exitosamente. Revisá tu correo institucional para instrucciones sobre cómo establecer tu contraseña.
           </p>
@@ -120,7 +120,7 @@ export default function AccountRequestPage() {
 
   return (
     <ContentWrapper>
-      <h2 className="text-2xl font-bold text-cara-900 mb-6 text-center md:text-left">Alta de usuario</h2>
+      <h2 className="text-2xl font-bold text-cara-900 dark:text-cara-400 mb-6 text-center md:text-left">Alta de usuario</h2>
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

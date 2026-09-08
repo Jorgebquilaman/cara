@@ -37,20 +37,20 @@ export default function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-[#121212] px-4">
         <div className="text-center text-cara-500">Enlace inválido o expirado.</div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-[#121212] px-4">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
           <img src="/imagenes/logo%20cara.png" alt="CARA" className="w-full object-contain rounded-xl border bg-white p-6 shadow-sm" />
         </div>
         <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-gray-100 dark:border-white/10 bg-white dark:bg-[#1E1E1E] p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-cara-900 text-center">Nueva contraseña</h2>
+          <h2 className="text-lg font-semibold text-cara-900 dark:text-cara-400 text-center">Nueva contraseña</h2>
           <Input label="Nueva contraseña" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           <Input label="Confirmar contraseña" type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} required />
           <Button type="submit" className="w-full" isLoading={loading}>Restablecer</Button>

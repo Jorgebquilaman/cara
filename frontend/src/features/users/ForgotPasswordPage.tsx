@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/Input';
 import toast from 'react-hot-toast';
 
 const ContentWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
+  <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-[#121212] p-4">
     <div className="flex w-full max-w-4xl flex-col md:flex-row overflow-hidden rounded-3xl bg-white dark:bg-[#1E1E1E] shadow-2xl">
       <div className="hidden md:flex md:w-1/2 bg-cara-900 items-center justify-center p-12 relative">
         <div className="absolute inset-0 bg-cara-950/20" />
@@ -58,7 +58,7 @@ export default function ForgotPasswordPage() {
       <ContentWrapper>
         <div className="text-center space-y-4">
           <div className="text-5xl">📧</div>
-          <h1 className="text-2xl font-bold text-cara-900">Revisá tu correo</h1>
+          <h1 className="text-2xl font-bold text-cara-900 dark:text-cara-400">Revisá tu correo</h1>
           <p className="text-sm text-cara-500">
             Si el email está registrado, vas a recibir un enlace para restablecer tu contraseña.
           </p>
@@ -70,7 +70,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <ContentWrapper>
-      <h2 className="text-2xl font-bold text-cara-900 mb-6 text-center md:text-left">Recuperar contraseña</h2>
+      <h2 className="text-2xl font-bold text-cara-900 dark:text-cara-400 mb-6 text-center md:text-left">Recuperar contraseña</h2>
       <p className="text-sm text-cara-500 mb-6 text-center md:text-left">Ingresá tu email institucional y te enviaremos los pasos a seguir.</p>
       
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -87,7 +87,7 @@ export default function ForgotPasswordPage() {
         </Button>
         
         <div className="flex flex-col items-center gap-3 text-sm mt-6">
-          <a href="/login" className="text-cara-600 hover:text-cara-900 hover:underline">Volver al inicio de sesión</a>
+          <a href="/login" className="text-cara-600 hover:text-cara-800 dark:text-cara-400 dark:hover:text-cara-300 hover:underline">Volver al inicio de sesión</a>
           <p className="text-xs text-danger text-center mt-4 border-t pt-4">
             Recordá: Si tu cuenta no está activa, debés esperar a que un administrativo autorice tu acceso al sistema.
           </p>

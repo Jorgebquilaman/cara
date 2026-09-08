@@ -41,7 +41,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-[#121212] p-4">
       {/* Ticket Container */}
       <div className="flex w-full max-w-4xl flex-col md:flex-row overflow-hidden rounded-3xl bg-white dark:bg-[#1E1E1E] shadow-2xl">
         
@@ -69,7 +69,7 @@ export default function LoginPage() {
             />
           </div>
           
-          <h2 className="text-2xl font-bold text-cara-900 mb-6 text-center md:text-left">Iniciar Sesión</h2>
+          <h2 className="text-2xl font-bold text-cara-900 dark:text-cara-400 mb-6 text-center md:text-left">Iniciar Sesión</h2>
           
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <Input
@@ -97,9 +97,9 @@ export default function LoginPage() {
             </Button>
 
             <div className="flex flex-col items-center gap-3 text-sm mt-6">
-              <a href="/forgot-password" className="text-cara-600 hover:text-cara-900 hover:underline">Olvidé mi contraseña</a>
+              <a href="/forgot-password" className="text-cara-600 hover:text-cara-800 dark:text-cara-400 dark:hover:text-cara-300 hover:underline">Olvidé mi contraseña</a>
               <div className="border-t w-full my-1"></div>
-              <a href="/solicitar-alta" className="text-cara-600 font-semibold hover:text-cara-900 hover:underline">Solicitar alta de usuario</a>
+              <a href="/solicitar-alta" className="text-cara-600 font-semibold hover:text-cara-800 dark:text-cara-400 dark:hover:text-cara-300 hover:underline">Solicitar alta de usuario</a>
             </div>
           </form>
         </div>
