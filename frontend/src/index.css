@@ -94,6 +94,15 @@
     caret-color: #f9fafb !important;
   }
 
+  /* Campos sobre fondos oscuros (login) */
+  .field-on-dark input,
+  .field-on-dark textarea,
+  .field-on-dark select {
+    color: #f9fafb !important;
+    -webkit-text-fill-color: #f9fafb !important;
+    caret-color: #f9fafb !important;
+  }
+
   /* Autofill: evitar fondo/texto ilegibles del navegador */
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
