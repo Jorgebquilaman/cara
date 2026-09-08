@@ -77,6 +77,23 @@
     50% { opacity: 0.4; }
   }
 
+  /* Forzar legibilidad en inputs: texto negro en light, claro en dark */
+  input,
+  textarea,
+  select {
+    color: #111827 !important;
+    -webkit-text-fill-color: #111827 !important;
+    caret-color: #111827 !important;
+  }
+
+  html.dark input,
+  html.dark textarea,
+  html.dark select {
+    color: #f9fafb !important;
+    -webkit-text-fill-color: #f9fafb !important;
+    caret-color: #f9fafb !important;
+  }
+
   /* Autofill: evitar fondo/texto ilegibles del navegador */
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
