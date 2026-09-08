@@ -4,6 +4,8 @@
 
 @layer base {
   :root {
+    color-scheme: light;
+
     /* Superficies light */
     --bg-base: #FAFAFA;
     --surface: #FFFFFF;
@@ -21,6 +23,8 @@
   }
 
   html.dark {
+    color-scheme: dark;
+
     --bg-base: #121212;
     --surface: #1E1E1E;
     --surface-alt: #1A1A1A;
