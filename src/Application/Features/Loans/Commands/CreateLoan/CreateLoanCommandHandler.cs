@@ -66,7 +66,7 @@ public class CreateLoanCommandHandler : IRequestHandler<CreateLoanCommand, LoanD
 
         var period = new LoanPeriod(startUtc, endUtc);
 
-        if ((endUtc - startUtc).TotalDays > asset.MaxLoanDays)
+        if (!request.Force && (endUtc - startUtc).TotalDays > asset.MaxLoanDays)
             throw new LoanPeriodException($"El período máximo del activo es de {asset.MaxLoanDays} días.");
 
         var hasOverlap = await _loanRepository.HasOverlappingActiveLoanAsync(

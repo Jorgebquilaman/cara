@@ -11,4 +11,5 @@ public record CreateLoanCommand : IRequest<LoanDto>
     public DateTime DueDate { get; init; }
     public string? Observations { get; init; }
     public decimal Prenda { get; init; }
+    public bool Force { get; init; }
 }

@@ -61,6 +61,9 @@ public class LoansController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<LoanDto>> Create(CreateLoanCommand command)
     {
+        if (command.Force && !User.IsInRole("Admin") && !User.IsInRole("Staff"))
+            return BadRequest("No tenés permiso para forzar este préstamo. Ajustá el período al máximo permitido.");
+
         var result = await _mediator.Send(command);
         return CreatedAtAction(nameof(GetByUser), new { userId = result.UserId }, result);
     }

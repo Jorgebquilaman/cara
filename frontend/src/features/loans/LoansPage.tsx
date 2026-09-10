@@ -15,7 +15,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import Pagination from '@/components/ui/Pagination';
-import { Search, CheckCircle, XCircle, Undo2, Plus, Bell, FileSpreadsheet, FileText, Star } from 'lucide-react';
+import { Search, CheckCircle, XCircle, Undo2, Plus, Bell, FileSpreadsheet, FileText, Star, AlertTriangle } from 'lucide-react';
 import { Loan, User, Contract } from '@/types';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
@@ -84,6 +84,7 @@ export default function LoansPage() {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [contractData, setContractData] = useState<Contract | null>(null);
+  const [periodWarning, setPeriodWarning] = useState<{ message: string; data: LoanForm } | null>(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
@@ -160,8 +161,12 @@ export default function LoansPage() {
     const selectedAsset = activeAssets.find((a) => a.id === data.assetId);
     const start = new Date(data.startDate);
     const end = new Date(data.dueDate);
-    if (selectedAsset && end.getTime() - start.getTime() > selectedAsset.maxLoanDays * 24 * 60 * 60 * 1000) {
-      form.setError('dueDate', { message: `El período máximo de este activo es de ${selectedAsset.maxLoanDays} días` });
+    const days = Math.ceil((end.getTime() - start.getTime()) / (24 * 60 * 60 * 1000));
+    if (selectedAsset && days > selectedAsset.maxLoanDays) {
+      setPeriodWarning({
+        message: `El período solicitado (${days} días) excede el máximo permitido de ${selectedAsset.maxLoanDays} días para "${selectedAsset.name}". Podés corregir las fechas o continuar de todas formas si el activo va a estar disponible.`,
+        data,
+      });
       return;
     }
     try {
@@ -176,6 +181,25 @@ export default function LoansPage() {
       closeCreateModal();
       setIsCreateOpen(false);
     } catch { /* el interceptor muestra el mensaje del backend */ }
+  };
+
+  const forceCreateSubmit = async () => {
+    if (!periodWarning) return;
+    const data = periodWarning.data;
+    try {
+      await createLoan.mutateAsync({
+        userId: data.userId,
+        assetId: data.assetId,
+        startDate: data.startDate,
+        dueDate: data.dueDate,
+        observations: data.observations || undefined,
+        prenda: parseFloat(data.prenda || '0'),
+        force: true,
+      });
+      closeCreateModal();
+      setIsCreateOpen(false);
+    } catch { /* el interceptor muestra el mensaje del backend */ }
+    setPeriodWarning(null);
   };
 
   const activeAssets = (assetsData?.items ?? []).filter((a) => a.status !== 'Decommissioned');
@@ -652,6 +676,23 @@ export default function LoansPage() {
             </Button>
             <Button onClick={handleReturn} isLoading={returnLoan.isPending}>
               Devolver
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={!!periodWarning} onClose={() => setPeriodWarning(null)} title="Atención" size="sm">
+        <div className="space-y-4">
+          <div className="flex items-start gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
+            <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <p className="text-sm text-gray-700 dark:text-gray-300">{periodWarning?.message}</p>
+          </div>
+          <div className="flex justify-end gap-3">
+            <Button variant="secondary" onClick={() => setPeriodWarning(null)}>
+              Aceptar (corregir fechas)
+            </Button>
+            <Button onClick={forceCreateSubmit} isLoading={createLoan.isPending}>
+              Continuar con el préstamo
             </Button>
           </div>
         </div>
