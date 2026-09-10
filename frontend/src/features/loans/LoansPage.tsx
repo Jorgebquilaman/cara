@@ -157,16 +157,25 @@ export default function LoansPage() {
   };
 
   const onCreateSubmit = async (data: LoanForm) => {
-    await createLoan.mutateAsync({
-      userId: data.userId,
-      assetId: data.assetId,
-      startDate: data.startDate,
-      dueDate: data.dueDate,
-      observations: data.observations || undefined,
-      prenda: parseFloat(data.prenda || '0'),
-    });
-    closeCreateModal();
-    setIsCreateOpen(false);
+    const selectedAsset = activeAssets.find((a) => a.id === data.assetId);
+    const start = new Date(data.startDate);
+    const end = new Date(data.dueDate);
+    if (selectedAsset && end.getTime() - start.getTime() > selectedAsset.maxLoanDays * 24 * 60 * 60 * 1000) {
+      form.setError('dueDate', { message: `El período máximo de este activo es de ${selectedAsset.maxLoanDays} días` });
+      return;
+    }
+    try {
+      await createLoan.mutateAsync({
+        userId: data.userId,
+        assetId: data.assetId,
+        startDate: data.startDate,
+        dueDate: data.dueDate,
+        observations: data.observations || undefined,
+        prenda: parseFloat(data.prenda || '0'),
+      });
+      closeCreateModal();
+      setIsCreateOpen(false);
+    } catch { /* el interceptor muestra el mensaje del backend */ }
   };
 
   const activeAssets = (assetsData?.items ?? []).filter((a) => a.status !== 'Decommissioned');
