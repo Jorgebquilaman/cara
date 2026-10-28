@@ -166,10 +166,10 @@ export default function MainLayout() {
       ];
 
   return (
-    <div className="flex h-screen bg-[#FAFAFA] dark:bg-[#121212]">
+    <div className="flex h-screen bg-[var(--bg-base)]">
       <aside
         className={clsx(
-          'fixed inset-y-0 left-0 z-40 transform bg-gradient-to-b from-[#1F6E4A] to-[#123a27] text-white transition-all lg:relative lg:translate-x-0',
+          'fixed inset-y-0 left-0 z-40 transform bg-gradient-to-b from-cara-500 to-cara-700 text-white transition-all lg:relative lg:translate-x-0',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full',
           collapsed ? 'w-16' : 'w-64',
         )}
@@ -236,12 +236,12 @@ export default function MainLayout() {
                       <item.icon className="h-[18px] w-[18px] shrink-0" />
                       {!collapsed && <span className="flex-1">{item.label}</span>}
                       {!collapsed && badgeCount > 0 && (
-                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#7fc9c4] px-1.5 text-[10px] font-bold text-[#123a27]">
+                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-cara-200 px-1.5 text-[10px] font-bold text-cara-700">
                           {badgeCount > 99 ? '99+' : badgeCount}
                         </span>
                       )}
                       {collapsed && badgeCount > 0 && (
-                        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#7fc9c4] text-[10px] font-bold text-[#123a27]">
+                        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-cara-200 text-[10px] font-bold text-cara-700">
                           {badgeCount > 9 ? '9+' : badgeCount}
                         </span>
                       )}

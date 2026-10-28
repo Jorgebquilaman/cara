@@ -27,7 +27,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
       <div
         className={clsx(
-          'relative z-50 w-full rounded-2xl bg-white p-6 shadow-card-hover dark:bg-[#1E1E1E]',
+          'relative z-50 w-full rounded-2xl bg-[var(--surface)] p-6 shadow-[var(--shadow-4)]',
           {
             'max-w-sm': size === 'sm',
             'max-w-lg': size === 'md',

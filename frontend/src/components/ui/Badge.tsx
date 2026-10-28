@@ -6,31 +6,33 @@ interface BadgeProps {
   size?: 'sm' | 'md';
 }
 
+/* Chips del styleguide: pill radius-full. Estados semánticos usan tinte
+   claro + texto del color semántico; el resto gris claro + texto oscuro. */
 const statusStyles: Record<string, string> = {
-  Available: 'bg-cara-100 text-cara-800 dark:bg-cara-900/40 dark:text-cara-300',
-  InUse: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200',
-  Maintenance: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
+  Available: 'bg-success/10 text-success dark:bg-success/25',
+  InUse: 'bg-warning/15 text-gray-800 dark:bg-warning/25 dark:text-warning',
+  Maintenance: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
   Decommissioned: 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500',
-  Pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200',
-  Active: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200',
-  Overdue: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200',
-  Returned: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200',
-  Rejected: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200',
-  ApprovedRequest: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200',
-  Confirmed: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200',
-  Cancelled: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
-  Completed: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200',
-  LoanOverdue: 'bg-red-600 text-white',
-  LoanApproved: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200',
-  LoanRejected: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200',
-  LoanDueReminder: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200',
-  SanctionIssued: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200',
-  ReservationCreated: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200',
-  ReservationConfirmed: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200',
-  ReservationCancelled: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
-  IncidentReported: 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200',
-  LoanReturned: 'bg-green-600 text-white',
-  AccountRequestCreated: 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-200',
+  Pending: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+  Active: 'bg-warning/15 text-gray-800 dark:bg-warning/25 dark:text-warning',
+  Overdue: 'bg-danger/10 text-danger dark:bg-danger/25',
+  Returned: 'bg-success/10 text-success dark:bg-success/25',
+  Rejected: 'bg-danger/10 text-danger dark:bg-danger/25',
+  ApprovedRequest: 'bg-success/10 text-success dark:bg-success/25',
+  Confirmed: 'bg-info/10 text-info dark:bg-info/25',
+  Cancelled: 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400',
+  Completed: 'bg-success/10 text-success dark:bg-success/25',
+  LoanOverdue: 'bg-danger text-white',
+  LoanApproved: 'bg-success/10 text-success dark:bg-success/25',
+  LoanRejected: 'bg-danger/10 text-danger dark:bg-danger/25',
+  LoanDueReminder: 'bg-warning/15 text-gray-800 dark:bg-warning/25 dark:text-warning',
+  SanctionIssued: 'bg-danger/10 text-danger dark:bg-danger/25',
+  ReservationCreated: 'bg-info/10 text-info dark:bg-info/25',
+  ReservationConfirmed: 'bg-success/10 text-success dark:bg-success/25',
+  ReservationCancelled: 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400',
+  IncidentReported: 'bg-warning/15 text-gray-800 dark:bg-warning/25 dark:text-warning',
+  LoanReturned: 'bg-success text-white',
+  AccountRequestCreated: 'bg-info/10 text-info dark:bg-info/25',
 };
 
 const statusLabels: Record<string, string> = {
@@ -66,7 +68,7 @@ export function Badge({ status, size = 'sm' }: BadgeProps) {
     <span
       className={clsx(
         'inline-flex items-center rounded-full font-semibold',
-        statusStyles[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
+        statusStyles[status] || 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
         size === 'sm' ? 'px-2.5 py-0.5 text-xs' : 'px-3 py-1 text-sm',
       )}
     >

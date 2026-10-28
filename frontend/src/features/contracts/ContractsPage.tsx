@@ -384,7 +384,7 @@ export default function ContractsPage() {
               <span><strong>Estado:</strong> {statusBadgeMap[viewContract.status] || viewContract.status}</span>
             </div>
             {viewContract.content ? (
-              <div className="bg-white dark:bg-[#1E1E1E] rounded-xl border border-gray-100 dark:border-white/10 p-4 max-h-96 overflow-y-auto text-sm text-gray-800 dark:text-gray-200 leading-relaxed">
+              <div className="bg-white dark:bg-[var(--surface)] rounded-xl border border-gray-100 dark:border-white/10 p-4 max-h-96 overflow-y-auto text-sm text-gray-800 dark:text-gray-200 leading-relaxed">
                 <ReactMarkdown>{viewContract.content}</ReactMarkdown>
               </div>
             ) : (

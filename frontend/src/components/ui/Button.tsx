@@ -13,17 +13,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={clsx(
-          'inline-flex items-center justify-center rounded-xl font-medium transition-all focus:outline-none focus:ring-2 focus:ring-cara-500 focus:ring-offset-2 dark:focus:ring-offset-[#121212] disabled:opacity-50 disabled:cursor-not-allowed',
+          'inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)] focus:ring-offset-2 dark:focus:ring-offset-[#1A1917] disabled:opacity-50 disabled:cursor-not-allowed',
           {
-            'bg-cara-500 text-white hover:bg-cara-600 shadow-sm': variant === 'primary',
-            'bg-white text-cara-700 border border-gray-200 hover:bg-cara-50 hover:border-cara-300 dark:bg-neutral-800 dark:text-cara-300 dark:border-neutral-700 dark:hover:bg-neutral-700': variant === 'secondary',
-            'bg-danger text-white hover:bg-red-600 shadow-sm': variant === 'danger',
-            'text-cara-600 hover:bg-cara-100 dark:text-cara-400 dark:hover:bg-neutral-800': variant === 'ghost',
+            'bg-cara-500 text-white hover:bg-cara-600 active:bg-cara-700': variant === 'primary',
+            'bg-white text-gray-900 border border-gray-300 hover:bg-gray-100 active:bg-gray-300 dark:bg-neutral-800 dark:text-gray-100 dark:border-neutral-700 dark:hover:bg-neutral-700': variant === 'secondary',
+            'bg-danger text-white hover:bg-red-600 active:bg-red-700': variant === 'danger',
+            'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-neutral-800': variant === 'ghost',
           },
           {
-            'px-3 py-1.5 text-sm': size === 'sm',
-            'px-4 py-2 text-sm': size === 'md',
-            'px-6 py-3 text-base': size === 'lg',
+            'px-3 py-1.5': size === 'sm',
+            'px-4 py-2': size === 'md',
+            'px-6 py-2.5': size === 'lg',
           },
           className,
         )}

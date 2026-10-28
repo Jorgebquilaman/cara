@@ -41,7 +41,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#1f3d33]">
+    <div className="flex min-h-screen bg-cara-700">
       {/* ============ PANEL IZQUIERDO (blanco) ============ */}
       <div className="hidden lg:flex flex-col justify-between w-[46%] bg-white py-10 pl-12 pr-16 relative z-10">
         {/* Logo institución */}
@@ -104,7 +104,7 @@ export default function LoginPage() {
                 id="email"
                 type="email"
                 placeholder="usuario@iupa.edu.ar"
-                className="w-full rounded-lg bg-black/20 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:border-[#7fc9c4] focus:ring-1 focus:ring-[#7fc9c4]/40 transition-colors"
+                className="w-full rounded-lg bg-black/20 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:border-cara-200 focus:ring-1 focus:ring-cara-200/40 transition-colors"
                 {...register('email')}
               />
               {errors.email && <p className="mt-1 text-xs text-red-300">{errors.email.message}</p>}
@@ -118,7 +118,7 @@ export default function LoginPage() {
                 id="password"
                 type="password"
                 placeholder="••••••••"
-                className="w-full rounded-lg bg-black/20 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:border-[#7fc9c4] focus:ring-1 focus:ring-[#7fc9c4]/40 transition-colors"
+                className="w-full rounded-lg bg-black/20 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:border-cara-200 focus:ring-1 focus:ring-cara-200/40 transition-colors"
                 {...register('password')}
               />
               {errors.password && <p className="mt-1 text-xs text-red-300">{errors.password.message}</p>}
@@ -140,7 +140,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full rounded-full bg-[#7fc9c4] py-3 text-base font-bold text-[#1f3d33] transition-all hover:bg-[#6db8b3] hover:scale-[1.02] disabled:opacity-60 disabled:hover:scale-100 focus:outline-none focus:ring-2 focus:ring-[#7fc9c4]/50"
+              className="w-full rounded-full bg-white py-3 text-base font-bold text-cara-700 transition-all hover:bg-cara-50 hover:scale-[1.02] disabled:opacity-60 disabled:hover:scale-100 focus:outline-none focus:ring-2 focus:ring-cara-200/50"
             >
               {isSubmitting ? 'Ingresando…' : 'Iniciar Sesión'}
             </button>
@@ -149,7 +149,7 @@ export default function LoginPage() {
               ¿No tenés una cuenta?{' '}
               <a
                 href="/solicitar-alta"
-                className="underline underline-offset-2 text-white hover:text-[#7fc9c4] transition-colors"
+                className="underline underline-offset-2 text-white hover:text-cara-200 transition-colors"
               >
                 Registrate ahora
               </a>

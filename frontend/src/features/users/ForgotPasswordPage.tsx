@@ -8,8 +8,8 @@ import toast from 'react-hot-toast';
 const ContentWrapper = ({ children }: { children: ReactNode }) => {
   useForceLightTheme();
   return (
-  <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-[#121212] p-4">
-    <div className="flex w-full max-w-4xl flex-col md:flex-row overflow-hidden rounded-3xl bg-white dark:bg-[#1E1E1E] shadow-2xl">
+  <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-[var(--bg-base)] p-4">
+    <div className="flex w-full max-w-4xl flex-col md:flex-row overflow-hidden rounded-3xl bg-white dark:bg-[var(--surface)] shadow-2xl">
       <div className="hidden md:flex md:w-1/2 bg-cara-900 items-center justify-center p-12 relative">
         <div className="absolute inset-0 bg-cara-950/20" />
         <div className="relative z-10 text-white text-center">

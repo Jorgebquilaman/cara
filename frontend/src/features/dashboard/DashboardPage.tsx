@@ -18,10 +18,10 @@ import {
 const HOY = new Date().toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
 
 /* Paleta verde monocromática (inspiración dashboard inmobiliario) */
-const GREEN_DARK = '#14482f';
-const GREEN_MED = '#2E8B57';
-const GREEN_LIGHT = '#8dd4ab';
-const GREEN_LIGHTER = '#cfe8d8';
+const GREEN_DARK = '#0B4F57';
+const GREEN_MED = '#3D7E85';
+const GREEN_LIGHT = '#A3C4C7';
+const GREEN_LIGHTER = '#D3E4E5';
 
 const AXIS_TICK = { fill: '#6B7280', fontSize: 12 };
 

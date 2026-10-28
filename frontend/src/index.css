@@ -2,70 +2,151 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   Design Tokens — Product UI Styleguide v2.1
+   ============================================ */
+:root {
+  /* Color */
+  --color-primary: #0B4F57;
+  --color-primary-hover: #15666F;
+  --color-primary-active: #083A41;
+  --color-surface: #F7F5EE;
+  --color-border: #DEDCD6;
+  --color-focus-ring: #0B4F57;
+
+  --gray-900: #1F1F1F;
+  --gray-700: #404040;
+  --gray-500: #7A7A7A;
+  --gray-300: #DDDBD5;
+  --gray-100: #F1EFE9;
+  --gray-50: #F8F6EF;
+
+  --success: #2E9E5B;
+  --info: #2878C8;
+  --warning: #E0A800;
+  --error: #D13B3B;
+
+  /* Elevación */
+  --shadow-1: 0 2px 4px -1px rgba(0, 0, 0, 0.08);
+  --shadow-2: 0 4px 8px -2px rgba(0, 0, 0, 0.10);
+  --shadow-3: 0 8px 16px -4px rgba(0, 0, 0, 0.12);
+  --shadow-4: 0 12px 24px -6px rgba(0, 0, 0, 0.16);
+
+  /* Superficies aplicadas (light) */
+  --bg-base: var(--color-surface);
+  --surface: #FBFAF6;
+  --surface-alt: var(--gray-100);
+  --text-primary: var(--gray-900);
+  --text-secondary: var(--gray-500);
+  --border-subtle: var(--color-border);
+  --shadow-card: var(--shadow-3);
+  --shadow-card-hover: var(--shadow-4);
+
+  color-scheme: light;
+}
+
+html.dark {
+  /* Monocromo cálido oscuro, mismo acento teal */
+  --bg-base: #1A1917;
+  --surface: #23221F;
+  --surface-alt: #26251F;
+  --text-primary: #F5F4F0;
+  --text-secondary: #B5B3AC;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --shadow-1: 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 4px 8px -2px rgba(0, 0, 0, 0.45);
+  --shadow-3: 0 8px 16px -4px rgba(0, 0, 0, 0.5);
+  --shadow-4: 0 12px 24px -6px rgba(0, 0, 0, 0.55);
+  --shadow-card: var(--shadow-3);
+  --shadow-card-hover: var(--shadow-4);
+
+  color-scheme: dark;
+}
+
 @layer base {
-  :root {
-    color-scheme: light;
-
-    /* Superficies light */
-    --bg-base: #FAFAFA;
-    --surface: #FFFFFF;
-    --surface-alt: #F5F5F5;
-    --text-primary: #111827;
-    --text-secondary: #6B7280;
-    --border-subtle: rgba(0, 0, 0, 0.06);
-    --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 12px rgba(16, 24, 40, 0.08), 0 8px 24px rgba(16, 24, 40, 0.04);
-
-    /* Acento verde institucional */
-    --color-success: #2E8B57;
-    --color-warning: #F59E0B;
-    --color-danger: #EF4444;
-    --color-neutral: #6B7280;
-  }
-
-  html.dark {
-    color-scheme: dark;
-
-    --bg-base: #121212;
-    --surface: #1E1E1E;
-    --surface-alt: #1A1A1A;
-    --text-primary: #F9FAFB;
-    --text-secondary: #9CA3AF;
-    --border-subtle: rgba(255, 255, 255, 0.06);
-    --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.4);
-  }
-
   body {
     background-color: var(--bg-base);
     color: var(--text-primary);
     font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
   }
+
+  /* Forzar legibilidad en inputs: texto oscuro en light, claro en dark */
+  input,
+  textarea,
+  select {
+    color: var(--gray-900) !important;
+    -webkit-text-fill-color: var(--gray-900) !important;
+    caret-color: var(--gray-900) !important;
+  }
+
+  html.dark input,
+  html.dark textarea,
+  html.dark select {
+    color: #F5F4F0 !important;
+    -webkit-text-fill-color: #F5F4F0 !important;
+    caret-color: #F5F4F0 !important;
+  }
+
+  /* Campos sobre fondos oscuros (login) */
+  .field-on-dark input,
+  .field-on-dark textarea,
+  .field-on-dark select {
+    color: #F5F4F0 !important;
+    -webkit-text-fill-color: #F5F4F0 !important;
+    caret-color: #F5F4F0 !important;
+  }
+
+  /* Autofill: evitar fondo/texto ilegibles del navegador */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--gray-900);
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+    caret-color: var(--gray-900);
+    transition: background-color 9999s ease-out;
+  }
+
+  html.dark input:-webkit-autofill,
+  html.dark input:-webkit-autofill:hover,
+  html.dark input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #F5F4F0;
+    -webkit-box-shadow: 0 0 0 1000px #262522 inset;
+    caret-color: #F5F4F0;
+  }
 }
 
 @layer components {
+  /* Card según styleguide: radius 16px, sombra Level 3, fondo surface */
   .card-surface {
     background-color: var(--surface);
     box-shadow: var(--shadow-card);
-    @apply rounded-2xl;
+    border-radius: 16px;
+  }
+
+  /* Título de sección: MAYÚSCULAS, 12-13px, semibold, tracking amplio */
+  .section-title {
+    @apply text-xs font-semibold uppercase tracking-[0.12em] text-gray-700 dark:text-gray-300;
   }
 
   .status-badge {
     @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
   }
 
+  /* Chips semánticos: tinte claro + texto del color semántico (dark: tinte fuerte) */
   .status-badge--available {
-    @apply bg-cara-100 text-cara-800 dark:bg-cara-900/40 dark:text-cara-200;
+    @apply bg-success/10 text-success dark:bg-success/20 dark:text-success;
   }
 
   .status-badge--in-use {
-    @apply bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200;
+    @apply bg-warning/15 text-gray-800 dark:bg-warning/20 dark:text-warning;
   }
 
   .status-badge--overdue {
-    @apply bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200;
+    @apply bg-error/10 text-error dark:bg-error/20 dark:text-error;
   }
 
   .status-badge--maintenance {
-    @apply bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300;
+    @apply bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300;
   }
 
   .blink-title {
@@ -75,49 +156,5 @@
   @keyframes blink-alert {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
-  }
-
-  /* Forzar legibilidad en inputs: texto negro en light, claro en dark */
-  input,
-  textarea,
-  select {
-    color: #111827 !important;
-    -webkit-text-fill-color: #111827 !important;
-    caret-color: #111827 !important;
-  }
-
-  html.dark input,
-  html.dark textarea,
-  html.dark select {
-    color: #f9fafb !important;
-    -webkit-text-fill-color: #f9fafb !important;
-    caret-color: #f9fafb !important;
-  }
-
-  /* Campos sobre fondos oscuros (login) */
-  .field-on-dark input,
-  .field-on-dark textarea,
-  .field-on-dark select {
-    color: #f9fafb !important;
-    -webkit-text-fill-color: #f9fafb !important;
-    caret-color: #f9fafb !important;
-  }
-
-  /* Autofill: evitar fondo/texto ilegibles del navegador */
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus {
-    -webkit-text-fill-color: #111827;
-    -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
-    caret-color: #111827;
-    transition: background-color 9999s ease-out;
-  }
-
-  html.dark input:-webkit-autofill,
-  html.dark input:-webkit-autofill:hover,
-  html.dark input:-webkit-autofill:focus {
-    -webkit-text-fill-color: #f9fafb;
-    -webkit-box-shadow: 0 0 0 1000px #262626 inset;
-    caret-color: #f9fafb;
   }
 }

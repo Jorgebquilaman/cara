@@ -705,7 +705,7 @@ export default function LoansPage() {
               <span><strong>Código:</strong> {contractData.code}</span>
               <span><strong>Estado:</strong> <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-green-100 text-green-800">Activo</span></span>
             </div>
-            <div className="bg-white dark:bg-[#1E1E1E] rounded-xl border border-gray-100 dark:border-white/10 p-6 max-h-96 overflow-y-auto text-sm text-gray-800 dark:text-gray-200 leading-relaxed" id="contract-content">
+            <div className="bg-white dark:bg-[var(--surface)] rounded-xl border border-gray-100 dark:border-white/10 p-6 max-h-96 overflow-y-auto text-sm text-gray-800 dark:text-gray-200 leading-relaxed" id="contract-content">
               <ReactMarkdown>{contractData.content || ''}</ReactMarkdown>
             </div>
             <div className="flex justify-end gap-3 pt-2">
