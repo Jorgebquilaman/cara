@@ -1,5 +1,6 @@
 using Application.DTOs;
 using Application.Features.Users.Commands.CreateUser;
+using Application.Features.Users.Commands.DeleteUser;
 using Application.Features.Users.Commands.SetUserPassword;
 using Application.Features.Users.Commands.UpdateUser;
 using Application.Features.Users.Queries.GetAllUsers;
@@ -51,6 +52,13 @@ public class UsersController : ControllerBase
             return BadRequest(new { message = "La contraseña debe tener al menos 6 caracteres." });
 
         await _mediator.Send(new SetUserPasswordCommand(id, dto.NewPassword));
+        return NoContent();
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _mediator.Send(new DeleteUserCommand(id));
         return NoContent();
     }
 }

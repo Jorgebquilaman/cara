@@ -29,6 +29,7 @@ const loanSchema = z.object({
   startDate: z.string().min(1, 'Requerido'),
   dueDate: z.string().min(1, 'Requerido'),
   observations: z.string().max(1000).optional(),
+  space: z.string().max(100).optional(),
   prenda: z.string().optional(),
 });
 
@@ -176,6 +177,7 @@ export default function LoansPage() {
         startDate: data.startDate,
         dueDate: data.dueDate,
         observations: data.observations || undefined,
+        space: data.space || undefined,
         prenda: parseFloat(data.prenda || '0'),
       });
       closeCreateModal();
@@ -193,6 +195,7 @@ export default function LoansPage() {
         startDate: data.startDate,
         dueDate: data.dueDate,
         observations: data.observations || undefined,
+        space: data.space || undefined,
         prenda: parseFloat(data.prenda || '0'),
         force: true,
       });
@@ -211,11 +214,15 @@ export default function LoansPage() {
   const selectedUser = (users ?? []).find((u) => u.id === selectedUserId);
   const userOptions = (users ?? []).map((u) => ({
     value: u.id,
-    label: `${u.fullName} (${u.institutionalEmail})`,
+    label: `${u.fullName}${u.dni ? ` · DNI ${u.dni}` : ''}`,
+    dni: u.dni || '',
+    name: u.fullName,
   }));
-  const filteredUserOptions = userOptions.filter((opt) =>
-    opt.label.toLowerCase().includes(userSearch.toLowerCase())
-  );
+  const filteredUserOptions = userOptions.filter((opt) => {
+    const q = userSearch.trim().toLowerCase();
+    if (!q) return true;
+    return opt.name.toLowerCase().includes(q) || opt.dni.includes(q);
+  });
   const filteredAssetOptions = assetOptions.filter((opt) =>
     opt.label.toLowerCase().includes(assetSearch.toLowerCase())
   );
@@ -316,6 +323,7 @@ export default function LoansPage() {
   const columns = [
     { key: 'assetName', header: 'Activo', sortable: true },
     { key: 'userName', header: 'Usuario', sortable: true },
+    { key: 'space', header: 'Aula/Espacio', sortable: true },
     {
       key: 'startDate',
       header: 'Inicio',
@@ -446,7 +454,7 @@ export default function LoansPage() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Usuario</label>
                 <input
                   type="text"
-                  placeholder="Buscá por nombre o email..."
+                  placeholder="Buscá por DNI o nombre..."
                   value={userSearch}
                   onChange={(e) => {
                     setUserSearch(e.target.value);
@@ -562,6 +570,12 @@ export default function LoansPage() {
                 type="datetime-local"
                 error={form.formState.errors.dueDate?.message}
                 {...form.register('dueDate')}
+              />
+              <Input
+                label="Aula o espacio"
+                placeholder="Ej: Aula 12, Sala de ensayo…"
+                error={form.formState.errors.space?.message}
+                {...form.register('space')}
               />
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Observaciones</label>

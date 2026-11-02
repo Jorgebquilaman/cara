@@ -72,7 +72,7 @@ public class CreateLoanCommandHandler : IRequestHandler<CreateLoanCommand, LoanD
         var hasOverlap = await _loanRepository.HasOverlappingActiveLoanAsync(
             request.AssetId, startUtc, endUtc, cancellationToken);
 
-        var loan = new Loan(request.AssetId, request.UserId, period, request.Observations, request.Prenda);
+        var loan = new Loan(request.AssetId, request.UserId, period, request.Observations, request.Prenda, request.Space);
 
         _loanRepository.Add(loan);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

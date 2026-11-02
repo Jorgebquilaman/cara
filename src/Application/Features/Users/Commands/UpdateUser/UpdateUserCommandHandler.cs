@@ -1,3 +1,4 @@
+using Application.Services;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Interfaces;
@@ -8,11 +9,13 @@ namespace Application.Features.Users.Commands.UpdateUser;
 public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IAuthService _authService;
     private readonly IUnitOfWork _unitOfWork;
 
-    public UpdateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
+    public UpdateUserCommandHandler(IUserRepository userRepository, IAuthService authService, IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
+        _authService = authService;
         _unitOfWork = unitOfWork;
     }
 
@@ -32,6 +35,13 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand>
             user.Activate();
         else if (!request.IsActive && user.IsActive)
             user.Deactivate();
+
+        if (!string.IsNullOrWhiteSpace(request.Password))
+        {
+            if (request.Password.Length < 6)
+                throw new InvalidOperationException("La contraseña debe tener al menos 6 caracteres.");
+            user.SetPassword(_authService.HashPassword(request.Password));
+        }
 
         _userRepository.Update(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

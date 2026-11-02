@@ -12,7 +12,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import Pagination from '@/components/ui/Pagination';
-import { Search, Plus, FileSpreadsheet, FileText, Pencil, KeyRound } from 'lucide-react';
+import { Search, Plus, FileSpreadsheet, FileText, Pencil, KeyRound, Trash2 } from 'lucide-react';
 import { User } from '@/types';
 import toast from 'react-hot-toast';
 import * as XLSX from 'xlsx';
@@ -60,6 +60,8 @@ export default function UsersPage() {
   const [editCareerId, setEditCareerId] = useState('');
   const [editRole, setEditRole] = useState('');
   const [editIsActive, setEditIsActive] = useState(true);
+  const [editPassword, setEditPassword] = useState('');
+  const [deleteUser, setDeleteUser] = useState<User | null>(null);
   const [search, setSearch] = useState('');
   const [passwordUser, setPasswordUser] = useState<User | null>(null);
   const [newPassword, setNewPassword] = useState('');
@@ -131,6 +133,20 @@ export default function UsersPage() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await api.delete(`/users/${id}`);
+    },
+    onSuccess: () => {
+      setDeleteUser(null);
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      toast.success('Usuario eliminado');
+    },
+    onError: () => {
+      toast.error('No se pudo eliminar (¿tiene registros asociados?)');
+    },
+  });
+
   const updateMutation = useMutation({
     mutationFn: async (user: User) => {
       await api.put(`/users/${user.id}`, {
@@ -142,10 +158,12 @@ export default function UsersPage() {
         careerId: editCareerId || null,
         role: editRole,
         isActive: editIsActive,
+        password: editPassword.length >= 6 ? editPassword : undefined,
       });
     },
     onSuccess: () => {
       setEditUser(null);
+      setEditPassword('');
       queryClient.invalidateQueries({ queryKey: ['users'] });
       toast.success('Usuario actualizado exitosamente');
     },
@@ -303,6 +321,7 @@ export default function UsersPage() {
             setEditCareerId(u.careerId || '');
             setEditRole(u.role);
             setEditIsActive(u.isActive);
+            setEditPassword('');
             const dept = departments.find(d => d.name === u.departmentName);
             setEditDepartmentId(dept?.id || '');
           }}
@@ -320,6 +339,14 @@ export default function UsersPage() {
           className="rounded-lg p-2 text-cara-500 hover:bg-cara-100 hover:text-cara-700 transition-colors"
         >
           <KeyRound className="h-4 w-4" />
+        </button>
+        <button
+          title="Eliminar usuario"
+          aria-label="Eliminar usuario"
+          onClick={() => setDeleteUser(u)}
+          className="rounded-lg p-2 text-cara-500 hover:bg-red-50 hover:text-danger transition-colors"
+        >
+          <Trash2 className="h-4 w-4" />
         </button>
         </div>
       ),
@@ -457,6 +484,14 @@ export default function UsersPage() {
             value={editPhoneNumber}
             onChange={(e) => setEditPhoneNumber(e.target.value)}
           />
+          <Input
+            label="Contraseña nueva (opcional)"
+            type="password"
+            placeholder="Mínimo 6 caracteres — dejalo vacío para no cambiarla"
+            value={editPassword}
+            onChange={(e) => setEditPassword(e.target.value)}
+            error={editPassword.length > 0 && editPassword.length < 6 ? 'Mínimo 6 caracteres' : undefined}
+          />
           <div>
             <label className="mb-1 block text-sm font-medium text-cara-700">Departamento</label>
             <select value={editDepartmentId} onChange={(e) => { setEditDepartmentId(e.target.value); setEditCareerId(''); }}
@@ -499,6 +534,31 @@ export default function UsersPage() {
             <Button variant="secondary" onClick={() => setEditUser(null)}>Cancelar</Button>
             <Button onClick={() => editUser && updateMutation.mutate(editUser)} isLoading={updateMutation.isPending}>
               Guardar
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={!!deleteUser}
+        onClose={() => setDeleteUser(null)}
+        title="Eliminar usuario"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            ¿Estás seguro de que querés eliminar a <strong>{deleteUser?.fullName}</strong> (
+            {deleteUser?.institutionalEmail})? Esta acción no se puede deshacer.
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Si el usuario tiene préstamos, reservas o sanciones registradas, el sistema lo va a impedir: en ese caso desactivá la cuenta desde el lápiz de edición.
+          </p>
+          <div className="flex justify-end gap-3">
+            <Button variant="secondary" onClick={() => setDeleteUser(null)}>
+              Cancelar
+            </Button>
+            <Button variant="danger" onClick={() => deleteUser && deleteMutation.mutate(deleteUser.id)} isLoading={deleteMutation.isPending}>
+              Eliminar
             </Button>
           </div>
         </div>

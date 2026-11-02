@@ -13,7 +13,7 @@ import { Select } from '@/components/ui/Select';
 import Calendar from '@/components/ui/Calendar';
 import Pagination from '@/components/ui/Pagination';
 import { Search, Plus, CheckCircle, XCircle, FileSpreadsheet, FileText, Star } from 'lucide-react';
-import { Reservation, AssetAvailability } from '@/types';
+import { Reservation, AssetAvailability, User } from '@/types';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -30,6 +30,7 @@ const reservationSchema = z.object({
   startTime: z.string().min(1, 'Requerido'),
   endTime: z.string().min(1, 'Requerido'),
   space: z.string().min(1, 'Requerido'),
+  userId: z.string().optional(),
 });
 
 type ReservationForm = z.infer<typeof reservationSchema>;
@@ -48,6 +49,12 @@ export default function ReservationsPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [dateRange, setDateRange] = useState<{ start: Date; end: Date } | null>(null);
   const [selectedAssetId, setSelectedAssetId] = useState('');
+  const [assetPickerSearch, setAssetPickerSearch] = useState('');
+  const [showAssetPicker, setShowAssetPicker] = useState(false);
+  const [reservingUserId, setReservingUserId] = useState('');
+  const [reservingUserName, setReservingUserName] = useState('');
+  const [showReservingDropdown, setShowReservingDropdown] = useState(false);
+  const [reservingSearch, setReservingSearch] = useState('');
   const [assetSearch, setAssetSearch] = useState('');
   const [showAssetDropdown, setShowAssetDropdown] = useState(false);
   const [rangeError, setRangeError] = useState('');
@@ -109,7 +116,7 @@ export default function ReservationsPage() {
     mutationFn: async (data: ReservationForm) => {
       const startDate = `${data.startDate}T${data.startTime}:00`;
       const endDate = `${data.endDate}T${data.endTime}:00`;
-      await api.post('/reservations', { assetId: data.assetId, startDate, endDate, space: data.space, userId: user?.id });
+      await api.post('/reservations', { assetId: data.assetId, startDate, endDate, space: data.space, userId: data.userId || user?.id });
     },
     onSuccess: () => {
       form.reset();
@@ -138,6 +145,41 @@ export default function ReservationsPage() {
   const selectedAsset = activeAssets.find((a) => a.id === selectedAssetId);
 
   const isAdminOrStaff = user?.role === 'Admin' || user?.role === 'Staff';
+
+  /* Settable asset picker: opciones con código + nombre + estado */
+  const assetPickerOptions = activeAssets.map((a) => ({
+    value: a.id,
+    code: a.code,
+    name: a.name,
+    statusLabel: a.status === 'Available' ? 'Disponible' : a.status === 'InUse' ? 'En uso' : a.status,
+    statusColor: a.status === 'Available' ? 'text-success' : a.status === 'InUse' ? 'text-gray-500' : 'text-gray-400',
+  }));
+  const filteredAssetPicker = assetPickerOptions.filter((o) => {
+    const q = assetPickerSearch.trim().toLowerCase();
+    if (!q) return true;
+    return o.name.toLowerCase().includes(q) || o.code.toLowerCase().includes(q);
+  });
+
+  /* Usuarios para "Nombre de la persona que reserva" (solo Admin/Staff) */
+  const { data: reservingUsers } = useQuery({
+    queryKey: ['users'],
+    queryFn: async () => {
+      const { data } = await api.get<User[]>('/users');
+      return data;
+    },
+    enabled: isAdminOrStaff,
+  });
+  const reservingOptions = (reservingUsers ?? []).map((u) => ({
+    value: u.id,
+    label: `${u.fullName}${u.dni ? ` · DNI ${u.dni}` : ''}`,
+    dni: u.dni || '',
+    name: u.fullName,
+  }));
+  const filteredReservingOptions = reservingOptions.filter((o) => {
+    const q = reservingSearch.trim().toLowerCase();
+    if (!q) return true;
+    return o.name.toLowerCase().includes(q) || o.dni.includes(q);
+  });
 
   const allReservations = reservations ?? [];
 
@@ -363,22 +405,61 @@ export default function ReservationsPage() {
         />
       </div>
 
-      <Modal isOpen={isCreateOpen} onClose={() => { setIsCreateOpen(false); setDateRange(null); setSelectedAssetId(''); }} title="Nueva Reserva" size="lg">
+      <Modal isOpen={isCreateOpen} onClose={() => { setIsCreateOpen(false); setDateRange(null); setSelectedAssetId(''); setReservingUserId(''); setReservingUserName(''); setReservingSearch(''); }} title="Nueva Reserva" size="lg">
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <Select
-                label="Activo"
-                options={assetOptions}
-                placeholder="Seleccioná un activo"
-                error={form.formState.errors.assetId?.message}
-                {...form.register('assetId', {
-                  onChange: (e) => {
-                    setSelectedAssetId(e.target.value);
-                    setDateRange(null);
-                  },
-                })}
-              />
+              <div className="relative">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Activo / Instrumento</label>
+                <input
+                  type="text"
+                  placeholder="Buscá por código o nombre..."
+                  value={assetPickerSearch}
+                  onChange={(e) => {
+                    setAssetPickerSearch(e.target.value);
+                    setShowAssetPicker(true);
+                  }}
+                  onFocus={() => setShowAssetPicker(true)}
+                  onBlur={() => setTimeout(() => setShowAssetPicker(false), 200)}
+                  className="w-full h-10 rounded-lg border border-[var(--color-border)] bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 px-3.5 text-sm focus:outline-none focus:border-cara-500 focus:ring-2 focus:ring-cara-500/25"
+                />
+                {showAssetPicker && (
+                  <div className="absolute z-50 mt-1 w-full max-h-64 overflow-y-auto rounded-xl border border-gray-200 bg-white dark:bg-neutral-800 dark:border-neutral-700 shadow-dropdown">
+                    {filteredAssetPicker.length === 0 ? (
+                      <p className="px-3 py-2 text-sm text-gray-400">Sin resultados</p>
+                    ) : (
+                      filteredAssetPicker.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          className={`w-full text-left px-3 py-2 hover:bg-cara-50 transition-colors ${
+                            selectedAssetId === opt.value ? 'bg-cara-50 font-medium' : ''
+                          }`}
+                          onClick={() => {
+                            setSelectedAssetId(opt.value);
+                            setAssetPickerSearch(`${opt.code} - ${opt.name}`);
+                            setShowAssetPicker(false);
+                            setDateRange(null);
+                            form.setValue('assetId', opt.value, { shouldValidate: true });
+                          }}
+                        >
+                          <span className="flex items-center justify-between gap-2">
+                            <span className="text-sm text-gray-900 dark:text-gray-100">
+                              <span className="font-mono text-xs font-bold text-cara-700 dark:text-cara-400 mr-2">{opt.code}</span>
+                              {opt.name}
+                            </span>
+                            <span className={`text-[10px] uppercase tracking-wider shrink-0 ${opt.statusColor}`}>{opt.statusLabel}</span>
+                          </span>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+                {form.formState.errors.assetId?.message && (
+                  <p className="text-xs text-red-500 mt-1">{form.formState.errors.assetId?.message}</p>
+                )}
+                <input type="hidden" name="assetId" value={selectedAssetId} />
+              </div>
               {selectedAssetId && selectedAsset?.imageUrl && (
                 <div className="flex justify-center">
                   <img
@@ -391,6 +472,61 @@ export default function ReservationsPage() {
             </div>
 
             <div className="space-y-4">
+              <div className="relative">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                  Nombre de la persona que reserva
+                </label>
+                {isAdminOrStaff ? (
+                  <>
+                    <input
+                      type="text"
+                      placeholder="Buscá por DNI o nombre..."
+                      value={reservingUserId ? reservingUserName : reservingSearch}
+                      onChange={(e) => {
+                        if (reservingUserId) {
+                          setReservingUserId('');
+                          form.setValue('userId', undefined, { shouldValidate: true });
+                        }
+                        setReservingSearch(e.target.value);
+                        setShowReservingDropdown(true);
+                      }}
+                      onFocus={() => setShowReservingDropdown(true)}
+                      onBlur={() => setTimeout(() => setShowReservingDropdown(false), 200)}
+                      className="w-full h-10 rounded-lg border border-[var(--color-border)] bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 px-3.5 text-sm focus:outline-none focus:border-cara-500 focus:ring-2 focus:ring-cara-500/25"
+                    />
+                    {showReservingDropdown && (
+                      <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-xl border border-gray-200 bg-white dark:bg-neutral-800 dark:border-neutral-700 shadow-dropdown">
+                        {filteredReservingOptions.length === 0 ? (
+                          <p className="px-3 py-2 text-sm text-gray-400">Sin resultados</p>
+                        ) : (
+                          filteredReservingOptions.map((opt) => (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              className={`w-full text-left px-3 py-2 text-sm hover:bg-cara-50 transition-colors ${
+                                reservingUserId === opt.value ? 'bg-cara-50 font-medium' : ''
+                              }`}
+                              onClick={() => {
+                                setReservingUserId(opt.value);
+                                setReservingUserName(opt.label);
+                                setShowReservingDropdown(false);
+                                setReservingSearch('');
+                                form.setValue('userId', opt.value, { shouldValidate: true });
+                              }}
+                            >
+                              {opt.label}
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex items-center h-10 rounded-lg border border-[var(--color-border)] bg-gray-50 dark:bg-neutral-800 px-3.5 text-sm text-gray-700 dark:text-gray-300">
+                    {user?.fullName}
+                  </div>
+                )}
+              </div>
               <Input
                 label="Espacio"
                 placeholder="Ej: Sala A, Auditorio, etc."

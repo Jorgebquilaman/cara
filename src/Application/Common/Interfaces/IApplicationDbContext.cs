@@ -12,6 +12,7 @@ public interface IApplicationDbContext
     DbSet<Incident> Incidents { get; }
     DbSet<Sanction> Sanctions { get; }
     DbSet<Notification> Notifications { get; }
+    DbSet<PasswordResetToken> PasswordResetTokens { get; }
     DbSet<AuditLog> AuditLogs { get; }
     DbSet<SatisfactionSurvey> SatisfactionSurveys { get; }
 

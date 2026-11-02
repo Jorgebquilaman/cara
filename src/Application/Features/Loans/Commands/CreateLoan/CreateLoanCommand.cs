@@ -10,6 +10,7 @@ public record CreateLoanCommand : IRequest<LoanDto>
     public DateTime StartDate { get; init; }
     public DateTime DueDate { get; init; }
     public string? Observations { get; init; }
+    public string? Space { get; init; }
     public decimal Prenda { get; init; }
     public bool Force { get; init; }
 }

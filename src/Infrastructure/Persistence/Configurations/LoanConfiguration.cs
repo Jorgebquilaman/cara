@@ -57,6 +57,9 @@ public class LoanConfiguration : IEntityTypeConfiguration<Loan>
         builder.Property(l => l.UserRatingComment)
             .HasMaxLength(500);
 
+        builder.Property(l => l.Space)
+            .HasMaxLength(100);
+
         builder.HasOne(l => l.Asset)
             .WithMany(a => a.Loans)
             .HasForeignKey(l => l.AssetId)

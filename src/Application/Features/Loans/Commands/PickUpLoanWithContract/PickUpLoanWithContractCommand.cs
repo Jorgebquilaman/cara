@@ -45,6 +45,7 @@ public class PickUpLoanWithContractCommandHandler : IRequestHandler<PickUpLoanWi
         var userFullName = $"{user.FirstName} {user.LastName}";
         var prendaStr = loan.Prenda > 0 ? $"$ {loan.Prenda:N2}" : "—";
         var obsStr = !string.IsNullOrWhiteSpace(loan.Observations) ? loan.Observations : "—";
+        var spaceStr = !string.IsNullOrWhiteSpace(loan.Space) ? loan.Space : "—";
 
         string content;
 
@@ -65,6 +66,7 @@ public class PickUpLoanWithContractCommandHandler : IRequestHandler<PickUpLoanWi
                 ["AssetName"] = asset.Name,
                 ["AssetCategory"] = asset.Category,
                 ["AssetDescription"] = asset.Description ?? "—",
+                ["Space"] = spaceStr,
                 ["StartDate"] = loan.Period.Start.ToString("dd/MM/yyyy HH:mm") + " hs",
                 ["EndDate"] = loan.Period.End.ToString("dd/MM/yyyy HH:mm") + " hs",
                 ["Prenda"] = prendaStr,
@@ -96,6 +98,7 @@ public class PickUpLoanWithContractCommandHandler : IRequestHandler<PickUpLoanWi
 | Nombre | {asset.Name} |
 | Categoría | {asset.Category} |
 | Descripción | {asset.Description ?? "—"} |
+| Aula / Espacio | {spaceStr} |
 
 ## Período del Préstamo
 

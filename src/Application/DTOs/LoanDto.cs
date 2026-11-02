@@ -13,6 +13,7 @@ public class LoanDto
     public string Status { get; set; }
     public string? RejectionReason { get; set; }
     public string? Observations { get; set; }
+    public string? Space { get; set; }
     public decimal Prenda { get; set; }
     public bool PrendaReturned { get; set; }
     public DateTime? PrendaReturnedAt { get; set; }
@@ -30,6 +31,7 @@ public class CreateLoanDto
     public DateTime StartDate { get; set; }
     public DateTime DueDate { get; set; }
     public string? Observations { get; set; }
+    public string? Space { get; set; }
     public decimal Prenda { get; set; }
 }
 
