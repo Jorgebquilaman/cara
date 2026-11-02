@@ -12,7 +12,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import Pagination from '@/components/ui/Pagination';
-import { Search, Plus, FileSpreadsheet, FileText, Pencil } from 'lucide-react';
+import { Search, Plus, FileSpreadsheet, FileText, Pencil, KeyRound } from 'lucide-react';
 import { User } from '@/types';
 import toast from 'react-hot-toast';
 import * as XLSX from 'xlsx';
@@ -61,6 +61,8 @@ export default function UsersPage() {
   const [editRole, setEditRole] = useState('');
   const [editIsActive, setEditIsActive] = useState(true);
   const [search, setSearch] = useState('');
+  const [passwordUser, setPasswordUser] = useState<User | null>(null);
+  const [newPassword, setNewPassword] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   const [page, setPage] = useState(1);
   const [formDepartmentId, setFormDepartmentId] = useState('');
@@ -111,6 +113,21 @@ export default function UsersPage() {
     },
     onError: () => {
       toast.error('Error al crear usuario');
+    },
+  });
+
+  const setPasswordMutation = useMutation({
+    mutationFn: async () => {
+      await api.post(`/users/${passwordUser?.id}/set-password`, { newPassword });
+    },
+    onSuccess: () => {
+      setPasswordUser(null);
+      setNewPassword('');
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      toast.success('Contraseña actualizada exitosamente');
+    },
+    onError: () => {
+      toast.error('Error al cambiar la contraseña');
     },
   });
 
@@ -275,6 +292,7 @@ export default function UsersPage() {
       key: 'acciones',
       header: '',
       render: (u: User) => (
+        <div className="flex gap-1">
         <button
           onClick={() => {
             setEditUser(u);
@@ -292,6 +310,18 @@ export default function UsersPage() {
         >
           <Pencil className="h-4 w-4" />
         </button>
+        <button
+          title="Cambiar contraseña"
+          aria-label="Cambiar contraseña"
+          onClick={() => {
+            setPasswordUser(u);
+            setNewPassword('');
+          }}
+          className="rounded-lg p-2 text-cara-500 hover:bg-cara-100 hover:text-cara-700 transition-colors"
+        >
+          <KeyRound className="h-4 w-4" />
+        </button>
+        </div>
       ),
     },
   ];
@@ -469,6 +499,40 @@ export default function UsersPage() {
             <Button variant="secondary" onClick={() => setEditUser(null)}>Cancelar</Button>
             <Button onClick={() => editUser && updateMutation.mutate(editUser)} isLoading={updateMutation.isPending}>
               Guardar
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={!!passwordUser}
+        onClose={() => setPasswordUser(null)}
+        title={`Cambiar contraseña · ${passwordUser?.fullName ?? ''}`}
+        size="sm"
+      >
+        <div className="space-y-4">
+          <Input
+            label="Nueva contraseña"
+            type="password"
+            placeholder="Mínimo 6 caracteres"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            error={newPassword.length > 0 && newPassword.length < 6 ? 'Mínimo 6 caracteres' : undefined}
+          />
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Esta acción no requiere la contraseña anterior. Se sobrescribirá la actual de{' '}
+            <strong>{passwordUser?.institutionalEmail}</strong>.
+          </p>
+          <div className="flex justify-end gap-3">
+            <Button variant="secondary" onClick={() => setPasswordUser(null)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => setPasswordMutation.mutate()}
+              isLoading={setPasswordMutation.isPending}
+              disabled={newPassword.length < 6}
+            >
+              Guardar contraseña
             </Button>
           </div>
         </div>

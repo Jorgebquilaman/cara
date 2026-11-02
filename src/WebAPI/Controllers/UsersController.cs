@@ -1,5 +1,6 @@
 using Application.DTOs;
 using Application.Features.Users.Commands.CreateUser;
+using Application.Features.Users.Commands.SetUserPassword;
 using Application.Features.Users.Commands.UpdateUser;
 using Application.Features.Users.Queries.GetAllUsers;
 using MediatR;
@@ -40,6 +41,16 @@ public class UsersController : ControllerBase
             return BadRequest("ID mismatch.");
 
         await _mediator.Send(command);
+        return NoContent();
+    }
+
+    [HttpPost("{id:guid}/set-password")]
+    public async Task<IActionResult> SetPassword(Guid id, [FromBody] SetUserPasswordDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.NewPassword) || dto.NewPassword.Length < 6)
+            return BadRequest(new { message = "La contraseña debe tener al menos 6 caracteres." });
+
+        await _mediator.Send(new SetUserPasswordCommand(id, dto.NewPassword));
         return NoContent();
     }
 }
