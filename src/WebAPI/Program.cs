@@ -269,7 +269,11 @@ if (app.Environment.IsDevelopment())
 
     foreach (var sql in userAlters)
     {
-        try { await db.Database.ExecuteSqlRawAsync(sql); } catch { }
+        try { await db.Database.ExecuteSqlRawAsync(sql); }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[MigrationWarning] {ex.Message}");
+        }
     }
 
     // 3. Seed Users
