@@ -35,6 +35,21 @@ const loanSchema = z.object({
 
 type LoanForm = z.infer<typeof loanSchema>;
 
+/* Etiquetas y chips de rol (Styleguide v2.1) */
+const ROLE_LABELS: Record<string, string> = {
+  Admin: 'Administración',
+  Staff: 'Administrativo',
+  Teacher: 'Docente',
+  Student: 'Estudiante',
+};
+
+const ROLE_CHIP: Record<string, string> = {
+  Admin: 'bg-cara-500 text-white',
+  Staff: 'bg-cara-100 text-cara-700 dark:bg-cara-700 dark:text-white',
+  Teacher: 'bg-info/10 text-info dark:bg-info/25',
+  Student: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+};
+
 const statusFilterOptions = [
   { value: '', label: 'Todos' },
   { value: 'Pending', label: 'Pendientes' },
@@ -217,6 +232,8 @@ export default function LoansPage() {
     label: `${u.fullName}${u.dni ? ` · DNI ${u.dni}` : ''}`,
     dni: u.dni || '',
     name: u.fullName,
+    roleLabel: ROLE_LABELS[u.role] ?? u.role,
+    chipCls: ROLE_CHIP[u.role] ?? 'bg-gray-100 text-gray-700',
   }));
   const filteredUserOptions = userOptions.filter((opt) => {
     const q = userSearch.trim().toLowerCase();
@@ -474,7 +491,7 @@ export default function LoansPage() {
                           key={opt.value}
                           type="button"
                           className={`w-full text-left px-3 py-2 text-sm hover:bg-cara-50 transition-colors ${
-                            selectedUserId === opt.value ? 'bg-cara-100 font-medium' : ''
+                            selectedUserId === opt.value ? 'bg-cara-50 font-medium' : ''
                           }`}
                           onClick={() => {
                             setSelectedUserId(opt.value);
@@ -483,7 +500,15 @@ export default function LoansPage() {
                             form.setValue('userId', opt.value, { shouldValidate: true });
                           }}
                         >
-                          {opt.label}
+                          <span className="flex items-center justify-between gap-2">
+                            <span className="text-gray-900 dark:text-gray-100 truncate">
+                              {opt.name}
+                              {opt.dni && <span className="ml-2 text-xs text-gray-500">DNI {opt.dni}</span>}
+                            </span>
+                            <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${opt.chipCls}`}>
+                              {opt.roleLabel}
+                            </span>
+                          </span>
                         </button>
                       ))
                     )}
@@ -494,6 +519,27 @@ export default function LoansPage() {
                 )}
                 <input type="hidden" name="userId" value={selectedUserId} />
               </div>
+              {selectedUser && (
+                <div className="rounded-lg border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800 p-3 text-sm">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-gray-900 dark:text-gray-100">{selectedUser.fullName}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                        {selectedUser.institutionalEmail}{selectedUser.dni ? ` · DNI ${selectedUser.dni}` : ''}
+                      </p>
+                      {selectedUser.careerName && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{selectedUser.careerName}</p>
+                      )}
+                    </div>
+                    <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${ROLE_CHIP[selectedUser.role] ?? 'bg-gray-100 text-gray-700'}`}>
+                      {ROLE_LABELS[selectedUser.role] ?? selectedUser.role}
+                    </span>
+                  </div>
+                  <p className="mt-1.5 text-[11px] text-gray-400">
+                    Préstamos activos: {selectedUser.activeLoanCount}
+                  </p>
+                </div>
+              )}
               {selectedUser?.hasActiveSanctions && (
                 <div className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700">
                   <strong className="block mb-1">Usuario suspendido</strong>
