@@ -45,9 +45,17 @@ const ROLE_LABELS: Record<string, string> = {
 
 const ROLE_CHIP: Record<string, string> = {
   Admin: 'bg-cara-500 text-white',
-  Staff: 'bg-cara-100 text-cara-700 dark:bg-cara-700 dark:text-white',
+  Staff: 'bg-warning/15 text-gray-800 dark:bg-warning/30 dark:text-warning',
   Teacher: 'bg-info/10 text-info dark:bg-info/25',
-  Student: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+  Student: 'bg-success/10 text-success dark:bg-success/25',
+};
+
+/* Franja de color del panel de info, según rol */
+const ROLE_BAR: Record<string, string> = {
+  Admin: 'bg-cara-500',
+  Staff: 'bg-warning',
+  Teacher: 'bg-info',
+  Student: 'bg-success',
 };
 
 const statusFilterOptions = [
@@ -520,8 +528,9 @@ export default function LoansPage() {
                 <input type="hidden" name="userId" value={selectedUserId} />
               </div>
               {selectedUser && (
-                <div className="rounded-lg border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800 p-3 text-sm">
-                  <div className="flex items-start justify-between gap-2">
+                <div className="rounded-lg border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800 p-3 text-sm relative overflow-hidden">
+                  <div className={`absolute left-0 top-0 bottom-0 w-1 ${ROLE_BAR[selectedUser.role] ?? 'bg-gray-300'}`} />
+                  <div className="flex items-start justify-between gap-2 pl-2">
                     <div className="min-w-0">
                       <p className="font-semibold text-gray-900 dark:text-gray-100">{selectedUser.fullName}</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
@@ -535,7 +544,7 @@ export default function LoansPage() {
                       {ROLE_LABELS[selectedUser.role] ?? selectedUser.role}
                     </span>
                   </div>
-                  <p className="mt-1.5 text-[11px] text-gray-400">
+                  <p className="mt-1.5 text-[11px] text-gray-400 pl-2">
                     Préstamos activos: {selectedUser.activeLoanCount}
                   </p>
                 </div>
