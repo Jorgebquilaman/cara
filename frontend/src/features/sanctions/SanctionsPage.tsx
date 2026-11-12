@@ -31,6 +31,9 @@ export default function SanctionsPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [sanctionUserId, setSanctionUserId] = useState('');
+  const [sanctionUserSearch, setSanctionUserSearch] = useState('');
+  const [showSanctionUserDropdown, setShowSanctionUserDropdown] = useState(false);
   const pageSize = 10;
   const searchTimeout = useRef<ReturnType<typeof setTimeout>>();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -151,7 +154,17 @@ export default function SanctionsPage() {
 
   const userOptions = (users ?? [])
     .filter((u) => u.isActive)
-    .map((u) => ({ value: u.id, label: `${u.fullName} (${u.institutionalEmail})` }));
+    .map((u) => ({
+      value: u.id,
+      label: `${u.fullName}${u.dni ? ` · DNI ${u.dni}` : ''}`,
+      name: u.fullName,
+      dni: u.dni || '',
+    }));
+  const filteredUserOptions = userOptions.filter((o) => {
+    const q = sanctionUserSearch.trim().toLowerCase();
+    if (!q) return true;
+    return o.name.toLowerCase().includes(q) || o.dni.includes(q);
+  });
 
   const statusOptions = [
     { value: '', label: 'Todos' },
@@ -265,15 +278,56 @@ export default function SanctionsPage() {
         />
       </div>
 
-      <Modal isOpen={isCreateOpen} onClose={() => { setIsCreateOpen(false); setSelectedFile(null); }} title="Nueva Sanción" size="lg">
+      <Modal isOpen={isCreateOpen} onClose={() => { setIsCreateOpen(false); setSelectedFile(null); setSanctionUserId(''); setSanctionUserSearch(''); form.reset(); }} title="Nueva Sanción" size="lg">
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <Select
-            label="Usuario"
-            options={userOptions}
-            placeholder="Seleccioná un usuario"
-            error={form.formState.errors.userId?.message}
-            {...form.register('userId')}
-          />
+          <div className="relative">
+            <label className="mb-1 block text-sm font-semibold text-gray-700 dark:text-gray-300">Usuario</label>
+            <input
+              type="text"
+              placeholder="Buscá por DNI o nombre..."
+              value={sanctionUserId ? userOptions.find((o) => o.value === sanctionUserId)?.label ?? '' : sanctionUserSearch}
+              onChange={(e) => {
+                if (sanctionUserId) {
+                  setSanctionUserId('');
+                  form.setValue('userId', undefined, { shouldValidate: true });
+                }
+                setSanctionUserSearch(e.target.value);
+                setShowSanctionUserDropdown(true);
+              }}
+              onFocus={() => setShowSanctionUserDropdown(true)}
+              onBlur={() => setTimeout(() => setShowSanctionUserDropdown(false), 200)}
+              className="w-full h-10 rounded-lg border border-[var(--color-border)] bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 px-3.5 text-sm focus:outline-none focus:border-cara-500 focus:ring-2 focus:ring-cara-500/25"
+            />
+            {showSanctionUserDropdown && (
+              <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-xl border border-gray-200 bg-white dark:bg-neutral-800 dark:border-neutral-700 shadow-dropdown">
+                {filteredUserOptions.length === 0 ? (
+                  <p className="px-3 py-2 text-sm text-gray-400">Sin resultados</p>
+                ) : (
+                  filteredUserOptions.map((o) => (
+                    <button
+                      key={o.value}
+                      type="button"
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-cara-50 transition-colors ${
+                        sanctionUserId === o.value ? 'bg-cara-50 font-medium' : ''
+                      }`}
+                      onClick={() => {
+                        setSanctionUserId(o.value);
+                        setShowSanctionUserDropdown(false);
+                        setSanctionUserSearch('');
+                        form.setValue('userId', o.value, { shouldValidate: true });
+                      }}
+                    >
+                      {o.label}
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
+            {form.formState.errors.userId?.message && (
+              <p className="text-xs text-red-500 mt-1">{form.formState.errors.userId?.message}</p>
+            )}
+            <input type="hidden" name="userId" value={sanctionUserId} />
+          </div>
           <div className="space-y-1">
             <label className="block text-sm font-medium text-cara-700">Razón</label>
             <textarea

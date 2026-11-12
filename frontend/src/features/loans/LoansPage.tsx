@@ -111,6 +111,8 @@ export default function LoansPage() {
   const [periodWarning, setPeriodWarning] = useState<{ message: string; data: LoanForm } | null>(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [page, setPage] = useState(1);
   const [sortKey, setSortKey] = useState('');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
@@ -259,6 +261,18 @@ export default function LoansPage() {
     if (statusFilter) {
       result = result.filter((l) => l.status === statusFilter);
     }
+    if (dateFrom || dateTo) {
+      // Solapamiento del período del préstamo con el rango elegido
+      const from = dateFrom ? new Date(dateFrom) : null;
+      const to = dateTo ? new Date(dateTo) : null;
+      result = result.filter((l) => {
+        const start = new Date(l.startDate);
+        const end = new Date(l.dueDate);
+        if (from && end < from) return false;
+        if (to && start > to) return false;
+        return true;
+      });
+    }
     if (search) {
       const q = search.toLowerCase();
       result = result.filter(
@@ -277,7 +291,7 @@ export default function LoansPage() {
       return sorted;
     }
     return result;
-  }, [allLoans, statusFilter, search, sortKey, sortDir]);
+  }, [allLoans, statusFilter, dateFrom, dateTo, search, sortKey, sortDir]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
@@ -433,8 +447,8 @@ export default function LoansPage() {
       </div>
 
       <Card>
-        <div className="flex gap-4">
-          <div className="relative flex-1">
+        <div className="flex flex-wrap gap-4 items-center">
+          <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-cara-400" />
             <input
               type="text"
@@ -449,6 +463,29 @@ export default function LoansPage() {
             onChange={(e) => handleStatusChange(e.target.value)}
             className="w-44"
           />
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Fechas</span>
+            <input
+              type="date"
+              aria-label="Desde"
+              value={dateFrom}
+              onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
+              className="h-10 rounded-lg border border-[var(--color-border)] bg-white dark:bg-neutral-800 px-2.5 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-cara-500 focus:ring-2 focus:ring-cara-500/25"
+            />
+            <span className="text-gray-400">–</span>
+            <input
+              type="date"
+              aria-label="Hasta"
+              value={dateTo}
+              onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
+              className="h-10 rounded-lg border border-[var(--color-border)] bg-white dark:bg-neutral-800 px-2.5 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-cara-500 focus:ring-2 focus:ring-cara-500/25"
+            />
+            {(dateFrom || dateTo) && (
+              <Button variant="ghost" size="sm" onClick={() => { setDateFrom(''); setDateTo(''); setPage(1); }}>
+                Limpiar
+              </Button>
+            )}
+          </div>
         </div>
       </Card>
 
