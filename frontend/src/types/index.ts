@@ -35,6 +35,7 @@ export interface Asset {
   department: string;
   location: string;
   description?: string;
+  observations?: string;
   imageUrl?: string;
   maxLoanDays: number;
   createdAt: string;

@@ -10,6 +10,7 @@ public class AssetDto
     public string Department { get; set; }
     public string Location { get; set; }
     public string? Description { get; set; }
+    public string? Observations { get; set; }
     public int MaxLoanDays { get; set; }
     public string? ImageUrl { get; set; }
     public DateTime CreatedAt { get; set; }
@@ -23,6 +24,7 @@ public class CreateAssetDto
     public string Department { get; set; }
     public string Location { get; set; }
     public string? Description { get; set; }
+    public string? Observations { get; set; }
     public int MaxLoanDays { get; set; } = 7;
 }
 
@@ -46,5 +48,6 @@ public class UpdateAssetDto
     public string Department { get; set; }
     public string Location { get; set; }
     public string? Description { get; set; }
+    public string? Observations { get; set; }
     public int MaxLoanDays { get; set; }
 }

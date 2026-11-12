@@ -35,7 +35,8 @@ public class CreateAssetCommandHandler : IRequestHandler<CreateAssetCommand, Ass
             request.Department,
             request.Location,
             request.MaxLoanDays,
-            request.Description);
+            request.Description,
+            request.Observations);
 
         if (request.ImageUrl != null)
             asset.SetImage(request.ImageUrl);

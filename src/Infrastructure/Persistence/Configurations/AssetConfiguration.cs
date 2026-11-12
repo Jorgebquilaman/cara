@@ -46,6 +46,9 @@ public class AssetConfiguration : IEntityTypeConfiguration<Asset>
         builder.Property(a => a.Description)
             .HasMaxLength(500);
 
+        builder.Property(a => a.Observations)
+            .HasMaxLength(500);
+
         builder.Property(a => a.ImageUrl)
             .HasMaxLength(500);
 

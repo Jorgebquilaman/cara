@@ -608,6 +608,18 @@ export default function LoansPage() {
                   />
                 </div>
               )}
+              {selectedAsset?.observations && (
+                <div className="flex items-start gap-3 rounded-lg border border-danger bg-danger/10 p-3">
+                  <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5 text-danger" />
+                  <div className="text-sm">
+                    <p className="font-bold text-danger">⚠ Observaciones del activo</p>
+                    <p className="text-gray-800 dark:text-gray-200">{selectedAsset.observations}</p>
+                    <p className="text-xs text-danger mt-1">
+                      Verificá que la persona cumpla las condiciones antes de aprobar o retirar el préstamo.
+                    </p>
+                  </div>
+                </div>
+              )}
               {selectedAsset && (
                 <p className="text-xs text-cara-500">Máximo {selectedAsset.maxLoanDays} días por préstamo</p>
               )}

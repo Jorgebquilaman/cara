@@ -29,6 +29,7 @@ const assetSchema = z.object({
   department: z.string().min(1, 'Requerido').max(100),
   location: z.string().min(1, 'Requerido').max(200),
   description: z.string().optional(),
+  observations: z.string().max(500).optional(),
   maxLoanDays: z.coerce.number().min(1).max(365),
 });
 
@@ -40,6 +41,7 @@ const editAssetSchema = z.object({
   department: z.string().min(1, 'Requerido').max(100),
   location: z.string().min(1, 'Requerido').max(200),
   description: z.string().optional(),
+  observations: z.string().max(500).optional(),
   maxLoanDays: z.coerce.number().min(1).max(365),
 });
 
@@ -132,6 +134,7 @@ export default function AssetsPage() {
       department: asset.department,
       location: asset.location,
       description: asset.description ?? '',
+      observations: asset.observations ?? '',
       maxLoanDays: asset.maxLoanDays,
     });
     setEditSelectedFile(null);
@@ -419,6 +422,18 @@ export default function AssetsPage() {
             />
           </div>
           <Input label="Descripción" error={form.formState.errors.description?.message} {...form.register('description')} />
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Observaciones <span className="text-xs font-normal text-gray-500">(restricciones de uso)</span>
+            </label>
+            <textarea
+              rows={2}
+              maxLength={500}
+              placeholder="Ej: Solo se presta a alumnos de 4° año…"
+              className="w-full rounded-lg border border-[var(--color-border)] bg-white dark:bg-neutral-800 px-3.5 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-cara-500 focus:ring-2 focus:ring-cara-500/25"
+              {...form.register('observations')}
+            />
+          </div>
           <div className="space-y-1">
             <label className="block text-sm font-medium text-cara-700">Imagen (JPG)</label>
             <input
@@ -454,6 +469,18 @@ export default function AssetsPage() {
             />
           </div>
           <Input label="Descripción" error={editForm.formState.errors.description?.message} {...editForm.register('description')} />
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Observaciones <span className="text-xs font-normal text-gray-500">(restricciones de uso)</span>
+            </label>
+            <textarea
+              rows={2}
+              maxLength={500}
+              placeholder="Ej: Solo se presta a alumnos de 4° año…"
+              className="w-full rounded-lg border border-[var(--color-border)] bg-white dark:bg-neutral-800 px-3.5 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-cara-500 focus:ring-2 focus:ring-cara-500/25"
+              {...editForm.register('observations')}
+            />
+          </div>
           {editingAsset?.imageUrl && (
             <div>
               <label className="block text-sm font-medium text-cara-700 mb-1">Imagen actual</label>

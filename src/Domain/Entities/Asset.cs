@@ -12,6 +12,7 @@ public class Asset
     public string Department { get; private set; }
     public string Location { get; private set; }
     public string? Description { get; private set; }
+    public string? Observations { get; private set; }
     public string? ImageUrl { get; private set; }
     public int MaxLoanDays { get; private set; }
     public bool IsDeleted { get; private set; }
@@ -26,7 +27,7 @@ public class Asset
 
     private Asset() { }
 
-    public Asset(string code, string name, string category, string department, string location, int maxLoanDays, string? description = null)
+    public Asset(string code, string name, string category, string department, string location, int maxLoanDays, string? description = null, string? observations = null)
     {
         Id = Guid.NewGuid();
         Code = code;
@@ -36,6 +37,7 @@ public class Asset
         Department = department;
         Location = location;
         Description = description;
+        Observations = observations;
         MaxLoanDays = maxLoanDays;
         IsDeleted = false;
         CreatedAt = DateTime.UtcNow;
@@ -47,7 +49,7 @@ public class Asset
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void UpdateDetails(string name, string category, string department, string location, int maxLoanDays, string? description = null)
+    public void UpdateDetails(string name, string category, string department, string location, int maxLoanDays, string? description = null, string? observations = null)
     {
         Name = name;
         Category = category;
@@ -55,6 +57,7 @@ public class Asset
         Location = location;
         MaxLoanDays = maxLoanDays;
         Description = description;
+        Observations = observations;
         UpdatedAt = DateTime.UtcNow;
     }
 
