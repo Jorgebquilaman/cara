@@ -32,6 +32,7 @@ public class EmailConfigurationController : ControllerBase
                 password = "",
                 fromEmail = "",
                 fromName = "CARA - IUPA",
+                incidentsEmail = "",
                 useSsl = true,
             });
 
@@ -43,6 +44,7 @@ public class EmailConfigurationController : ControllerBase
             password = "",
             fromEmail = settings.FromEmail,
             fromName = settings.FromName,
+            incidentsEmail = settings.IncidentsEmail,
             useSsl = settings.UseSsl,
         });
     }
@@ -55,7 +57,7 @@ public class EmailConfigurationController : ControllerBase
         {
             settings = new Domain.Entities.EmailSetting(
                 dto.Host, dto.Port, dto.Username,
-                dto.Password, dto.FromEmail, dto.FromName, dto.UseSsl);
+                dto.Password, dto.FromEmail, dto.FromName, dto.IncidentsEmail, dto.UseSsl);
             _repository.Add(settings);
         }
         else
@@ -67,6 +69,7 @@ public class EmailConfigurationController : ControllerBase
                 settings.Password = dto.Password;
             settings.FromEmail = dto.FromEmail;
             settings.FromName = dto.FromName;
+            settings.IncidentsEmail = dto.IncidentsEmail ?? string.Empty;
             settings.UseSsl = dto.UseSsl;
         }
 
@@ -83,5 +86,6 @@ public class UpdateEmailConfigDto
     public string Password { get; set; } = string.Empty;
     public string FromEmail { get; set; } = string.Empty;
     public string FromName { get; set; } = "CARA - IUPA";
+    public string? IncidentsEmail { get; set; }
     public bool UseSsl { get; set; } = true;
 }

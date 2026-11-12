@@ -13,6 +13,7 @@ public class ReturnLoanCommandHandler : IRequestHandler<ReturnLoanCommand>
     private readonly IAssetRepository _assetRepository;
     private readonly IIncidentRepository _incidentRepository;
     private readonly INotificationService _notificationService;
+    private readonly IIncidentAlertSender _incidentAlertSender;
     private readonly INotificationRepository _notificationRepository;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -22,7 +23,8 @@ public class ReturnLoanCommandHandler : IRequestHandler<ReturnLoanCommand>
         IIncidentRepository incidentRepository,
         INotificationService notificationService,
         INotificationRepository notificationRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IIncidentAlertSender incidentAlertSender)
     {
         _loanRepository = loanRepository;
         _assetRepository = assetRepository;
@@ -30,6 +32,7 @@ public class ReturnLoanCommandHandler : IRequestHandler<ReturnLoanCommand>
         _notificationService = notificationService;
         _notificationRepository = notificationRepository;
         _unitOfWork = unitOfWork;
+        _incidentAlertSender = incidentAlertSender;
     }
 
     public async Task Handle(ReturnLoanCommand request, CancellationToken cancellationToken)
@@ -79,5 +82,14 @@ public class ReturnLoanCommandHandler : IRequestHandler<ReturnLoanCommand>
         await _notificationService.NotifyLoanReturnedAsync(loan, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Aviso por email al casillero configurado si la devolución tuvo incidentes
+        if (hasIncident)
+        {
+            var savedIncident = await _incidentRepository.GetByLoanAsync(request.LoanId, cancellationToken);
+            var last = savedIncident.OrderByDescending(i => i.ReportedAt).FirstOrDefault();
+            if (last != null)
+                await _incidentAlertSender.SendAsync(last.Id, cancellationToken);
+        }
     }
 }

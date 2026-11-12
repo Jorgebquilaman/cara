@@ -1,4 +1,5 @@
 using Application.DTOs;
+using Application.Services;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
@@ -12,17 +13,20 @@ public class CreateIncidentCommandHandler : IRequestHandler<CreateIncidentComman
     private readonly ILoanRepository _loanRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IIncidentAlertSender _incidentAlertSender;
 
     public CreateIncidentCommandHandler(
         IIncidentRepository incidentRepository,
         ILoanRepository loanRepository,
         IUnitOfWork unitOfWork,
-        IMapper mapper)
+        IMapper mapper,
+        IIncidentAlertSender incidentAlertSender)
     {
         _incidentRepository = incidentRepository;
         _loanRepository = loanRepository;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _incidentAlertSender = incidentAlertSender;
     }
 
     public async Task<IncidentDto> Handle(CreateIncidentCommand request, CancellationToken cancellationToken)
@@ -56,6 +60,9 @@ public class CreateIncidentCommandHandler : IRequestHandler<CreateIncidentComman
 
         _incidentRepository.Add(incident);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Aviso por email al casillero configurado (activo roto/robado)
+        await _incidentAlertSender.SendAsync(incident.Id, cancellationToken);
 
         return _mapper.Map<IncidentDto>(incident);
     }

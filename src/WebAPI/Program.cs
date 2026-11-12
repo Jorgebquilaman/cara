@@ -54,6 +54,7 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IExportService, ExportService>();
 builder.Services.AddScoped<IWebNotificationService, WebNotificationService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IIncidentAlertSender, IncidentAlertSender>();
 builder.Services.AddHttpContextAccessor();
 
 // ── MediatR & FluentValidation ───────────────────────────
@@ -246,6 +247,7 @@ app.MapHub<NotificationHub>("/hubs/notifications");
         @"ALTER TABLE ""Assets"" ADD COLUMN IF NOT EXISTS ""Observations"" VARCHAR(500) NULL",
         @"ALTER TABLE ""Incidents"" ALTER COLUMN ""LoanId"" DROP NOT NULL",
         @"ALTER TABLE ""Incidents"" ADD COLUMN IF NOT EXISTS ""AssetId"" UUID NULL REFERENCES ""Assets""(""Id"") ON DELETE CASCADE",
+        @"ALTER TABLE ""EmailSettings"" ADD COLUMN IF NOT EXISTS ""IncidentsEmail"" VARCHAR(200) NULL",
         @"DO $$ BEGIN
             IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Contracts' AND column_name = 'Description') THEN
                 ALTER TABLE ""Contracts"" RENAME COLUMN ""Description"" TO ""Content"";

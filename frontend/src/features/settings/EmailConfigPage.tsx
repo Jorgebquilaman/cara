@@ -12,6 +12,7 @@ export default function EmailConfigPage() {
   const [password, setPassword] = useState('');
   const [fromEmail, setFromEmail] = useState('');
   const [fromName, setFromName] = useState('CARA - IUPA');
+  const [incidentsEmail, setIncidentsEmail] = useState('');
   const [useSsl, setUseSsl] = useState(true);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
@@ -23,6 +24,7 @@ export default function EmailConfigPage() {
       setUsername(data.username);
       setFromEmail(data.fromEmail);
       setFromName(data.fromName);
+      setIncidentsEmail(data.incidentsEmail ?? '');
       setUseSsl(data.useSsl);
     }).catch(() => {}).finally(() => setFetching(false));
   }, []);
@@ -31,7 +33,7 @@ export default function EmailConfigPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.put('/email-config', { host, port, username, password, fromEmail, fromName, useSsl });
+      await api.put('/email-config', { host, port, username, password, fromEmail, fromName, incidentsEmail, useSsl });
       toast.success('Configuración guardada');
     } catch {
       toast.error('Error al guardar');
@@ -55,6 +57,19 @@ export default function EmailConfigPage() {
           <Input label="Contraseña de aplicación" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Dejá vacío para no cambiar" />
           <Input label="Email desde" type="email" value={fromEmail} onChange={(e) => setFromEmail(e.target.value)} required />
           <Input label="Nombre desde" value={fromName} onChange={(e) => setFromName(e.target.value)} required />
+          <div>
+            <Input
+              label="Email para reportes de activos rotos o robados"
+              type="email"
+              value={incidentsEmail}
+              onChange={(e) => setIncidentsEmail(e.target.value)}
+              placeholder="Ej: aparato@iupa.edu.ar"
+            />
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              Cuando se reporte un incidente o se devuelva un activo con daños, se enviará un aviso a esta
+              casilla con todos los datos del activo, la persona, el préstamo y la descripción.
+            </p>
+          </div>
           <label className="flex items-center gap-3 text-sm">
             <input type="checkbox" checked={useSsl} onChange={(e) => setUseSsl(e.target.checked)} className="h-4 w-4 rounded border-cara-300 text-cara-600" />
             Usar SSL/TLS

@@ -9,11 +9,12 @@ public class EmailSetting
     public string Password { get; set; } = string.Empty;
     public string FromEmail { get; set; } = string.Empty;
     public string FromName { get; set; } = "CARA - IUPA";
+    public string IncidentsEmail { get; set; } = string.Empty;
     public bool UseSsl { get; set; } = true;
 
     private EmailSetting() { }
 
-    public EmailSetting(string host, int port, string username, string password, string fromEmail, string fromName, bool useSsl)
+    public EmailSetting(string host, int port, string username, string password, string fromEmail, string fromName, string? incidentsEmail, bool useSsl)
     {
         Id = Guid.NewGuid();
         Host = host;
@@ -22,6 +23,7 @@ public class EmailSetting
         Password = password;
         FromEmail = fromEmail;
         FromName = fromName;
+        IncidentsEmail = incidentsEmail ?? string.Empty;
         UseSsl = useSsl;
     }
 }
