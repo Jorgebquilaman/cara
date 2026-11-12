@@ -289,7 +289,7 @@ export default function SanctionsPage() {
               onChange={(e) => {
                 if (sanctionUserId) {
                   setSanctionUserId('');
-                  form.setValue('userId', undefined, { shouldValidate: true });
+                  form.setValue('userId', '', { shouldValidate: true });
                 }
                 setSanctionUserSearch(e.target.value);
                 setShowSanctionUserDropdown(true);
