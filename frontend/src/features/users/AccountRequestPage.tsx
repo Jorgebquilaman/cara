@@ -143,7 +143,7 @@ export default function AccountRequestPage() {
           <div>
             <label className="mb-1 block text-sm font-medium text-cara-700">Departamento (opcional)</label>
             <select value={departmentId} onChange={(e) => setDepartmentId(e.target.value)}
-              className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none"
+              className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] px-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory"
             >
               <option value="">Seleccioná un departamento</option>
               {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
@@ -152,7 +152,7 @@ export default function AccountRequestPage() {
           <div>
             <label className="mb-1 block text-sm font-medium text-cara-700">Carrera (opcional)</label>
             <select value={careerId} onChange={(e) => setCareerId(e.target.value)} disabled={!departmentId}
-              className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none disabled:opacity-50"
+              className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] px-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory disabled:opacity-50"
             >
               <option value="">Seleccioná una carrera</option>
               {careers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -165,7 +165,7 @@ export default function AccountRequestPage() {
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none"
+            className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] px-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory"
           >
             <option value="Student">Estudiante</option>
             <option value="Teacher">Docente</option>
@@ -178,7 +178,7 @@ export default function AccountRequestPage() {
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             rows={3}
-            className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none"
+            className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] px-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory"
             placeholder="Contanos por qué necesitás acceso..."
             required
           />

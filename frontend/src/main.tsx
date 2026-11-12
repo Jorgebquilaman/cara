@@ -23,7 +23,13 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <ThemeProvider>
           <App />
-          <Toaster position="top-right" />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              className: 'toast-calm',
+              duration: 4000,
+            }}
+          />
         </ThemeProvider>
       </BrowserRouter>
     </QueryClientProvider>

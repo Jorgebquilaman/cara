@@ -427,7 +427,7 @@ export default function LoansPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-cara-900">Préstamos</h1>
+          <h1 className="page-title">Préstamos</h1>
           <p className="text-sm text-cara-500 mt-1">Administrá los préstamos del sistema</p>
         </div>
         <div className="flex items-center gap-2">
@@ -449,11 +449,11 @@ export default function LoansPage() {
       <Card>
         <div className="flex flex-wrap gap-4 items-center">
           <div className="relative flex-1 min-w-[220px]">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-cara-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-muted" strokeWidth={1.5} />
             <input
               type="text"
               placeholder="Buscar por activo o usuario..."
-              className="w-full rounded-lg border border-cara-300 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cara-500 focus:border-transparent transition-shadow"
+              className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] pl-11 pr-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory transition-all duration-200"
               onChange={(e) => handleSearch(e.target.value)}
             />
           </div>
@@ -524,10 +524,10 @@ export default function LoansPage() {
                   }}
                   onFocus={() => setShowUserDropdown(true)}
                   onBlur={() => setTimeout(() => setShowUserDropdown(false), 200)}
-                  className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cara-500"
+                  className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] px-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory"
                 />
                 {showUserDropdown && (
-                  <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-xl border border-gray-200 bg-white dark:bg-neutral-800 dark:border-neutral-700 shadow-lg">
+                  <div className="absolute z-50 mt-2 w-full max-h-56 overflow-y-auto rounded-2xl bg-[var(--surface)] border border-[var(--border-card)] shadow-float">
                     {filteredUserOptions.length === 0 ? (
                       <p className="px-3 py-2 text-sm text-cara-400">Sin resultados</p>
                     ) : (
@@ -604,10 +604,10 @@ export default function LoansPage() {
                   }}
                   onFocus={() => setShowAssetDropdown(true)}
                   onBlur={() => setTimeout(() => setShowAssetDropdown(false), 200)}
-                  className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cara-500"
+                  className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] px-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory"
                 />
                 {showAssetDropdown && (
-                  <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-xl border border-gray-200 bg-white dark:bg-neutral-800 dark:border-neutral-700 shadow-lg">
+                  <div className="absolute z-50 mt-2 w-full max-h-56 overflow-y-auto rounded-2xl bg-[var(--surface)] border border-[var(--border-card)] shadow-float">
                     {filteredAssetOptions.length === 0 ? (
                       <p className="px-3 py-2 text-sm text-cara-400">Sin resultados</p>
                     ) : (
@@ -684,7 +684,7 @@ export default function LoansPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Observaciones</label>
                 <textarea
-                  className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cara-500"
+                  className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] px-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory"
                   rows={3}
                   {...form.register('observations')}
                 />
@@ -749,7 +749,7 @@ export default function LoansPage() {
           </div>
           <p className="text-sm text-cara-600">¿Hubo algún daño o novedad en la devolución?</p>
           <textarea
-            className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none"
+            className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] px-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory"
             rows={3}
             placeholder="Describí el incidente (opcional)..."
             value={incidentDescription}

@@ -1,4 +1,4 @@
-/* ───── react-big-calendar theme ───── */
+/* ───── react-big-calendar — Calm Kit ───── */
 
 .rbc-calendar {
   font-family: inherit;
@@ -6,39 +6,25 @@
 
 .rbc-month-view,
 .rbc-time-view {
-  border: 1px solid #e5e7eb !important;
-  border-radius: 10px !important;
+  border: 1px solid var(--divider) !important;
+  border-radius: 16px !important;
   overflow: hidden !important;
-}
-
-.dark .rbc-month-view,
-.dark .rbc-time-view {
-  border-color: #374151 !important;
+  background: var(--surface);
 }
 
 .rbc-day-bg + .rbc-day-bg {
-  border-left: 1px solid #f3f4f6 !important;
-}
-
-.dark .rbc-day-bg + .rbc-day-bg {
-  border-left-color: #374151 !important;
+  border-left: 1px solid var(--divider) !important;
 }
 
 .rbc-header {
   padding: 10px 4px !important;
-  font-weight: 600 !important;
-  font-size: 12px !important;
-  color: #374151 !important;
-  border-bottom: 1px solid #e5e7eb !important;
-  background: #f9fafb !important;
+  font-weight: 500 !important;
+  font-size: 11px !important;
+  color: var(--ink-muted) !important;
+  border-bottom: 1px solid var(--divider) !important;
+  background: var(--ivory) !important;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.dark .rbc-header {
-  color: #d1d5db !important;
-  border-bottom-color: #374151 !important;
-  background: #1f2937 !important;
+  letter-spacing: 0.18em;
 }
 
 .rbc-month-row {
@@ -52,13 +38,9 @@
 }
 
 .rbc-date-cell > a {
-  color: #6b7280 !important;
+  color: var(--ink-muted) !important;
   font-weight: 500 !important;
   font-size: 13px !important;
-}
-
-.dark .rbc-date-cell > a {
-  color: #9ca3af !important;
 }
 
 .rbc-row-content {
@@ -74,6 +56,7 @@
 .rbc-event {
   border: none !important;
   box-shadow: none !important;
+  border-radius: 8px !important;
 }
 
 .rbc-event.rbc-selected {
@@ -82,25 +65,16 @@
 
 .rbc-show-more {
   font-size: 11px !important;
-  color: #6b7280 !important;
-  font-weight: 600 !important;
+  color: var(--sage) !important;
+  font-weight: 500 !important;
   padding: 0 4px !important;
-  background: #f3f4f6 !important;
-  border-radius: 4px !important;
+  background: var(--mist) !important;
+  border-radius: 8px !important;
   margin: 1px 2px !important;
 }
 
-.dark .rbc-show-more {
-  color: #9ca3af !important;
-  background: #1f2937 !important;
-}
-
 .rbc-off-range-bg {
-  background: #f9fafb !important;
-}
-
-.dark .rbc-off-range-bg {
-  background: #111827 !important;
+  background: var(--ivory) !important;
 }
 
 .rbc-off-range > a {
@@ -108,44 +82,24 @@
 }
 
 .rbc-today {
-  background-color: #eff6ff !important;
-}
-
-.dark .rbc-today {
-  background-color: rgba(59, 130, 246, 0.08) !important;
+  background-color: var(--mist) !important;
 }
 
 .rbc-button-link {
   color: inherit !important;
 }
 
-.dark .rbc-button-link {
-  color: #e5e7eb !important;
-}
-
 .rbc-time-view {
-  border: 1px solid #e5e7eb !important;
-  border-radius: 10px !important;
-}
-
-.dark .rbc-time-view {
-  border-color: #374151 !important;
+  border: 1px solid var(--divider) !important;
+  border-radius: 16px !important;
 }
 
 .rbc-time-header {
-  border-bottom: 1px solid #e5e7eb !important;
-}
-
-.dark .rbc-time-header {
-  border-bottom-color: #374151 !important;
+  border-bottom: 1px solid var(--divider) !important;
 }
 
 .rbc-time-content {
-  border-top: 1px solid #e5e7eb !important;
-}
-
-.dark .rbc-time-content {
-  border-top-color: #374151 !important;
+  border-top: 1px solid var(--divider) !important;
 }
 
 .rbc-toolbar {
@@ -153,38 +107,22 @@
 }
 
 .rbc-time-gutter .rbc-timeslot-group {
-  color: #6b7280 !important;
+  color: var(--ink-muted) !important;
   font-size: 11px !important;
 }
 
-.dark .rbc-time-gutter .rbc-timeslot-group {
-  color: #9ca3af !important;
-}
-
 .rbc-timeslot-group {
-  border-bottom: 1px solid #f3f4f6 !important;
-}
-
-.dark .rbc-timeslot-group {
-  border-bottom-color: #374151 !important;
+  border-bottom: 1px solid var(--divider) !important;
 }
 
 .rbc-day-slot .rbc-time-slot {
-  border-top: 1px solid #f9fafb !important;
-}
-
-.dark .rbc-day-slot .rbc-time-slot {
-  border-top-color: #1f2937 !important;
+  border-top: 1px solid var(--divider) !important;
 }
 
 .rbc-time-header-content {
-  border-left: 1px solid #e5e7eb !important;
-}
-
-.dark .rbc-time-header-content {
-  border-left-color: #374151 !important;
+  border-left: 1px solid var(--divider) !important;
 }
 
 .rbc-current-time-indicator {
-  background-color: #ef4444 !important;
+  background-color: var(--error) !important;
 }

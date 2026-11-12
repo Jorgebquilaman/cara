@@ -13,17 +13,19 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={clsx(
-          'inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)] focus:ring-offset-2 dark:focus:ring-offset-[#1A1917] disabled:opacity-50 disabled:cursor-not-allowed',
+          'inline-flex items-center justify-center rounded-full font-medium transition-all duration-200 ease-calm',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss focus-visible:ring-offset-2 focus-visible:ring-offset-ivory dark:focus-visible:ring-offset-[#262B27]',
+          'disabled:opacity-50 disabled:cursor-not-allowed',
           {
-            'bg-cara-500 text-white hover:bg-cara-600 active:bg-cara-700': variant === 'primary',
-            'bg-white text-gray-900 border border-gray-300 hover:bg-gray-100 active:bg-gray-300 dark:bg-neutral-800 dark:text-gray-100 dark:border-neutral-700 dark:hover:bg-neutral-700': variant === 'secondary',
-            'bg-danger text-white hover:bg-red-600 active:bg-red-700': variant === 'danger',
-            'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-neutral-800': variant === 'ghost',
+            'bg-sage text-ivory shadow-soft-sm hover:bg-[var(--sage-hover)] active:scale-[0.98]': variant === 'primary',
+            'bg-transparent text-ink border border-sand hover:bg-mist/70 dark:text-[#EFEAE2]': variant === 'secondary',
+            'bg-danger text-ivory shadow-soft-sm hover:opacity-90': variant === 'danger',
+            'text-ink-muted hover:text-ink hover:bg-mist/60': variant === 'ghost',
           },
           {
-            'px-3 py-1.5': size === 'sm',
-            'px-4 py-2': size === 'md',
-            'px-6 py-2.5': size === 'lg',
+            'px-3.5 py-1.5 text-[13px]': size === 'sm',
+            'px-5 py-2.5 text-sm': size === 'md',
+            'px-7 py-3 text-[15px]': size === 'lg',
           },
           className,
         )}

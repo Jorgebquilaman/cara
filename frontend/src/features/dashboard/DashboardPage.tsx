@@ -18,12 +18,12 @@ import {
 const HOY = new Date().toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
 
 /* Paleta verde monocromática (inspiración dashboard inmobiliario) */
-const GREEN_DARK = '#0B4F57';
-const GREEN_MED = '#3D7E85';
-const GREEN_LIGHT = '#A3C4C7';
-const GREEN_LIGHTER = '#D3E4E5';
+const GREEN_DARK = '#687F6E';
+const GREEN_MED = '#A7B8A7';
+const GREEN_LIGHT = '#C9BDAF';
+const GREEN_LIGHTER = '#D9E1D9';
 
-const AXIS_TICK = { fill: '#6B7280', fontSize: 12 };
+const AXIS_TICK = { fill: '#7A8479', fontSize: 11, fontFamily: 'Inter' };
 
 /* ---------- KPI estilo imagen: chip circular + número + label upper ---------- */
 function KpiCard({ value, label, icon: Icon, chipClass }: { value: number; label: string; icon: any; chipClass: string }) {
@@ -175,7 +175,7 @@ export default function DashboardPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-50">Panel de Control</h1>
+          <h1 className="page-title">Panel de Control</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1 capitalize">{HOY}</p>
         </div>
 
@@ -206,7 +206,7 @@ export default function DashboardPage() {
                   <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} />
                   <Tooltip cursor={{ fill: 'rgba(46,139,87,0.08)' }} />
                   <Bar dataKey="value" radius={[8, 8, 0, 0]} maxBarSize={72}>
-                    <LabelList dataKey="value" position="top" style={{ fill: '#374151', fontSize: 12, fontWeight: 700 }} />
+                    <LabelList dataKey="value" position="top" style={{ fill: '#1F2A24', fontSize: 11, fontWeight: 500 }} />
                     {barData.map((d) => <Cell key={d.name} fill={d.fill} />)}
                   </Bar>
                 </BarChart>
@@ -298,21 +298,21 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-50">Hola, {user?.firstName}</h1>
+        <h1 className="page-title">Hola, {user?.firstName}</h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1 capitalize">{HOY}</p>
       </div>
 
       {/* Banner destacado */}
-      <div className="rounded-2xl bg-gradient-to-r from-cara-700 to-cara-500 text-white p-6 md:p-8 relative overflow-hidden shadow-card">
+      <div className="rounded-card bg-gradient-to-br from-sage to-[#7A9180] text-ivory p-6 md:p-8 relative overflow-hidden shadow-soft">
         <div className="absolute -right-8 -top-8 opacity-10">
           <Package className="h-44 w-44" />
         </div>
         <h2 className="text-xl md:text-2xl font-bold">Reservá espacios y equipamiento</h2>
-        <p className="text-cara-100 mt-1 text-sm md:text-base max-w-lg">
+        <p className="text-ivory/80 mt-1 text-sm md:text-base max-w-lg">
           Seguimiento en tiempo real de tus préstamos. Solicitá, reservá y hacé seguimiento fácilmente.
         </p>
         <button
-          className="mt-4 rounded-full bg-white py-2.5 px-5 text-sm font-bold text-cara-700 transition-all hover:bg-cara-50 hover:scale-[1.02]"
+          className="mt-4 rounded-full bg-ivory py-2.5 px-5 text-sm font-medium text-sage shadow-soft-sm transition-all duration-200 hover:bg-white hover:scale-[1.01]"
           onClick={() => { window.location.href = '/reservations'; }}
         >
           <CalendarPlus className="h-4 w-4 inline mr-2 -mt-0.5" />

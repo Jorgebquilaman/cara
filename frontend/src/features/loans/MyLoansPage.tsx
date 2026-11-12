@@ -110,7 +110,7 @@ export default function MyLoansPage() {
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-cara-900">Mis Préstamos</h1>
+          <h1 className="page-title">Mis Préstamos</h1>
           <p className="text-sm text-cara-500 mt-1">Gestioná tus préstamos activos y pasados</p>
         </div>
         {user?.role === 'Admin' || user?.role === 'Staff' ? (
@@ -169,7 +169,7 @@ export default function MyLoansPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Observaciones</label>
             <textarea
-              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cara-500"
+              className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] px-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory"
               rows={3}
               {...form.register('observations')}
             />

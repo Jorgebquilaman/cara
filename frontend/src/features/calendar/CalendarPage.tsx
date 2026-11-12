@@ -105,7 +105,7 @@ export default function CalendarPage() {
             <CalendarDays className="h-5 w-5 text-cara-600 dark:text-cara-300" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-cara-900 dark:text-white">Calendario</h1>
+            <h1 className="page-title">Calendario</h1>
             <p className="text-sm text-cara-500 dark:text-cara-400 mt-0.5">Disponibilidad de activos, reservas y préstamos</p>
           </div>
         </div>

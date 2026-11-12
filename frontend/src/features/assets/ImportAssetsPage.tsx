@@ -111,7 +111,7 @@ export default function ImportAssetsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-cara-900">Importar Activos</h1>
+          <h1 className="page-title">Importar Activos</h1>
           <p className="text-sm text-cara-500 mt-1">Cargá un archivo Excel con los activos a importar</p>
         </div>
       </div>

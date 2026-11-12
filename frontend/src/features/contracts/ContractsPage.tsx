@@ -257,7 +257,7 @@ export default function ContractsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-cara-900">Contratos</h1>
+          <h1 className="page-title">Contratos</h1>
           <p className="text-sm text-cara-500 mt-1">Gestioná los contratos del sistema</p>
         </div>
         <div className="flex items-center gap-2">
@@ -276,11 +276,11 @@ export default function ContractsPage() {
       <Card>
         <div className="flex gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-cara-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-muted" strokeWidth={1.5} />
             <input
               type="text"
               placeholder="Buscar por código, título o proveedor..."
-              className="w-full rounded-lg border border-cara-300 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cara-500 focus:border-transparent transition-shadow"
+              className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] pl-11 pr-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory transition-all duration-200"
               onChange={(e) => handleSearch(e.target.value)}
             />
           </div>
@@ -317,7 +317,7 @@ export default function ContractsPage() {
               value={createContent}
               onChange={(e) => setCreateContent(e.target.value)}
               rows={10}
-              className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm font-mono focus:border-cara-500 focus:outline-none"
+              className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] px-4 text-sm font-mono text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory"
               placeholder="# Título del contrato&#10;&#10;Cuerpo del contrato en Markdown..."
             />
           </div>
@@ -341,7 +341,7 @@ export default function ContractsPage() {
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
               rows={10}
-              className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm font-mono focus:border-cara-500 focus:outline-none"
+              className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] px-4 text-sm font-mono text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory"
               placeholder="# Título del contrato&#10;&#10;Cuerpo del contrato en Markdown..."
             />
           </div>

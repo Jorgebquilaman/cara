@@ -77,7 +77,7 @@ export default function NotificationsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-cara-900">Notificaciones</h1>
+        <h1 className="page-title">Notificaciones</h1>
         <div className="flex items-center gap-2">
           {data && data.items.some(n => !n.isRead) && (
             <Button variant="secondary" size="sm" onClick={() => markAllAsRead.mutate()} isLoading={markAllAsRead.isPending}>

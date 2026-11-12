@@ -33,7 +33,7 @@ export function Table<T>({
 }: TableProps<T>) {
   if (isLoading) {
     return (
-      <div className="card-surface p-8 text-center text-gray-500 dark:text-gray-400">
+      <div className="py-10 text-center text-sm text-ink-muted">
         Cargando...
       </div>
     );
@@ -41,24 +41,24 @@ export function Table<T>({
 
   if (data.length === 0) {
     return (
-      <div className="card-surface p-8 text-center text-gray-500 dark:text-gray-400">
+      <div className="py-10 text-center text-sm text-ink-muted">
         {emptyMessage}
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto card-surface">
-      <table className="min-w-full divide-y divide-gray-100 dark:divide-white/5">
-        <thead className="bg-gray-50 dark:bg-neutral-800/60">
-          <tr>
+    <div className="overflow-x-auto">
+      <table className="min-w-full">
+        <thead>
+          <tr className="border-b border-[var(--divider)]/60">
             {columns.map((col) => (
               <th
                 key={col.key}
                 className={clsx(
-                  'px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400',
+                  'px-3 py-3 text-left text-[11px] font-medium uppercase tracking-section text-ink-muted',
                   col.className,
-                  col.sortable && 'cursor-pointer select-none hover:text-cara-600 dark:hover:text-cara-400',
+                  col.sortable && 'cursor-pointer select-none hover:text-ink transition-colors',
                 )}
                 onClick={col.sortable && onSort ? () => onSort(col.key) : undefined}
               >
@@ -66,19 +66,22 @@ export function Table<T>({
                   {col.header}
                   {col.sortable && (
                     sortKey === col.key
-                      ? sortDir === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                      : <ArrowUpDown className="h-3 w-3 opacity-40" />
+                      ? sortDir === 'asc' ? <ArrowUp className="h-3 w-3" strokeWidth={1.5} /> : <ArrowDown className="h-3 w-3" strokeWidth={1.5} />
+                      : <ArrowUpDown className="h-3 w-3 opacity-40" strokeWidth={1.5} />
                   )}
                 </span>
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100 dark:divide-white/5">
+        <tbody>
           {data.map((item) => (
-            <tr key={keyExtractor(item)} className="hover:bg-cara-50/50 transition-colors dark:hover:bg-neutral-800/50">
+            <tr
+              key={keyExtractor(item)}
+              className="border-b border-[var(--divider)]/40 last:border-0 hover:bg-mist/30 transition-colors duration-150"
+            >
               {columns.map((col) => (
-                <td key={col.key} className={clsx('px-4 py-3 text-sm text-gray-800 dark:text-gray-200', col.className)}>
+                <td key={col.key} className={clsx('px-3 py-3.5 text-sm text-ink', col.className)}>
                   {col.render ? col.render(item) : String((item as Record<string, unknown>)[col.key] ?? '')}
                 </td>
               ))}

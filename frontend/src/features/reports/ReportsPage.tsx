@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { Select } from '@/components/ui/Select';
+import { SegmentedTabs } from '@/components/ui/SegmentedTabs';
 import { FileText, Download, Users, Package, BookOpen, ThumbsUp, Undo2, ArrowRightCircle, File } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { User } from '@/types';
@@ -299,36 +299,31 @@ export default function ReportsPage() {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-cara-900">Reportes y Estadísticas</h1>
+        <h1 className="page-title">Reportes y Estadísticas</h1>
       </div>
 
-      {/* Tabs */}
-      <div className="border-b border-gray-200">
-        <nav className="flex gap-4">
-            {(isAdmin ? (['graphics', 'prenda', 'historial', 'csv'] as const) : (['graphics', 'prenda', 'csv'] as const)).map((tab) => (
-                <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={clsx(
-                        "py-3 px-4 border-b-2 font-medium text-sm transition-colors capitalize",
-                        activeTab === tab ? "border-cara-600 text-cara-600" : "border-transparent text-gray-500 hover:text-gray-700"
-                    )}
-                >
-                    {tab === 'graphics' ? 'Estadísticas' : tab === 'prenda' ? 'Prendas' : tab === 'historial' ? 'Historial de Usuarios' : 'Reportes CSV'}
-                </button>
-            ))}
-        </nav>
-      </div>
+      {/* Tabs segmentadas (Calm Kit) */}
+      <SegmentedTabs
+        value={activeTab}
+        onChange={setActiveTab}
+        tabs={(isAdmin
+          ? (['graphics', 'prenda', 'historial', 'csv'] as const)
+          : (['graphics', 'prenda', 'csv'] as const)
+        ).map((tab) => ({
+          value: tab,
+          label: tab === 'graphics' ? 'Estadísticas' : tab === 'prenda' ? 'Prendas' : tab === 'historial' ? 'Historial de Usuarios' : 'Reportes CSV',
+        }))}
+      />
 
       {activeTab === 'graphics' ? (
         <div className="space-y-8">
             {/* KPI Cards */}
             {stats && stats.kpIs && (
                 <div className="grid gap-6 md:grid-cols-4">
-                    <StatCard label="Total Activos" value={stats.kpIs.totalAssets} icon={Package} color="text-blue-600 bg-blue-50" accentColor="bg-blue-500" />
-                    <StatCard label="Préstamos Activos" value={stats.kpIs.activeLoans} icon={BookOpen} color="text-amber-600 bg-amber-50" accentColor="bg-amber-500" />
-                    <StatCard label="Usuarios Totales" value={stats.kpIs.totalUsers} icon={Users} color="text-green-600 bg-green-50" accentColor="bg-green-500" />
-                    <StatCard label="Encuestas Realizadas" value={stats.kpIs.totalSurveys} icon={ThumbsUp} color="text-purple-600 bg-purple-50" accentColor="bg-purple-500" />
+                    <StatCard label="Total Activos" value={stats.kpIs.totalAssets} icon={Package} color="text-sage bg-mist" accentColor="bg-sage" />
+                    <StatCard label="Préstamos Activos" value={stats.kpIs.activeLoans} icon={BookOpen} color="text-ink-muted bg-[var(--ivory)]" accentColor="bg-moss" />
+                    <StatCard label="Usuarios Totales" value={stats.kpIs.totalUsers} icon={Users} color="text-sage bg-mist" accentColor="bg-sage" />
+                    <StatCard label="Encuestas Realizadas" value={stats.kpIs.totalSurveys} icon={ThumbsUp} color="text-ink-muted bg-mist/60" accentColor="bg-sand" />
                 </div>
             )}
 
@@ -487,7 +482,7 @@ export default function ReportsPage() {
         <div className="space-y-6">
           <div className="grid gap-6 md:grid-cols-4">
             <div className="card-surface p-6 relative overflow-hidden">
-              <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500" />
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-sage" />
               <p className="text-3xl font-extrabold text-gray-900">${prendaStats?.totalPrenda.toFixed(2) ?? '0.00'}</p>
               <p className="text-sm text-gray-500 font-medium">Total en Prendas</p>
             </div>
@@ -503,7 +498,7 @@ export default function ReportsPage() {
             </div>
             <div className="card-surface p-6 relative overflow-hidden">
               <div className={clsx('absolute left-0 top-0 bottom-0 w-1', (prendaStats?.saldoPendiente ?? 0) > 0 ? 'bg-amber-500' : 'bg-green-500')} />
-              <p className={clsx('text-3xl font-extrabold', (prendaStats?.saldoPendiente ?? 0) > 0 ? 'text-amber-600' : 'text-green-600')}>
+              <p className={clsx('text-3xl font-extrabold', (prendaStats?.saldoPendiente ?? 0) > 0 ? 'text-warning' : 'text-sage')}>
                 ${prendaStats?.saldoPendiente.toFixed(2) ?? '0.00'}
               </p>
               <p className="text-sm text-gray-500 font-medium">Saldo Pendiente</p>
@@ -531,12 +526,12 @@ export default function ReportsPage() {
                       <td className="px-4 py-3 text-sm text-cara-800 font-medium">${r.prenda.toFixed(2)}</td>
                       <td className="px-4 py-3">
                         {r.prendaReturned ? (
-                          <span className="inline-flex items-center gap-1 text-xs text-green-600 font-medium">
+                          <span className="inline-flex items-center gap-1 text-xs text-sage font-medium">
                             <Undo2 className="h-3 w-3" />
                             Devuelta
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-xs text-amber-600 font-medium">
+                          <span className="inline-flex items-center gap-1 text-xs text-warning font-medium">
                             <ArrowRightCircle className="h-3 w-3" />
                             Pendiente
                           </span>
@@ -588,10 +583,10 @@ export default function ReportsPage() {
                   }}
                   onFocus={() => setShowHistoryUserDropdown(true)}
                   onBlur={() => setTimeout(() => setShowHistoryUserDropdown(false), 200)}
-                  className="w-full h-10 rounded-lg border border-[var(--color-border)] bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 px-3.5 text-sm focus:outline-none focus:border-cara-500 focus:ring-2 focus:ring-cara-500/25"
+                  className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] px-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory"
                 />
                 {showHistoryUserDropdown && (
-                  <div className="absolute z-50 mt-1 w-full max-h-56 overflow-y-auto rounded-xl border border-gray-200 bg-white dark:bg-neutral-800 dark:border-neutral-700 shadow-dropdown">
+                  <div className="absolute z-50 mt-2 w-full max-h-56 overflow-y-auto rounded-2xl bg-[var(--surface)] border border-[var(--border-card)] shadow-float">
                     {filteredUserOptions.length === 0 ? (
                       <p className="px-3 py-2 text-sm text-gray-400">Sin resultados</p>
                     ) : (

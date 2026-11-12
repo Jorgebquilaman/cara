@@ -52,7 +52,7 @@ export default function OverdueLoansPage() {
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <AlertTriangle className="h-6 w-6 text-danger" />
-        <h1 className="text-2xl font-bold text-cara-900">Préstamos Vencidos</h1>
+        <h1 className="page-title">Préstamos Vencidos</h1>
       </div>
 
       <Card

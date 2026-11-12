@@ -6,33 +6,32 @@ interface BadgeProps {
   size?: 'sm' | 'md';
 }
 
-/* Chips del styleguide: pill radius-full. Estados semánticos usan tinte
-   claro + texto del color semántico; el resto gris claro + texto oscuro. */
+/* Chips Calm Kit: fondo mist + texto ink; estados semánticos con tintes suaves */
 const statusStyles: Record<string, string> = {
-  Available: 'bg-success/10 text-success dark:bg-success/25',
-  InUse: 'bg-warning/15 text-gray-800 dark:bg-warning/25 dark:text-warning',
-  Maintenance: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
-  Decommissioned: 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500',
-  Pending: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
-  Active: 'bg-warning/15 text-gray-800 dark:bg-warning/25 dark:text-warning',
-  Overdue: 'bg-danger/10 text-danger dark:bg-danger/25',
-  Returned: 'bg-success/10 text-success dark:bg-success/25',
-  Rejected: 'bg-danger/10 text-danger dark:bg-danger/25',
-  ApprovedRequest: 'bg-success/10 text-success dark:bg-success/25',
-  Confirmed: 'bg-info/10 text-info dark:bg-info/25',
-  Cancelled: 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400',
-  Completed: 'bg-success/10 text-success dark:bg-success/25',
-  LoanOverdue: 'bg-danger text-white',
-  LoanApproved: 'bg-success/10 text-success dark:bg-success/25',
-  LoanRejected: 'bg-danger/10 text-danger dark:bg-danger/25',
-  LoanDueReminder: 'bg-warning/15 text-gray-800 dark:bg-warning/25 dark:text-warning',
-  SanctionIssued: 'bg-danger/10 text-danger dark:bg-danger/25',
-  ReservationCreated: 'bg-info/10 text-info dark:bg-info/25',
-  ReservationConfirmed: 'bg-success/10 text-success dark:bg-success/25',
-  ReservationCancelled: 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400',
-  IncidentReported: 'bg-warning/15 text-gray-800 dark:bg-warning/25 dark:text-warning',
-  LoanReturned: 'bg-success text-white',
-  AccountRequestCreated: 'bg-info/10 text-info dark:bg-info/25',
+  Available: 'bg-mist text-sage',
+  InUse: 'bg-[var(--ivory)] text-ink',
+  Maintenance: 'bg-[var(--ivory)] text-ink-muted',
+  Decommissioned: 'bg-[var(--ivory)] text-ink-muted',
+  Pending: 'bg-[var(--ivory)] text-ink-muted',
+  Active: 'bg-mist text-ink',
+  Overdue: 'bg-danger/15 text-danger',
+  Returned: 'bg-mist text-sage',
+  Rejected: 'bg-danger/15 text-danger',
+  ApprovedRequest: 'bg-mist text-sage',
+  Confirmed: 'bg-info/15 text-info',
+  Cancelled: 'bg-[var(--ivory)] text-ink-muted',
+  Completed: 'bg-mist text-sage',
+  LoanOverdue: 'bg-danger text-ivory',
+  LoanApproved: 'bg-mist text-sage',
+  LoanRejected: 'bg-danger/15 text-danger',
+  LoanDueReminder: 'bg-warning/15 text-warning',
+  SanctionIssued: 'bg-danger/15 text-danger',
+  ReservationCreated: 'bg-info/15 text-info',
+  ReservationConfirmed: 'bg-mist text-sage',
+  ReservationCancelled: 'bg-[var(--ivory)] text-ink-muted',
+  IncidentReported: 'bg-warning/15 text-warning',
+  LoanReturned: 'bg-sage text-ivory',
+  AccountRequestCreated: 'bg-info/15 text-info',
 };
 
 const statusLabels: Record<string, string> = {
@@ -67,9 +66,9 @@ export function Badge({ status, size = 'sm' }: BadgeProps) {
   return (
     <span
       className={clsx(
-        'inline-flex items-center rounded-full font-semibold',
-        statusStyles[status] || 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
-        size === 'sm' ? 'px-2.5 py-0.5 text-xs' : 'px-3 py-1 text-sm',
+        'inline-flex items-center rounded-full font-medium',
+        statusStyles[status] || 'bg-[var(--ivory)] text-ink-muted',
+        size === 'sm' ? 'px-2.5 py-1 text-[11px]' : 'px-3 py-1.5 text-xs',
       )}
     >
       {statusLabels[status] || status}

@@ -12,11 +12,7 @@ interface ModalProps {
 
 export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+    document.body.style.overflow = isOpen ? 'hidden' : 'unset';
     return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen]);
 
@@ -24,10 +20,11 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-[#1F2A24]/30 backdrop-blur-sm transition-opacity duration-200" onClick={onClose} />
       <div
         className={clsx(
-          'relative z-50 w-full rounded-2xl bg-[var(--surface)] p-6 shadow-[var(--shadow-4)]',
+          'relative z-50 w-full rounded-card bg-[var(--surface)] p-6 shadow-float border border-[var(--border-card)]',
+          'max-h-[90vh] overflow-y-auto transition-all duration-200 ease-calm',
           {
             'max-w-sm': size === 'sm',
             'max-w-lg': size === 'md',
@@ -35,10 +32,14 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
           },
         )}
       >
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-50">{title}</h2>
-          <button onClick={onClose} className="rounded-lg p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors dark:text-gray-500 dark:hover:text-gray-300 dark:hover:bg-neutral-800">
-            <X className="h-5 w-5" />
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-lg font-medium text-ink">{title}</h2>
+          <button
+            onClick={onClose}
+            className="rounded-full p-2 text-ink-muted hover:bg-mist/70 hover:text-ink transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-moss focus-visible:ring-offset-2 outline-none"
+            aria-label="Cerrar"
+          >
+            <X className="h-4 w-4" strokeWidth={1.5} />
           </button>
         </div>
         {children}

@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import toast from 'react-hot-toast';
 import api from '@/services/api';
+import { MapPin, MoreHorizontal } from 'lucide-react';
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
@@ -38,18 +39,34 @@ export default function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-8 py-6">
-      <h1 className="text-2xl font-bold text-cara-900">Mi Perfil</h1>
+      <h1 className="page-title">Mi Perfil</h1>
 
-      <div className="flex justify-center card-surface px-8">
-        <img
-          src="/imagenes/logo%20cara.png"
-          alt="CARA Logo"
-          className="w-full max-h-80 object-contain"
-        />
+      <div className="card-surface p-6 flex items-center gap-4">
+        <div className="relative shrink-0">
+          <div className="h-16 w-16 rounded-full bg-mist text-sage flex items-center justify-center text-xl font-medium">
+            {(user?.fullName ?? 'U').split(' ').slice(0, 2).map((n) => n[0]).join('')}
+          </div>
+          <span className="absolute bottom-0.5 right-0.5 h-3.5 w-3.5 rounded-full border-2 border-[var(--surface)] bg-sage" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-ink truncate">{user?.fullName}</p>
+          <p className="text-xs text-ink-muted capitalize">{user?.role}</p>
+          <p className="text-xs text-ink-muted flex items-center gap-1 mt-1">
+            <MapPin className="h-3 w-3" strokeWidth={1.5} />
+            IUPA — Instituto Universitario Patagónico de las Artes
+          </p>
+        </div>
+        <button
+          type="button"
+          aria-label="Más opciones"
+          className="h-9 w-9 rounded-full flex items-center justify-center text-ink-muted hover:bg-mist/60 hover:text-ink transition-colors duration-150"
+        >
+          <MoreHorizontal className="h-4 w-4" strokeWidth={1.5} />
+        </button>
       </div>
 
-      <Card className="p-6">
-        <h2 className="mb-4 text-lg font-semibold text-cara-900">Información del Sistema</h2>
+      <Card>
+        <h2 className="section-title mb-4">Información del Sistema</h2>
         <dl className="grid grid-cols-2 gap-4 text-sm">
           <div>
             <dt className="text-cara-500">Nombre</dt>
@@ -80,14 +97,14 @@ export default function ProfilePage() {
         </dl>
       </Card>
 
-      <Card className="p-6">
+      <Card>
         <h2 className="mb-4 text-lg font-semibold text-cara-900">Cambiar Contraseña</h2>
         <form onSubmit={handleChangePassword} className="space-y-4">
           <div>
             <label className="mb-1 block text-sm font-medium text-cara-700">Contraseña actual</label>
             <input
               type="password"
-              className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none"
+              className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] px-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               required
@@ -97,7 +114,7 @@ export default function ProfilePage() {
             <label className="mb-1 block text-sm font-medium text-cara-700">Nueva contraseña</label>
             <input
               type="password"
-              className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none"
+              className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] px-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
@@ -107,7 +124,7 @@ export default function ProfilePage() {
             <label className="mb-1 block text-sm font-medium text-cara-700">Confirmar nueva contraseña</label>
             <input
               type="password"
-              className="w-full rounded-lg border border-cara-200 px-3 py-2 text-sm focus:border-cara-500 focus:outline-none"
+              className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] px-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required

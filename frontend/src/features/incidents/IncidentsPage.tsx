@@ -201,7 +201,7 @@ export default function IncidentsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-cara-900">Incidentes</h1>
+        <h1 className="page-title">Incidentes</h1>
         <div className="flex items-center gap-2">
           <Button variant="secondary" onClick={exportExcel}>
             <FileSpreadsheet className="h-4 w-4 mr-2" />
@@ -250,10 +250,10 @@ export default function IncidentsPage() {
               }}
               onFocus={() => setShowAssetDropdown(true)}
               onBlur={() => setTimeout(() => setShowAssetDropdown(false), 200)}
-              className="w-full h-10 rounded-lg border border-[var(--color-border)] bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 px-3.5 text-sm focus:outline-none focus:border-cara-500 focus:ring-2 focus:ring-cara-500/25"
+              className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] px-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory"
             />
             {showAssetDropdown && (
-              <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-xl border border-gray-200 bg-white dark:bg-neutral-800 dark:border-neutral-700 shadow-dropdown">
+              <div className="absolute z-50 mt-2 w-full max-h-56 overflow-y-auto rounded-2xl bg-[var(--surface)] border border-[var(--border-card)] shadow-float">
                 {filteredIncidentAssetOptions.length === 0 ? (
                   <p className="px-3 py-2 text-sm text-gray-400">Sin resultados</p>
                 ) : (
@@ -286,7 +286,7 @@ export default function IncidentsPage() {
               placeholder="Contá qué pasó con el activo..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-lg border border-[var(--color-border)] bg-white dark:bg-neutral-800 px-3.5 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-cara-500 focus:ring-2 focus:ring-cara-500/25"
+              className="w-full rounded-2xl border border-transparent bg-[var(--surface)] px-4 py-3 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory"
             />
           </div>
 

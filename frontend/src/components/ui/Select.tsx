@@ -18,9 +18,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     const selectId = id || label?.toLowerCase().replace(/\s+/g, '-');
 
     return (
-      <div className="space-y-1">
+      <div className="space-y-1.5">
         {label && (
-          <label htmlFor={selectId} className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+          <label htmlFor={selectId} className="block text-[13px] font-medium text-ink-muted">
             {label}
           </label>
         )}
@@ -28,10 +28,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           ref={ref}
           id={selectId}
           className={clsx(
-            'block w-full h-10 rounded-lg border bg-white px-3.5 text-sm text-gray-900 dark:bg-neutral-800 dark:text-gray-100 transition-colors focus:outline-none focus:border-cara-500 focus:ring-2 focus:ring-cara-500/25',
-            error
-              ? 'border-danger focus:border-danger'
-              : 'border-[var(--color-border)] focus:border-cara-500 dark:border-neutral-700',
+            'block w-full h-11 rounded-full border px-4 text-sm transition-all duration-200 ease-calm',
+            'bg-[var(--surface)] text-ink',
+            'shadow-[var(--shadow-inset)]',
+            'focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory dark:focus:ring-offset-[#262B27]',
+            error ? 'border-danger' : 'border-transparent',
             className,
           )}
           {...props}
@@ -43,7 +44,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             </option>
           ))}
         </select>
-        {error && <p className="text-sm text-danger">{error}</p>}
+        {error && <p className="text-xs text-danger pl-4">{error}</p>}
       </div>
     );
   },

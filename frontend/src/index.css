@@ -3,62 +3,65 @@
 @tailwind utilities;
 
 /* ============================================
-   Design Tokens — Product UI Styleguide v2.1
+   Calm Kit — Design Tokens
    ============================================ */
 :root {
-  /* Color */
-  --color-primary: #0B4F57;
-  --color-primary-hover: #15666F;
-  --color-primary-active: #083A41;
-  --color-surface: #F7F5EE;
-  --color-border: #DEDCD6;
-  --color-focus-ring: #0B4F57;
+  /* Paleta */
+  --sage: #687F6E;
+  --sage-hover: #7A9180;
+  --moss: #A7B8A7;
+  --mist: #D9E1D9;
+  --ivory: #F4EFE8;
+  --sand: #C9BDAF;
+  --ink: #1F2A24;
+  --ink-muted: #7A8479;
+  --surface: #F8F4EE;
 
-  --gray-900: #1F1F1F;
-  --gray-700: #404040;
-  --gray-500: #7A7A7A;
-  --gray-300: #DDDBD5;
-  --gray-100: #F1EFE9;
-  --gray-50: #F8F6EF;
+  --success: var(--sage);
+  --info: #5C7C8A;
+  --warning: #B98A56;
+  --error: #A65D57;
 
-  --success: #2E9E5B;
-  --info: #2878C8;
-  --warning: #E0A800;
-  --error: #D13B3B;
+  /* Superficies */
+  --bg-base: var(--ivory);
+  --surface-card: var(--surface);
+  --border-card: rgba(255, 255, 255, 0.6);
+  --divider: var(--sand);
 
-  /* Elevación */
-  --shadow-1: 0 2px 4px -1px rgba(0, 0, 0, 0.08);
-  --shadow-2: 0 4px 8px -2px rgba(0, 0, 0, 0.10);
-  --shadow-3: 0 8px 16px -4px rgba(0, 0, 0, 0.12);
-  --shadow-4: 0 12px 24px -6px rgba(0, 0, 0, 0.16);
+  /* Sombras (soft UI) */
+  --shadow-card: 8px 8px 20px rgba(120, 110, 95, 0.12), -6px -6px 16px rgba(255, 255, 255, 0.8);
+  --shadow-soft: 4px 4px 12px rgba(120, 110, 95, 0.10), -4px -4px 10px rgba(255, 255, 255, 0.7);
+  --shadow-float: 0 10px 30px rgba(120, 110, 95, 0.16);
+  --shadow-inset: inset 2px 2px 5px rgba(120, 110, 95, 0.10), inset -2px -2px 6px rgba(255, 255, 255, 0.85);
 
-  /* Superficies aplicadas (light) */
-  --bg-base: var(--color-surface);
-  --surface: #FBFAF6;
-  --surface-alt: var(--gray-100);
-  --text-primary: var(--gray-900);
-  --text-secondary: var(--gray-500);
-  --border-subtle: var(--color-border);
-  --shadow-card: var(--shadow-3);
-  --shadow-card-hover: var(--shadow-4);
+  /* Texto */
+  --text-primary: var(--ink);
+  --text-secondary: var(--ink-muted);
 
   color-scheme: light;
 }
 
 html.dark {
-  /* Monocromo cálido oscuro, mismo acento teal */
-  --bg-base: #1A1917;
-  --surface: #23221F;
-  --surface-alt: #26251F;
-  --text-primary: #F5F4F0;
-  --text-secondary: #B5B3AC;
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --shadow-1: 0 2px 4px -1px rgba(0, 0, 0, 0.4);
-  --shadow-2: 0 4px 8px -2px rgba(0, 0, 0, 0.45);
-  --shadow-3: 0 8px 16px -4px rgba(0, 0, 0, 0.5);
-  --shadow-4: 0 12px 24px -6px rgba(0, 0, 0, 0.55);
-  --shadow-card: var(--shadow-3);
-  --shadow-card-hover: var(--shadow-4);
+  /* Variante nocturna cálida (sin negro puro) */
+  --ivory: #262B27;
+  --surface: #2E3430;
+  --surface-card: var(--surface);
+  --sand: #4A524B;
+  --mist: #3A423C;
+  --moss: #7F9484;
+  --ink: #EFEAE2;
+  --ink-muted: #A8AEA4;
+  --border-card: rgba(255, 255, 255, 0.06);
+  --divider: rgba(255, 255, 255, 0.08);
+
+  --bg-base: var(--ivory);
+  --text-primary: var(--ink);
+  --text-secondary: var(--ink-muted);
+
+  --shadow-card: 8px 8px 20px rgba(0, 0, 0, 0.28), -6px -6px 16px rgba(255, 255, 255, 0.03);
+  --shadow-soft: 4px 4px 12px rgba(0, 0, 0, 0.25), -4px -4px 10px rgba(255, 255, 255, 0.03);
+  --shadow-float: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --shadow-inset: inset 2px 2px 5px rgba(0, 0, 0, 0.25), inset -2px -2px 6px rgba(255, 255, 255, 0.03);
 
   color-scheme: dark;
 }
@@ -68,96 +71,115 @@ html.dark {
     background-color: var(--bg-base);
     color: var(--text-primary);
     font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 14px;
   }
 
-  /* Forzar legibilidad en inputs: texto oscuro en light, claro en dark */
+  /* Inputs: texto legible siempre */
   input,
   textarea,
   select {
-    color: var(--gray-900) !important;
-    -webkit-text-fill-color: var(--gray-900) !important;
-    caret-color: var(--gray-900) !important;
+    color: var(--ink) !important;
+    -webkit-text-fill-color: var(--ink) !important;
+    caret-color: var(--ink) !important;
   }
 
   html.dark input,
   html.dark textarea,
   html.dark select {
-    color: #F5F4F0 !important;
-    -webkit-text-fill-color: #F5F4F0 !important;
-    caret-color: #F5F4F0 !important;
+    color: var(--ink) !important;
+    -webkit-text-fill-color: var(--ink) !important;
+    caret-color: var(--ink) !important;
   }
 
   /* Campos sobre fondos oscuros (login) */
   .field-on-dark input,
   .field-on-dark textarea,
   .field-on-dark select {
-    color: #F5F4F0 !important;
-    -webkit-text-fill-color: #F5F4F0 !important;
-    caret-color: #F5F4F0 !important;
+    color: var(--ivory) !important;
+    -webkit-text-fill-color: var(--ivory) !important;
+    caret-color: var(--ivory) !important;
   }
 
-  /* Autofill: evitar fondo/texto ilegibles del navegador */
+  /* Autofill coherente con el kit */
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus {
-    -webkit-text-fill-color: var(--gray-900);
-    -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
-    caret-color: var(--gray-900);
+    -webkit-text-fill-color: var(--ink);
+    -webkit-box-shadow: 0 0 0 1000px var(--surface) inset;
+    caret-color: var(--ink);
     transition: background-color 9999s ease-out;
   }
 
   html.dark input:-webkit-autofill,
   html.dark input:-webkit-autofill:hover,
   html.dark input:-webkit-autofill:focus {
-    -webkit-text-fill-color: #F5F4F0;
-    -webkit-box-shadow: 0 0 0 1000px #262522 inset;
-    caret-color: #F5F4F0;
+    -webkit-text-fill-color: var(--ink);
+    -webkit-box-shadow: 0 0 0 1000px var(--surface) inset;
+    caret-color: var(--ink);
   }
 
-  /* Autofill sobre campos con fondo oscuro (login): fondo teal, texto claro */
   .field-on-dark input:-webkit-autofill,
   .field-on-dark input:-webkit-autofill:hover,
   .field-on-dark input:-webkit-autofill:focus {
-    -webkit-text-fill-color: #F5F4F0 !important;
-    -webkit-box-shadow: 0 0 0 1000px #083A41 inset !important;
-    caret-color: #F5F4F0 !important;
-    border-radius: 8px;
-    transition: background-color 9999s ease-out;
+    -webkit-text-fill-color: var(--ivory) !important;
+    -webkit-box-shadow: 0 0 0 1000px var(--sage) inset !important;
+    caret-color: var(--ivory) !important;
+    border-radius: 999px;
+  }
+
+  /* Focus visible del kit */
+  :focus-visible {
+    outline: none;
   }
 }
 
 @layer components {
-  /* Card según styleguide: radius 16px, sombra Level 3, fondo surface */
+  /* Tarjeta: radio 24, superficie con gradiente sutil, sombra doble */
   .card-surface {
-    background-color: var(--surface);
+    background: linear-gradient(160deg, var(--surface-card) 0%, var(--ivory) 100%);
+    border: 1px solid var(--border-card);
     box-shadow: var(--shadow-card);
-    border-radius: 16px;
+    border-radius: 24px;
   }
 
-  /* Título de sección: MAYÚSCULAS, 12-13px, semibold, tracking amplio */
+  /* Título de página: mayúsculas, peso 300, tracking amplio */
+  .page-title {
+    @apply uppercase font-light tracking-page text-[26px] leading-tight;
+    color: var(--ink);
+  }
+
+  /* Título de sección numerado: mayúsculas 11-12px, peso 500 */
   .section-title {
-    @apply text-xs font-semibold uppercase tracking-[0.12em] text-gray-700 dark:text-gray-300;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
   }
 
   .status-badge {
-    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
   }
 
-  /* Chips semánticos: tinte claro + texto del color semántico (dark: tinte fuerte) */
   .status-badge--available {
-    @apply bg-success/10 text-success dark:bg-success/20 dark:text-success;
+    background-color: var(--mist);
+    color: var(--sage);
   }
 
   .status-badge--in-use {
-    @apply bg-warning/15 text-gray-800 dark:bg-warning/20 dark:text-warning;
+    background-color: var(--ivory);
+    color: var(--ink);
   }
 
   .status-badge--overdue {
-    @apply bg-error/10 text-error dark:bg-error/20 dark:text-error;
+    background-color: rgba(166, 93, 87, 0.14);
+    color: #8F4C47;
   }
 
   .status-badge--maintenance {
-    @apply bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300;
+    background-color: var(--ivory);
+    color: var(--ink-muted);
   }
 
   .blink-title {
@@ -168,4 +190,21 @@ html.dark {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
   }
+}
+
+/* ── Toasts (Calm Kit) ───────────────────────────── */
+.toast-calm {
+  background: var(--mist) !important;
+  color: var(--ink) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--shadow-soft) !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  padding: 12px 16px !important;
+}
+
+html.dark .toast-calm {
+  background: var(--surface) !important;
+  box-shadow: var(--shadow-soft) !important;
 }

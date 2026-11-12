@@ -3,6 +3,7 @@ import api from '@/services/api';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { Checkbox } from '@/components/ui/Checkbox';
 import toast from 'react-hot-toast';
 
 export default function EmailConfigPage() {
@@ -46,10 +47,10 @@ export default function EmailConfigPage() {
 
   return (
     <div className="mx-auto max-w-xl space-y-6 py-6">
-      <h1 className="text-2xl font-bold text-cara-900">Configuración de Email</h1>
+      <h1 className="page-title">Configuración de Email</h1>
       <p className="text-sm text-cara-500">Configuración SMTP para Gmail (usá una contraseña de aplicación de Google).</p>
 
-      <Card className="p-6">
+      <Card>
         <form onSubmit={handleSave} className="space-y-4">
           <Input label="Servidor SMTP" value={host} onChange={(e) => setHost(e.target.value)} required />
           <Input label="Puerto" type="number" value={port} onChange={(e) => setPort(Number(e.target.value))} required />
@@ -70,17 +71,14 @@ export default function EmailConfigPage() {
               casilla con todos los datos del activo, la persona, el préstamo y la descripción.
             </p>
           </div>
-          <label className="flex items-center gap-3 text-sm">
-            <input type="checkbox" checked={useSsl} onChange={(e) => setUseSsl(e.target.checked)} className="h-4 w-4 rounded border-cara-300 text-cara-600" />
-            Usar SSL/TLS
-          </label>
+          <Checkbox checked={useSsl} onChange={setUseSsl} label="Usar SSL/TLS" id="use-ssl" />
           <div className="flex justify-end">
             <Button type="submit" isLoading={loading}>Guardar configuración</Button>
           </div>
         </form>
       </Card>
 
-      <Card className="p-4 bg-blue-50 border-blue-200">
+      <Card className="p-4 bg-mist/50">
         <h3 className="text-sm font-semibold text-blue-800 mb-2">¿Cómo obtener una contraseña de aplicación de Google?</h3>
         <ol className="text-xs text-blue-700 space-y-1 list-decimal ml-4">
           <li>Activá la verificación en dos pasos en tu cuenta de Google</li>

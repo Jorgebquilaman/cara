@@ -187,7 +187,7 @@ export default function AccountRequestsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-cara-900">Solicitudes de Alta</h1>
+        <h1 className="page-title">Solicitudes de Alta</h1>
         <p className="text-sm text-cara-500 mt-1">Revisá y aprobá las solicitudes de nuevos usuarios</p>
       </div>
 

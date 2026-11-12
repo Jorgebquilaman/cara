@@ -48,7 +48,7 @@ export default function SurveysPage() {
   return (
     <div className="space-y-6">
         <div>
-            <h1 className="text-2xl font-bold text-cara-900">Mis Encuestas</h1>
+            <h1 className="page-title">Mis Encuestas</h1>
             <p className="text-sm text-cara-500 mt-1">Completá las encuestas de tus préstamos finalizados</p>
         </div>
 

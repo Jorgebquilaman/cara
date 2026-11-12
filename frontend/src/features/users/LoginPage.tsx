@@ -44,9 +44,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-cara-700">
+    <div className="flex min-h-screen bg-sage">
       {/* ============ PANEL IZQUIERDO (blanco) ============ */}
-      <div className="hidden lg:flex flex-col justify-between w-[46%] bg-white py-10 pl-12 pr-16 relative z-10">
+      <div className="hidden lg:flex flex-col justify-between w-[46%] bg-[var(--surface)] py-10 pl-12 pr-16 relative z-10">
         {/* Logo institución */}
         <div>
           {/* Reemplazar src por el logo definitivo de la institución si cambia */}
@@ -68,7 +68,7 @@ export default function LoginPage() {
         </div>
 
         {/* Copyright */}
-        <div className="text-xs text-gray-400 leading-relaxed">
+        <div className="text-[11px] text-ink-muted leading-relaxed">
           <p>© {new Date().getFullYear()} IUPA — Instituto Universitario Patagónico de las Artes</p>
           <p>Powered by CARA</p>
         </div>
@@ -76,7 +76,7 @@ export default function LoginPage() {
 
       {/* ============ DIVISOR ORGÁNICO (curva irregular) ============ */}
       <svg
-        className="hidden lg:block h-screen w-[90px] shrink-0 fill-white"
+        className="hidden lg:block h-screen w-[90px] shrink-0 fill-[var(--surface)]"
         viewBox="0 0 90 900"
         preserveAspectRatio="none"
         aria-hidden="true"
@@ -96,25 +96,25 @@ export default function LoginPage() {
             />
           </div>
 
-          <h1 className="text-5xl font-bold text-white mb-10">Login</h1>
+          <h1 className="text-5xl font-light tracking-page uppercase text-ivory mb-10">Login</h1>
 
           <form onSubmit={handleSubmit(onSubmit)} className="field-on-dark space-y-5">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-200 mb-2">
+              <label htmlFor="email" className="block text-[13px] font-medium text-ivory/80 mb-2">
                 Usuario
               </label>
               <input
                 id="email"
                 type="email"
                 placeholder="usuario@iupa.edu.ar"
-                className="w-full rounded-lg bg-black/20 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:border-cara-200 focus:ring-1 focus:ring-cara-200/40 transition-colors"
+                className="w-full rounded-full bg-white/10 border border-white/20 px-5 py-3 text-sm text-ivory placeholder:text-ivory/50 focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-sage transition-all duration-200"
                 {...register('email')}
               />
               {errors.email && <p className="mt-1 text-xs text-red-300">{errors.email.message}</p>}
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-200 mb-2">
+              <label htmlFor="password" className="block text-[13px] font-medium text-ivory/80 mb-2">
                 Password
               </label>
               <div className="relative">
@@ -144,7 +144,7 @@ export default function LoginPage() {
             <div className="flex justify-end">
               <a
                 href="/forgot-password"
-                className="text-xs text-gray-300 underline underline-offset-2 hover:text-white transition-colors"
+                className="text-xs text-ivory/70 underline underline-offset-2 hover:text-ivory transition-colors"
               >
                 ¿Olvidaste tu contraseña?
               </a>
@@ -153,16 +153,16 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full rounded-full bg-white py-3 text-base font-bold text-cara-700 transition-all hover:bg-cara-50 hover:scale-[1.02] disabled:opacity-60 disabled:hover:scale-100 focus:outline-none focus:ring-2 focus:ring-cara-200/50"
+              className="w-full rounded-full bg-ivory py-3 text-[15px] font-medium text-sage shadow-soft-sm transition-all duration-200 hover:bg-white hover:scale-[1.01] disabled:opacity-60 disabled:hover:scale-100 focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-sage"
             >
               {isSubmitting ? 'Ingresando…' : 'Iniciar Sesión'}
             </button>
 
-            <p className="text-center text-sm text-gray-300 pt-2">
+            <p className="text-center text-sm text-ivory/70 pt-2">
               ¿No tenés una cuenta?{' '}
               <a
                 href="/solicitar-alta"
-                className="underline underline-offset-2 text-white hover:text-cara-200 transition-colors"
+                className="underline underline-offset-2 text-ivory hover:text-mist transition-colors"
               >
                 Registrate ahora
               </a>
@@ -171,7 +171,7 @@ export default function LoginPage() {
             <p className="text-center pt-4">
               <a
                 href="#"
-                className="text-xs text-gray-400 underline underline-offset-2 hover:text-gray-200 transition-colors"
+                className="text-xs text-ivory/60 underline underline-offset-2 hover:text-ivory transition-colors"
               >
                 Términos y Servicios
               </a>
@@ -180,11 +180,11 @@ export default function LoginPage() {
         </div>
 
         {/* Pie derecho: contacto */}
-        <div className="absolute bottom-5 right-8 text-xs text-gray-400 hidden md:block">
+        <div className="absolute bottom-5 right-8 text-xs text-ivory/60 hidden md:block">
           ¿Tenés algún problema? Contactanos a{' '}
           <a
             href="mailto:soporte@iupa.edu.ar"
-            className="underline underline-offset-2 text-gray-300 hover:text-white transition-colors"
+            className="underline underline-offset-2 text-ivory/80 hover:text-ivory transition-colors"
           >
             soporte@iupa.edu.ar
           </a>

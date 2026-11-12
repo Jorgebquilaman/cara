@@ -347,7 +347,7 @@ export default function ReservationsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-cara-900">Reservas</h1>
+          <h1 className="page-title">Reservas</h1>
           <p className="text-sm text-cara-500 mt-1">Gestioná las reservas de activos</p>
         </div>
         <div className="flex items-center gap-2">
@@ -369,11 +369,11 @@ export default function ReservationsPage() {
       <Card>
         <div className="flex gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-cara-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-muted" strokeWidth={1.5} />
             <input
               type="text"
               placeholder="Buscar por espacio o usuario..."
-              className="w-full rounded-lg border border-cara-300 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cara-500 focus:border-transparent transition-shadow"
+              className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] pl-11 pr-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory transition-all duration-200"
               onChange={(e) => handleSearch(e.target.value)}
             />
           </div>
@@ -421,7 +421,7 @@ export default function ReservationsPage() {
                   }}
                   onFocus={() => setShowAssetPicker(true)}
                   onBlur={() => setTimeout(() => setShowAssetPicker(false), 200)}
-                  className="w-full h-10 rounded-lg border border-[var(--color-border)] bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 px-3.5 text-sm focus:outline-none focus:border-cara-500 focus:ring-2 focus:ring-cara-500/25"
+                  className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] px-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory"
                 />
                 {showAssetPicker && (
                   <div className="absolute z-50 mt-1 w-full max-h-64 overflow-y-auto rounded-xl border border-gray-200 bg-white dark:bg-neutral-800 dark:border-neutral-700 shadow-dropdown">
@@ -492,10 +492,10 @@ export default function ReservationsPage() {
                       }}
                       onFocus={() => setShowReservingDropdown(true)}
                       onBlur={() => setTimeout(() => setShowReservingDropdown(false), 200)}
-                      className="w-full h-10 rounded-lg border border-[var(--color-border)] bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 px-3.5 text-sm focus:outline-none focus:border-cara-500 focus:ring-2 focus:ring-cara-500/25"
+                      className="w-full h-11 rounded-full border border-transparent bg-[var(--surface)] px-4 text-sm text-ink shadow-[var(--shadow-inset)] focus:outline-none focus:ring-2 focus:ring-moss focus:ring-offset-2 focus:ring-offset-ivory"
                     />
                     {showReservingDropdown && (
-                      <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-xl border border-gray-200 bg-white dark:bg-neutral-800 dark:border-neutral-700 shadow-dropdown">
+                      <div className="absolute z-50 mt-2 w-full max-h-56 overflow-y-auto rounded-2xl bg-[var(--surface)] border border-[var(--border-card)] shadow-float">
                         {filteredReservingOptions.length === 0 ? (
                           <p className="px-3 py-2 text-sm text-gray-400">Sin resultados</p>
                         ) : (

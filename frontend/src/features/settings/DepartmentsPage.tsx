@@ -157,7 +157,7 @@ export default function DepartmentsPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-2xl font-bold text-cara-900">Departamentos y Propuestas</h1>
+          <h1 className="page-title">Departamentos y Propuestas</h1>
           <p className="text-sm text-cara-500 mt-1">
             Gestioná los departamentos académicos y las propuestas (carreras) que dictan
           </p>
