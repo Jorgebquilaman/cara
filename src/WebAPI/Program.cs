@@ -179,8 +179,7 @@ Console.WriteLine($"Controllers registered: {controllerTypes.Count}");
 app.MapHub<LoanHub>("/hubs/loans");
 app.MapHub<NotificationHub>("/hubs/notifications");
 
-// ── Auto-create database and seed (dev only) ──────────────
-if (app.Environment.IsDevelopment())
+// ── Auto-create database, migrations and seed (idempotente, corre siempre) ──────────────
 {
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
