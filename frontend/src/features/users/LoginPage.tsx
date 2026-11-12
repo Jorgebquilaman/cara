@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Eye, EyeOff } from 'lucide-react';
 import { z } from 'zod';
 import { useAuth } from '@/hooks/useAuth';
 import { useForceLightTheme } from '@/hooks/useTheme';
@@ -16,6 +18,7 @@ export default function LoginPage() {
   useForceLightTheme();
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -114,13 +117,23 @@ export default function LoginPage() {
               <label htmlFor="password" className="block text-sm font-medium text-gray-200 mb-2">
                 Password
               </label>
-              <input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                className="w-full rounded-lg bg-black/20 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:border-cara-200 focus:ring-1 focus:ring-cara-200/40 transition-colors"
-                {...register('password')}
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  className="w-full rounded-lg bg-black/20 border border-white/15 px-4 py-3 pr-11 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:border-cara-200 focus:ring-1 focus:ring-cara-200/40 transition-colors"
+                  {...register('password')}
+                />
+                <button
+                  type="button"
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-[18px] w-[18px]" /> : <Eye className="h-[18px] w-[18px]" />}
+                </button>
+              </div>
               {errors.password && <p className="mt-1 text-xs text-red-300">{errors.password.message}</p>}
             </div>
 

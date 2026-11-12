@@ -113,6 +113,17 @@ html.dark {
     -webkit-box-shadow: 0 0 0 1000px #262522 inset;
     caret-color: #F5F4F0;
   }
+
+  /* Autofill sobre campos con fondo oscuro (login): fondo teal, texto claro */
+  .field-on-dark input:-webkit-autofill,
+  .field-on-dark input:-webkit-autofill:hover,
+  .field-on-dark input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #F5F4F0 !important;
+    -webkit-box-shadow: 0 0 0 1000px #083A41 inset !important;
+    caret-color: #F5F4F0 !important;
+    border-radius: 8px;
+    transition: background-color 9999s ease-out;
+  }
 }
 
 @layer components {
