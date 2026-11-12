@@ -59,6 +59,8 @@ export default function ReportsPage() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'Admin';
   const [selectedUserId, setSelectedUserId] = useState('');
+  const [historyUserSearch, setHistoryUserSearch] = useState('');
+  const [showHistoryUserDropdown, setShowHistoryUserDropdown] = useState(false);
   const historyRef = useRef<HTMLDivElement>(null);
   const topAssetsRef = useRef<HTMLDivElement>(null);
   const incidentsRef = useRef<HTMLDivElement>(null);
@@ -284,8 +286,15 @@ export default function ReportsPage() {
 
   const userOptions = (users ?? []).map((u) => ({
     value: u.id,
-    label: `${u.fullName} (${u.institutionalEmail})`,
+    label: `${u.fullName}${u.dni ? ` · DNI ${u.dni}` : ''}`,
+    name: u.fullName,
+    dni: u.dni || '',
   }));
+  const filteredUserOptions = userOptions.filter((o) => {
+    const q = historyUserSearch.trim().toLowerCase();
+    if (!q) return true;
+    return o.name.toLowerCase().includes(q) || o.dni.includes(q);
+  });
 
   return (
     <div className="space-y-8">
@@ -563,15 +572,50 @@ export default function ReportsPage() {
         <div className="space-y-4">
           <Card>
             <div className="flex gap-3 items-end">
-              <div className="flex-1">
-                <Select
-                  label="Seleccioná un usuario"
-                  options={userOptions}
-                  placeholder="Buscar usuario..."
-                  value={selectedUserId}
-                  onChange={(e) => setSelectedUserId(e.target.value)}
+            <div className="flex-1">
+              <label className="mb-1 block text-sm font-semibold text-gray-700 dark:text-gray-300">Seleccioná un usuario</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Escribí parte del nombre o DNI..."
+                  value={selectedUserId ? userOptions.find((o) => o.value === selectedUserId)?.label ?? '' : historyUserSearch}
+                  onChange={(e) => {
+                    if (selectedUserId) {
+                      setSelectedUserId('');
+                    }
+                    setHistoryUserSearch(e.target.value);
+                    setShowHistoryUserDropdown(true);
+                  }}
+                  onFocus={() => setShowHistoryUserDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowHistoryUserDropdown(false), 200)}
+                  className="w-full h-10 rounded-lg border border-[var(--color-border)] bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 px-3.5 text-sm focus:outline-none focus:border-cara-500 focus:ring-2 focus:ring-cara-500/25"
                 />
+                {showHistoryUserDropdown && (
+                  <div className="absolute z-50 mt-1 w-full max-h-56 overflow-y-auto rounded-xl border border-gray-200 bg-white dark:bg-neutral-800 dark:border-neutral-700 shadow-dropdown">
+                    {filteredUserOptions.length === 0 ? (
+                      <p className="px-3 py-2 text-sm text-gray-400">Sin resultados</p>
+                    ) : (
+                      filteredUserOptions.map((o) => (
+                        <button
+                          key={o.value}
+                          type="button"
+                          className={`w-full text-left px-3 py-2 text-sm hover:bg-cara-50 transition-colors ${
+                            selectedUserId === o.value ? 'bg-cara-50 font-medium' : ''
+                          }`}
+                          onClick={() => {
+                            setSelectedUserId(o.value);
+                            setShowHistoryUserDropdown(false);
+                            setHistoryUserSearch('');
+                          }}
+                        >
+                          {o.label}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
               </div>
+            </div>
               {selectedUserId && (
                 <div className="flex gap-2">
                   <Button variant="secondary" size="sm" onClick={handleExportUserHistory}>

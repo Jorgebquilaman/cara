@@ -10,8 +10,11 @@ import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/hooks/useAuth';
 import { useAssets } from '@/hooks/useAssets';
 import { Incident } from '@/types';
-import { CheckCircle, Eye, Plus, AlertTriangle, Camera, X } from 'lucide-react';
+import { CheckCircle, Eye, Plus, AlertTriangle, Camera, X, FileSpreadsheet, FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export default function IncidentsPage() {
   const queryClient = useQueryClient();
@@ -159,14 +162,60 @@ export default function IncidentsPage() {
     }] : []),
   ];
 
+  const exportExcel = () => {
+    const rows = (incidents ?? []).map((i) => ({
+      'Activo': i.assetName,
+      'Código': i.assetCode,
+      'Descripción': i.description,
+      'Reportado': new Date(i.reportedAt).toLocaleDateString(),
+      'Estado': i.isResolved ? 'Resuelto' : 'Pendiente',
+      'Resuelto': i.resolvedAt ? new Date(i.resolvedAt).toLocaleDateString() : '',
+      'Evidencia': i.photoUrl ?? '',
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Incidentes');
+    XLSX.writeFile(wb, `incidentes-${new Date().toISOString().slice(0, 10)}.xlsx`);
+    toast.success('Excel exportado');
+  };
+
+  const exportPdf = () => {
+    const doc = new jsPDF();
+    autoTable(doc, {
+      head: [['Activo', 'Código', 'Descripción', 'Reportado', 'Estado']],
+      body: (incidents ?? []).map((i) => [
+        i.assetName,
+        i.assetCode,
+        i.description.length > 80 ? `${i.description.slice(0, 80)}…` : i.description,
+        new Date(i.reportedAt).toLocaleDateString(),
+        i.isResolved ? 'Resuelto' : 'Pendiente',
+      ]),
+      startY: 20,
+      styles: { fontSize: 8, cellPadding: 2 },
+      headStyles: { fillColor: [11, 79, 87] },
+    });
+    doc.save(`incidentes-${new Date().toISOString().slice(0, 10)}.pdf`);
+    toast.success('PDF exportado');
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-cara-900">Incidentes</h1>
-        <Button onClick={() => setIsCreateOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Reportar incidente
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="secondary" onClick={exportExcel}>
+            <FileSpreadsheet className="h-4 w-4 mr-2" />
+            Excel
+          </Button>
+          <Button variant="secondary" onClick={exportPdf}>
+            <FileText className="h-4 w-4 mr-2" />
+            PDF
+          </Button>
+          <Button onClick={() => setIsCreateOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Reportar incidente
+          </Button>
+        </div>
       </div>
 
       <Card>

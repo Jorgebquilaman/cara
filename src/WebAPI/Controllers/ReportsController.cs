@@ -233,9 +233,16 @@ public class ReportsController : ControllerBase
         {
             TotalIncidents = incidents.Count,
             UnresolvedIncidents = incidents.Count(i => !i.IsResolved),
-            AssetsWithIncidents = incidents.Select(i => i.Loan.Asset.Name).Distinct().Count(),
+            AssetsWithIncidents = incidents
+                .Select(i => i.Asset != null ? i.Asset.Name : i.Loan?.Asset?.Name)
+                .Where(n => n != null)
+                .Distinct().Count(),
             TopIncidentAssets = incidents
-                .GroupBy(i => new { i.Loan.Asset.Name, i.Loan.Asset.Code })
+                .GroupBy(i => new
+                {
+                    Name = i.Asset != null ? i.Asset.Name : i.Loan?.Asset?.Name ?? "—",
+                    Code = i.Asset != null ? i.Asset.Code : i.Loan?.Asset?.Code ?? "—"
+                })
                 .Select(g => new { Asset = $"{g.Key.Code} - {g.Key.Name}", Count = g.Count() })
                 .OrderByDescending(g => g.Count)
                 .Take(10)
