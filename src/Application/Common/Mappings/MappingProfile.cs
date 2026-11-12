@@ -39,9 +39,12 @@ public class MappingProfile : Profile
             .ForMember(d => d.UserEmail, o => o.MapFrom(s => s.User.InstitutionalEmail.Value));
 
         CreateMap<Incident, IncidentDto>()
-            .ForMember(d => d.AssetName, o => o.MapFrom(s => s.Loan.Asset.Name))
-            .ForMember(d => d.AssetCode, o => o.MapFrom(s => s.Loan.Asset.Code))
-            .ForMember(d => d.AssetImageUrl, o => o.MapFrom(s => s.Loan.Asset.ImageUrl));
+            .ForMember(d => d.AssetName, o => o.MapFrom(s =>
+                s.Asset != null ? s.Asset.Name : s.Loan != null ? s.Loan.Asset.Name : string.Empty))
+            .ForMember(d => d.AssetCode, o => o.MapFrom(s =>
+                s.Asset != null ? s.Asset.Code : s.Loan != null ? s.Loan.Asset.Code : string.Empty))
+            .ForMember(d => d.AssetImageUrl, o => o.MapFrom(s =>
+                s.Asset != null ? s.Asset.ImageUrl : s.Loan != null ? s.Loan.Asset.ImageUrl : null));
 
         CreateMap<Notification, NotificationDto>()
             .ForMember(d => d.Type, o => o.MapFrom(s => s.Type.ToString()));

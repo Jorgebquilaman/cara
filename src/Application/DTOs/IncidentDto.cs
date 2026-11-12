@@ -3,7 +3,8 @@ namespace Application.DTOs;
 public class IncidentDto
 {
     public Guid Id { get; set; }
-    public Guid LoanId { get; set; }
+    public Guid? LoanId { get; set; }
+    public Guid? AssetId { get; set; }
     public string AssetName { get; set; } = string.Empty;
     public string AssetCode { get; set; } = string.Empty;
     public string? AssetImageUrl { get; set; }

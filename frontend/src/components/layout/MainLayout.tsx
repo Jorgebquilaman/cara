@@ -53,7 +53,7 @@ const navItems: { to: string; icon: any; label: string; roles: string[]; section
   { to: '/config-email', icon: Settings, label: 'Config. Email', roles: ['Admin'], section: 'ADMINISTRACIÓN' },
 
   { to: '/sanctions', icon: ShieldAlert, label: 'Sanciones', roles: ['Admin', 'Staff'], section: 'CONTROL' },
-  { to: '/incidents', icon: AlertTriangle, label: 'Incidentes', roles: ['Admin', 'Staff'], section: 'CONTROL' },
+  { to: '/incidents', icon: AlertTriangle, label: 'Incidentes', roles: ['Admin', 'Staff', 'Teacher', 'Student'], section: 'GENERAL' },
   { to: '/reports', icon: FileText, label: 'Reportes', roles: ['Admin', 'Staff'], section: 'CONTROL' },
 ];
 

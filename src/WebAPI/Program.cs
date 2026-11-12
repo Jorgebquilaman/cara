@@ -245,6 +245,8 @@ if (app.Environment.IsDevelopment())
         @"ALTER TABLE ""Loans"" ADD COLUMN IF NOT EXISTS ""UserRatingComment"" VARCHAR(500) NULL",
         @"ALTER TABLE ""Loans"" ADD COLUMN IF NOT EXISTS ""Space"" VARCHAR(100) NULL",
         @"ALTER TABLE ""Assets"" ADD COLUMN IF NOT EXISTS ""Observations"" VARCHAR(500) NULL",
+        @"ALTER TABLE ""Incidents"" ALTER COLUMN ""LoanId"" DROP NOT NULL",
+        @"ALTER TABLE ""Incidents"" ADD COLUMN IF NOT EXISTS ""AssetId"" UUID NULL REFERENCES ""Assets""(""Id"") ON DELETE CASCADE",
         @"DO $$ BEGIN
             IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Contracts' AND column_name = 'Description') THEN
                 ALTER TABLE ""Contracts"" RENAME COLUMN ""Description"" TO ""Content"";

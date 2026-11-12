@@ -55,7 +55,7 @@ export default function App() {
         <Route path="/users" element={<ProtectedRoute roles={['Admin']}><UsersPage /></ProtectedRoute>} />
         <Route path="/departamentos" element={<ProtectedRoute roles={['Admin']}><DepartmentsPage /></ProtectedRoute>} />
         <Route path="/reports" element={<ProtectedRoute roles={['Admin', 'Staff']}><ReportsPage /></ProtectedRoute>} />
-        <Route path="/incidents" element={<ProtectedRoute roles={['Admin', 'Staff']}><IncidentsPage /></ProtectedRoute>} />
+        <Route path="/incidents" element={<ProtectedRoute><IncidentsPage /></ProtectedRoute>} />
         <Route path="/sanctions" element={<ProtectedRoute roles={['Admin', 'Staff']}><SanctionsPage /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
         <Route path="/mi-perfil" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />

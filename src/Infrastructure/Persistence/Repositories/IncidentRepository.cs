@@ -18,6 +18,7 @@ public class IncidentRepository : IIncidentRepository
         => await _context.Incidents
             .Include(i => i.Loan)
             .ThenInclude(l => l.Asset)
+            .Include(i => i.Asset)
             .OrderByDescending(i => i.ReportedAt)
             .ToListAsync(cancellationToken);
 

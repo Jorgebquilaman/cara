@@ -32,5 +32,10 @@ public class IncidentConfiguration : IEntityTypeConfiguration<Incident>
             .WithMany(l => l.Incidents)
             .HasForeignKey(i => i.LoanId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(i => i.Asset)
+            .WithMany()
+            .HasForeignKey(i => i.AssetId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

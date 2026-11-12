@@ -30,8 +30,40 @@ public class IncidentsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<IncidentDto>> Create(CreateIncidentCommand command)
     {
+        // El reporte siempre se atribuye al usuario autenticado
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (Guid.TryParse(userId, out var reportedBy))
+            command = command with { ReportedBy = reportedBy };
+
         var result = await _mediator.Send(command);
         return CreatedAtAction(nameof(Create), null, result);
+    }
+
+    [HttpPost("upload-photo")]
+    [Authorize]
+    public async Task<IActionResult> UploadPhoto(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest(new { message = "No se envió ningún archivo." });
+
+        var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (ext is not ".jpg" and not ".jpeg" and not ".png")
+            return BadRequest(new { message = "Solo se permiten fotos JPG o PNG." });
+
+        if (file.Length > 5 * 1024 * 1024)
+            return BadRequest(new { message = "La foto no puede superar los 5 MB." });
+
+        var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "uploads", "incidents");
+        Directory.CreateDirectory(uploadsDir);
+
+        var fileName = $"{Guid.NewGuid()}{ext}";
+        var filePath = Path.Combine(uploadsDir, fileName);
+
+        await using var stream = new FileStream(filePath, FileMode.Create);
+        await file.CopyToAsync(stream);
+
+        var url = $"/uploads/incidents/{fileName}";
+        return Ok(new { url });
     }
 
     [HttpPost("{id:guid}/resolve")]
