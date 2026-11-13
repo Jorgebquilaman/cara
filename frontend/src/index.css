@@ -39,11 +39,11 @@
   --text-secondary: var(--ink-muted);
 
   /* Sidebar: tono oscuro para buen contraste en tema claro */
-  --sidebar-bg: #687F6E;
-  --sidebar-bg-end: #57695C;
+  --sidebar-bg: #5D7263;
+  --sidebar-bg-end: #4C5E52;
   --sidebar-text: #F4EFE8;
   --sidebar-item: #FFFFFF;
-  --sidebar-muted: rgba(244, 239, 232, 0.68);
+  --sidebar-muted: rgba(244, 239, 232, 0.85);
   --sidebar-hover: rgba(244, 239, 232, 0.10);
   --sidebar-active-bg: rgba(244, 239, 232, 0.16);
   --sidebar-active-text: #FFFFFF;
@@ -79,7 +79,7 @@ html.dark {
   --sidebar-bg-end: #1B201B;
   --sidebar-text: #EFEAE2;
   --sidebar-item: #FFFFFF;
-  --sidebar-muted: rgba(239, 234, 226, 0.62);
+  --sidebar-muted: rgba(239, 234, 226, 0.82);
   --sidebar-hover: rgba(255, 255, 255, 0.06);
   --sidebar-active-bg: rgba(255, 255, 255, 0.10);
   --sidebar-active-text: #FFFFFF;
@@ -90,6 +90,8 @@ html.dark {
 
 @layer base {
   body {
+    -webkit-font-smoothing: auto;
+    -moz-osx-font-smoothing: auto;
     background-color: var(--bg-base);
     color: var(--text-primary);
     font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;

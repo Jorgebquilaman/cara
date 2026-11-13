@@ -205,7 +205,7 @@ export default function MainLayout() {
           {sections.map((section) => (
             <div key={section.name}>
               {!collapsed && (
-                <p className="px-3 mb-1.5 text-[10px] font-medium uppercase tracking-section text-[var(--sidebar-muted)] select-none">
+                <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-section text-[var(--sidebar-muted)] select-none">
                   {section.name}
                 </p>
               )}
@@ -224,16 +224,16 @@ export default function MainLayout() {
                       onClick={() => setSidebarOpen(false)}
                       className={({ isActive }) =>
                         clsx(
-                          'flex items-center rounded-full px-3 py-2 text-sm transition-colors duration-150 relative',
+                          'flex items-center rounded-full px-3 py-2 text-sm font-medium transition-colors duration-150 relative',
                           collapsed ? 'justify-center' : 'gap-3',
                           isActive
-                            ? 'bg-[var(--sidebar-active-bg)] text-white font-medium'
+                            ? 'bg-[var(--sidebar-active-bg)] text-white font-semibold'
                             : 'text-[var(--sidebar-item)] hover:bg-[var(--sidebar-hover)] hover:text-white',
                         )
                       }
                       title={collapsed ? item.label : undefined}
                     >
-                      <item.icon className="h-[18px] w-[18px] shrink-0" />
+                      <item.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.75} />
                       {!collapsed && <span className="flex-1">{item.label}</span>}
                       {!collapsed && badgeCount > 0 && (
                         <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-ivory px-1.5 text-[10px] font-medium text-sage">
