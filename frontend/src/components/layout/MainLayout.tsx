@@ -227,8 +227,8 @@ export default function MainLayout() {
                           'flex items-center rounded-full px-3 py-2 text-sm transition-colors duration-150 relative',
                           collapsed ? 'justify-center' : 'gap-3',
                           isActive
-                            ? 'bg-[var(--sidebar-active-bg)] text-[var(--sidebar-active-text)] font-medium'
-                            : 'text-[var(--sidebar-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]',
+                            ? 'bg-[var(--sidebar-active-bg)] text-white font-medium'
+                            : 'text-[var(--sidebar-item)] hover:bg-[var(--sidebar-hover)] hover:text-white',
                         )
                       }
                       title={collapsed ? item.label : undefined}

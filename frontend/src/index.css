@@ -42,6 +42,7 @@
   --sidebar-bg: #687F6E;
   --sidebar-bg-end: #57695C;
   --sidebar-text: #F4EFE8;
+  --sidebar-item: #FFFFFF;
   --sidebar-muted: rgba(244, 239, 232, 0.68);
   --sidebar-hover: rgba(244, 239, 232, 0.10);
   --sidebar-active-bg: rgba(244, 239, 232, 0.16);
@@ -77,6 +78,7 @@ html.dark {
   --sidebar-bg: #20251F;
   --sidebar-bg-end: #1B201B;
   --sidebar-text: #EFEAE2;
+  --sidebar-item: #FFFFFF;
   --sidebar-muted: rgba(239, 234, 226, 0.62);
   --sidebar-hover: rgba(255, 255, 255, 0.06);
   --sidebar-active-bg: rgba(255, 255, 255, 0.10);
